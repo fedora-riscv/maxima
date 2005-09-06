@@ -8,7 +8,7 @@
 #define cvs cvs20050825
 #define beta cvs
 
-Summary: Maxima Symbolic Computation Program
+Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.1
 
