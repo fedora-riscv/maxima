@@ -18,6 +18,7 @@ Group:	 Applications/Engineering
 URL: 	 http://maxima.sourceforge.net/
 Source:  http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?cvs}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+ExcludeArch: ppc ppc64
 
 Source1: maxima.png
 Source2: xmaxima.desktop
@@ -311,6 +312,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Tue Sep 06 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1-4
 - workaround lack of debuginfo.list when building --with gcl
+- ExcludeArch: ppc ppc64
 
 * Mon Aug 29 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1-3
 - BR: tk (/usr/bin/wish)
