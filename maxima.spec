@@ -312,7 +312,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Tue Sep 06 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1-4
 - workaround lack of debuginfo.list when building --with gcl
-- ExcludeArch: ppc ppc64
+- ExcludeArch: ppc ppc64 (bug #166347)
 
 * Mon Aug 29 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1-3
 - BR: tk (/usr/bin/wish)
