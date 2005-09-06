@@ -1,0 +1,10 @@
+
+(autoload 'emaxima-mode "emaxima" "EMaxima" t)
+(add-hook 'emaxima-mode-hook 'emaxima-mark-file-as-emaxima)
+(autoload 'maxima-mode "maxima" "Maxima mode" t)
+(autoload 'maxima "maxima" "Maxima interaction" t)
+;(autoload 'imaxima "imaxima" "Maxima interaction with graphical output" t)
+(autoload 'dbl "dbl" "Make a debugger to run lisp, maxima and or gdb in" t)
+(autoload 'gcl-mode "gcl" "Major mode for editing maxima code and interacting with debugger" t)
+(setq auto-mode-alist (cons '("\\.ma?[cx]\\'" . maxima-mode) auto-mode-alist))
+;(setq auto-mode-alist (cons '("\\.li?sp\\'" . gcl-mode) auto-mode-alist))

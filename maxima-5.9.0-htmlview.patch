@@ -1,0 +1,11 @@
+--- maxima-5.9.0/interfaces/xmaxima/Tkmaxima/Menu.tcl.htmlview	2003-02-06 21:13:54.000000000 -0600
++++ maxima-5.9.0/interfaces/xmaxima/Tkmaxima/Menu.tcl	2004-03-26 15:47:44.000000000 -0600
+@@ -215,7 +215,7 @@
+ 	}
+     } else {
+ 	# This is more difficult under Unix - KDE GNOME CDE etc...
+-	lappend browse netscape
++	lappend browse htmlview 
+     }
+     $m add sep
+     $m add command -underline 0 -label {Maxima Homepage} \
