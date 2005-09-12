@@ -5,14 +5,14 @@
 %define _without_gcl 1
 %define _without_sbcl 1
 
-#define cvs cvs20050825
+#define cvs .20050908
 #define beta cvs
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.9.1
+Version: 5.9.1%{?beta}
 
-Release: 4%{?dist} 
+Release: 5%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -31,12 +31,12 @@ Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.
 Patch1: maxima-5.9.0-htmlview.patch
 # (mysterious?) xemacs patch
 Patch2: maxima.el-xemacs.patch
-# Fix build w/sbcl (5.9.1.1cvs only)
-%{?cvs:Patch3: maxima-sbcl.patch}
 
 # Inhibit automatic compressing of info files. Compressed info
 # files break maxima's internal help.
 %define __spec_install_post %{nil} 
+# debuginfo is empty/blank, disable
+%define debug_package   %{nil}
 
 BuildRequires: texinfo
 BuildRequires: tetex-latex
@@ -83,6 +83,7 @@ BuildRequires: clisp
 %define clisp_ver %{expand:%%(rpm -q --qf '%%{VERSION}' clisp )}
 Requires: clisp >= %{clisp_ver}
 Requires: %{name} = %{version}
+Obsoletes: maxima-exec-lisp
 Provides: %{name}-runtime = %{version}
 %description runtime-clisp
 Maxima compiled with Common Lisp (clisp) 
@@ -96,7 +97,7 @@ BuildRequires: cmucl
 #define cmucl_ver %{expand:%%(rpm -q --qf '%%{VERSION}' cmucl )}
 #Requires: cmucl >= %{cmucl_ver}
 Requires:  %{name} = %{version}
-Obsoletes: %{name}-exec-cmucl 
+Obsoletes: maxima-exec-cmucl 
 Provides:  %{name}-runtime = %{version}
 %description runtime-cmucl
 Maxima compiled with CMU Common Lisp (cmucl) 
@@ -108,7 +109,7 @@ Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}
-#Obsoletes: %{name}-exec-gcl 
+Obsoletes: maxima-exec-gcl 
 Provides:  %{name}-runtime = %{version}
 %description runtime-gcl
 Maxima compiled with Gnu Common Lisp (gcl)
@@ -122,7 +123,7 @@ BuildRequires: sbcl
 %define sbcl_ver %{expand:%%(rpm -q --qf '%%{version}' sbcl )}
 Requires: sbcl >= %{sbcl_ver}
 Requires: %{name} = %{version}
-#Obsoletes: %{name}-exec-sbcl
+#Obsoletes: maxima-exec-sbcl
 Provides: %{name}-runtime = %{version}
 %description runtime-sbcl
 Maxima compiled with Steel Bank Common Lisp (sbcl).
@@ -130,14 +131,13 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 
 
 %prep
-%setup -q  -n %{name}%{!?cvs:-%{version}%{?beta}}
+%setup -q  -n %{name}%{!?cvs:-%{version}}
 
 # Extra docs
 install -p -m644 %{SOURCE10} .
 
 %patch1 -p1 -b .htmlview
 %patch2 -p1 -b .xemacs
-%{?cvs:%patch3 -p1 -b .sbcl}
 
 sed -i -e 's:/usr/local/info:/usr/share/info:' \
   interfaces/emacs/emaxima/maxima.el
@@ -204,20 +204,20 @@ desktop-file-install --vendor fedora \
 ## emaxima
 # LaTeX style
 install -d $RPM_BUILD_ROOT%{_datadir}/texmf/tex/latex/emaxima
-cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}%{?beta}/emacs/*.sty \
+cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.sty \
 	$RPM_BUILD_ROOT%{_datadir}/texmf/tex/latex/emaxima/
 # emacs
 install -d $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/{maxima,site-start.d}
-cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}%{?beta}/emacs/*.el \
-	$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}%{?beta}/emacs/*.lisp \
+cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.el \
+	$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.lisp \
 	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/maxima/
 install -D -m644 -p %{SOURCE6} \
 	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d/maxima.el
 
 # xemacs
 install -d $RPM_BUILD_ROOT%{_datadir}/xemacs/site-packages/lisp/{maxima,site-start.d}
-cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}%{?beta}/emacs/*.el \
-	$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}%{?beta}/emacs/*.lisp \
+cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.el \
+	$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.lisp \
 	$RPM_BUILD_ROOT%{_datadir}/xemacs/site-packages/lisp/maxima/
 install -D -m644 -p %{SOURCE6} \
 	$RPM_BUILD_ROOT%{_datadir}/xemacs/site-packages/lisp/site-start.d/maxima.el
@@ -227,7 +227,7 @@ rm -f $RPM_BUILD_ROOT%{_infodir}/dir
 # until we get/Require rlwrap from http://utopia.knoware.nl/~hlub/uck/rlwrap/
 rm -f $RPM_BUILD_ROOT%{_bindir}/rmaxima
 # docs
-rm -rf $RPM_BUILD_ROOT%{_datadir}/maxima/%{version}%{?beta}/doc/{contributors,implementation,misc,maximabook,EMaximaIntro.ps}
+rm -rf $RPM_BUILD_ROOT%{_datadir}/maxima/%{version}/doc/{contributors,implementation,misc,maximabook,EMaximaIntro.ps}
 
 # when --with gcl, this (sometimes) fails to get auto-created, so we'll help out
 touch debugfiles.list
@@ -255,61 +255,67 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/intromax/intromax.pdf
 %doc doc/maximabook/maxima.pdf
 %doc macref.pdf
-%doc %{_datadir}/maxima/%{version}%{?beta}/doc
+%doc %{_datadir}/maxima/%{version}/doc
 %{_bindir}/maxima
 %dir %{_datadir}/maxima
-%dir %{_datadir}/maxima/%{version}%{?beta}
-%{_datadir}/maxima/%{version}%{?beta}/[a-c,f-r,t-w,y-z,A-Z]*
-%{_datadir}/maxima/%{version}%{?beta}/demo/
-%{_datadir}/maxima/%{version}%{?beta}/share/
+%dir %{_datadir}/maxima/%{version}
+%{_datadir}/maxima/%{version}/[a-c,f-r,t-w,y-z,A-Z]*
+%{_datadir}/maxima/%{version}/demo/
+%{_datadir}/maxima/%{version}/share/
 %dir %{_libdir}/maxima
-%dir %{_libdir}/maxima/%{version}%{?beta}
+%dir %{_libdir}/maxima/%{version}
 %{_libexecdir}/maxima
 %{_infodir}/*.info*
 %{_mandir}/man1/maxima.*
 # emaxima     
-%{_datadir}/maxima/%{version}%{?beta}/emacs
+%{_datadir}/maxima/%{version}/emacs
 %{_datadir}/emacs/site-lisp/*
 %{_datadir}/xemacs/site-packages/lisp/*
 %{_datadir}/texmf/tex/latex/emaxima/
 
 %files src
 %defattr(-,root,root)
-%{_datadir}/maxima/%{version}%{?beta}/src/
+%{_datadir}/maxima/%{version}/src/
 
 %files gui
 %defattr(-,root,root)
 %{_bindir}/xmaxima
-%{_datadir}/maxima/%{version}%{?beta}/xmaxima
+%{_datadir}/maxima/%{version}/xmaxima
 %{_datadir}/applications/*.desktop
 %{_datadir}/pixmaps/*.png
 
 %if "%{?_with_clisp:1}" == "1"
 %files runtime-clisp
 %defattr(-,root,root)
-%{_libdir}/maxima/%{version}%{?beta}/binary-clisp
+%{_libdir}/maxima/%{version}/binary-clisp
 %endif
 
 %if "%{?_with_cmucl:1}" == "1"
 %files runtime-cmucl
 %defattr(-,root,root)
-%{_libdir}/maxima/%{version}%{?beta}/binary-cmucl
+%{_libdir}/maxima/%{version}/binary-cmucl
 %endif
 
 %if "%{?_with_gcl:1}" == "1"
 %files runtime-gcl
 %defattr(-,root,root)
-%{_libdir}/maxima/%{version}%{?beta}/binary-gcl
+%{_libdir}/maxima/%{version}/binary-gcl
 %endif
 
 %if "%{?_with_sbcl:1}" == "1"
 %files runtime-sbcl
 %defattr(-,root,root)
-%{_libdir}/maxima/%{version}%{?beta}/binary-sbcl
+%{_libdir}/maxima/%{version}/binary-sbcl
 %endif
 
 
 %changelog
+* Fri Sep 09 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1-5
+- add more Obsoletes: maxima-exec- for cleaner upgrade from customized,
+  rebuilt upstream rpms.
+- (re)disable debuginfo.  No point in having empty -debuginfo pkgs.
+- a few cleanups getting ready for 5.9.1.1cvs/5.9.2rc
+
 * Tue Sep 06 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1-4
 - workaround lack of debuginfo.list when building --with gcl
 - ExcludeArch: ppc ppc64 (bug #166347)
