@@ -6,19 +6,21 @@
 %define _without_sbcl 1
 
 #define cvs .20050908
-#define beta cvs
+%define beta rc1 
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.9.1%{?beta}
+Version: 5.9.1.9rc1
 
-Release: 5%{?dist} 
+Release: 2%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
-Source:  http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?cvs}.tar.gz
+#Source:  http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?cvs}.tar.gz
+Source:	 http://maxima.sf.net/tmp-release/maxima-5.9.1.9rc1.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-ExcludeArch: ppc ppc64
+# add ppc (and maybe ppc64)  when clisp builds again on ppc (http://bugzilla.redhat.com/bugzilla/166347) 
+ExclusiveArch: %{ix86} x86_64 
 
 Source1: maxima.png
 Source2: xmaxima.desktop
@@ -28,14 +30,14 @@ Source6: maxima-modes.el
 Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
-Patch1: maxima-5.9.0-htmlview.patch
+Patch1: maxima-5.9.2-htmlview.patch
 # (mysterious?) xemacs patch
 Patch2: maxima.el-xemacs.patch
 
 # Inhibit automatic compressing of info files. Compressed info
 # files break maxima's internal help.
 %define __spec_install_post %{nil} 
-# debuginfo is empty/blank, disable
+# debuginfo is empty/blank (when using gcl?), disable
 %define debug_package   %{nil}
 
 BuildRequires: texinfo
@@ -43,8 +45,7 @@ BuildRequires: tetex-latex
 BuildRequires: desktop-file-utils
 # /usr/bin/wish
 BuildRequires: tk
-# cvs
-%{?cvs:BuildRequires: autoconf automake}
+%{?beta:BuildRequires: autoconf automake}
 
 Requires: %{name}-runtime = %{version}
 Requires: gnuplot
@@ -79,11 +80,11 @@ Requires: %{name} = %{version}-%{release}
 %package runtime-clisp
 Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
-BuildRequires: clisp
+BuildRequires: clisp-devel
 %define clisp_ver %{expand:%%(rpm -q --qf '%%{VERSION}' clisp )}
 Requires: clisp >= %{clisp_ver}
 Requires: %{name} = %{version}
-Obsoletes: maxima-exec-lisp
+Obsoletes: maxima-exec-clisp < %{version}-%{release}
 Provides: %{name}-runtime = %{version}
 %description runtime-clisp
 Maxima compiled with Common Lisp (clisp) 
@@ -94,10 +95,8 @@ Maxima compiled with Common Lisp (clisp)
 Summary: Maxima compiled with CMUCL
 Group:	 Applications/Engineering 
 BuildRequires: cmucl 
-#define cmucl_ver %{expand:%%(rpm -q --qf '%%{VERSION}' cmucl )}
-#Requires: cmucl >= %{cmucl_ver}
 Requires:  %{name} = %{version}
-Obsoletes: maxima-exec-cmucl 
+Obsoletes: maxima-exec-cmucl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}
 %description runtime-cmucl
 Maxima compiled with CMU Common Lisp (cmucl) 
@@ -107,9 +106,9 @@ Maxima compiled with CMU Common Lisp (cmucl)
 %package runtime-gcl
 Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
-BuildRequires: gcl
+BuildRequires: gcl-devel
 Requires:  %{name} = %{version}
-Obsoletes: maxima-exec-gcl 
+Obsoletes: maxima-exec-gcl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}
 %description runtime-gcl
 Maxima compiled with Gnu Common Lisp (gcl)
@@ -120,10 +119,10 @@ Maxima compiled with Gnu Common Lisp (gcl)
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
 BuildRequires: sbcl 
-%define sbcl_ver %{expand:%%(rpm -q --qf '%%{version}' sbcl )}
+%define sbcl_ver %{expand:%%(rpm -q --qf '%%{VERSION}' sbcl )}
 Requires: sbcl >= %{sbcl_ver}
 Requires: %{name} = %{version}
-#Obsoletes: maxima-exec-sbcl
+Obsoletes: maxima-exec-sbcl < %{version}-%{release}
 Provides: %{name}-runtime = %{version}
 %description runtime-sbcl
 Maxima compiled with Steel Bank Common Lisp (sbcl).
@@ -145,16 +144,16 @@ sed -i -e \
   's/(defcustom\s+maxima-info-index-file\s+)(\S+)/$1\"maxima.info-16\"/' \
   interfaces/emacs/emaxima/maxima.el
 
-#if "%{?cvs:1}" == "1"
-if [ ! -f configure ]; then
+# remove CVS crud
+find -name CVS -type d | xargs rm -r
+
+%if "%{?beta:1}" == "1"
+#if [ ! -f configure ]; then
 aclocal
 automake --add-missing --copy
 autoconf
-fi
-
-# remove CVS crud
-find -name CVS -type d | xargs rm -r
-#endif
+#fi
+%endif
 
 
 %build
@@ -167,7 +166,7 @@ find -name CVS -type d | xargs rm -r
 # docs
 pushd doc
 
- install -p -m644 %{SOURCE11} maximabook/maxima.pdf
+ install -D -p -m644 %{SOURCE11} maximabook/maxima.pdf
 
  pushd info
   texi2dvi -p maxima.texi
@@ -310,6 +309,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Sep 16 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1.9rc1-2
+- -runtime-sbcl: with sbcl_ver macro
+- use versioned maxima-exec Obsoletes.
+
+* Mon Sep 12 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1.9rc1-1
+- 5.9.1.9rc1
+
 * Fri Sep 09 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1-5
 - add more Obsoletes: maxima-exec- for cleaner upgrade from customized,
   rebuilt upstream rpms.
