@@ -3,9 +3,8 @@
 %define _with_clisp 1
 %define _without_cmucl 1
 %define _without_gcl 1
-%define _without_sbcl 1
+%define _with_sbcl 1
 
-#define cvs .20050908
 %define beta rc1 
 
 Summary: Symbolic Computation Program
@@ -16,10 +15,11 @@ Release: 2%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
-#Source:  http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?cvs}.tar.gz
+#Source: http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?cvs}.tar.gz
 Source:	 http://maxima.sf.net/tmp-release/maxima-5.9.1.9rc1.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-# add ppc (and maybe ppc64)  when clisp builds again on ppc (http://bugzilla.redhat.com/bugzilla/166347) 
+# add ppc (and maybe ppc64)  when lisps build again on ppc 
+#  (clisp: http://bugzilla.redhat.com/bugzilla/166347) 
 ExclusiveArch: %{ix86} x86_64 
 
 Source1: maxima.png
@@ -106,7 +106,7 @@ Maxima compiled with CMU Common Lisp (cmucl)
 %package runtime-gcl
 Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
-BuildRequires: gcl-devel
+BuildRequires: gcl
 Requires:  %{name} = %{version}
 Obsoletes: maxima-exec-gcl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}
