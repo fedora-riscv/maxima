@@ -1,0 +1,14 @@
+--- maxima/interfaces/xmaxima/Tkmaxima/Menu.tcl.htmlview	2004-10-16 10:37:53.000000000 -0500
++++ maxima/interfaces/xmaxima/Tkmaxima/Menu.tcl	2005-08-22 07:27:23.000000000 -0500
+@@ -215,9 +215,9 @@
+ 	}
+     } else {
+ 	
+-	set selectedbrowser mozilla
++	set selectedbrowser htmlview 
+ 
+-	foreach b { mozilla konqueror epiphany firefox netscape } {
++	foreach b { htmlview firefox konqueror mozilla epiphany netscape } {
+ 	    if { ! [catch {exec which $b} ] } {
+ 		set selectedbrowser $b
+ 		break } }
