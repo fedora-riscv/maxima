@@ -5,7 +5,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.1.9rc4
 
-Release: 2%{?dist} 
+Release: 3%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -22,7 +22,8 @@ ExclusiveArch: %{ix86} x86_64
 %if "%{?fedora}" < "5"
 %define _with_gcl 1
 %endif
-%define _with_sbcl 1
+# seems to hang/crash in mock(??), disable for now
+%define _without_sbcl 1
 %endif
 
 %ifarch ppc
@@ -327,7 +328,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue Oct 04 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1.9rc4-2
+* Tue Oct 04 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1.9rc4-3
 - 5.9.1.9rc4
 - banish _without_ macros, use only _with_ (absense of _with_foo implies
   _without_foo)
