@@ -23,7 +23,7 @@ ExclusiveArch: %{ix86} x86_64
 %define _with_gcl 1
 %endif
 # seems to hang/crash in mock(??), disable for now
-%define _without_sbcl 1
+#define _with_sbcl 1
 %endif
 
 %ifarch ppc
