@@ -1,26 +1,35 @@
 
-## Which runtimes to build/enable?
-%define _with_clisp 1
-%define _without_cmucl 1
-%define _without_gcl 1
-%define _with_sbcl 1
-
-%define beta rc1 
-
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.9.1.9rc1
+Version: 5.9.2
 
 Release: 2%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
-#Source: http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?cvs}.tar.gz
-Source:	 http://maxima.sf.net/tmp-release/maxima-5.9.1.9rc1.tar.gz
+Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # add ppc (and maybe ppc64)  when lisps build again on ppc 
 #  (clisp: http://bugzilla.redhat.com/bugzilla/166347) 
 ExclusiveArch: %{ix86} x86_64 
+
+%ifarch %{ix86} x86_64
+%define _enable_clisp --enable-clisp 
+#define _enable_cmucl --enable-cmucl 
+# gcl not built for fc5/development (yet)
+%if "%{?fedora}" < "5"
+%define _enable_gcl --enable-gcl 
+%endif
+# sbcl build fails: http://bugzilla.redhat.com/bugzilla/170026 
+#define _enable_sbcl --enable-sbcl 
+%endif
+
+%ifarch ppc
+#define _enable_clisp --enable-clisp 
+#define _enable_cmucl --enable-cmucl 
+#define _enable_gcl --enable-gcl 
+#define _enable_sbcl --enable-sbcl 
+%endif
 
 Source1: maxima.png
 Source2: xmaxima.desktop
@@ -33,19 +42,22 @@ Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.
 Patch1: maxima-5.9.2-htmlview.patch
 # (mysterious?) xemacs patch
 Patch2: maxima.el-xemacs.patch
+# use sbcl --disable-debugger
+Patch3: maxima-5.9.2-sbcl-disable-debugger.patch
 
 # Inhibit automatic compressing of info files. Compressed info
 # files break maxima's internal help.
 %define __spec_install_post %{nil} 
-# debuginfo is empty/blank (when using gcl?), disable
+# debuginfo.list ends up empty/blank anyway. disable
 %define debug_package   %{nil}
 
+BuildRequires: time
 BuildRequires: texinfo
 BuildRequires: tetex-latex
 BuildRequires: desktop-file-utils
 # /usr/bin/wish
 BuildRequires: tk
-%{?beta:BuildRequires: autoconf automake}
+BuildRequires: automake
 
 Requires: %{name}-runtime = %{version}
 Requires: gnuplot
@@ -64,7 +76,6 @@ Summary: Tcl/Tk GUI interface for %{name}
 Group:	 Applications/Engineering 
 Requires: %{name} = %{version}-%{release} 
 Obsoletes: %{name}-xmaxima < %{version}-%{release}
-Provides:  %{name}-xmaxima = %{version}-%{release}
 Requires: tk
 %description gui
 Tcl/Tk GUI interface for %{name}
@@ -76,7 +87,9 @@ Requires: %{name} = %{version}-%{release}
 %description src 
 %{name} lisp source code.
 
-%if "%{?_with_clisp:1}" == "1"
+%if "%{?_enable_clisp:1}" == "1"
+# to workaround mysterious(?) "cpio: MD5 sum mismatch" errors on this subpkg
+%define __prelink_undo_cmd %{nil}
 %package runtime-clisp
 Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
@@ -90,7 +103,8 @@ Provides: %{name}-runtime = %{version}
 Maxima compiled with Common Lisp (clisp) 
 %endif
 
-%if "%{?_with_cmucl:1}" == "1"
+%if "%{?_enable_cmucl:1}" == "1"
+%define _with_cmucl_runtime=--with-cmucl-runtime=%{_libdir}/cmucl/bin/lisp
 %package runtime-cmucl
 Summary: Maxima compiled with CMUCL
 Group:	 Applications/Engineering 
@@ -102,7 +116,7 @@ Provides:  %{name}-runtime = %{version}
 Maxima compiled with CMU Common Lisp (cmucl) 
 %endif
 
-%if "%{?_with_gcl:1}" == "1"
+%if "%{?_enable_gcl:1}" == "1"
 %package runtime-gcl
 Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
@@ -114,7 +128,7 @@ Provides:  %{name}-runtime = %{version}
 Maxima compiled with Gnu Common Lisp (gcl)
 %endif
 
-%if "%{?_with_sbcl:1}" == "1"
+%if "%{?_enable_sbcl:1}" == "1"
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
@@ -147,21 +161,23 @@ sed -i -e \
 # remove CVS crud
 find -name CVS -type d | xargs rm -r
 
-%if "%{?beta:1}" == "1"
-#if [ ! -f configure ]; then
+%if "%{?_enable_sbcl:1}" == "1"
+%patch3 -p1 -b .sbcl-disable-debugger
+# seems to be needed only if --enable-sbcl
 aclocal
 automake --add-missing --copy
 autoconf
-#fi
 %endif
 
 
 %build
 %configure \
-  %{?_with_clisp: --enable-clisp }%{?_without_clisp:--disable-clisp } \
-  %{?_with_cmucl: --enable-cmucl --with-cmucl-runtime=%{_libdir}/cmucl/bin/lisp }%{?_without_cmucl:--disable-cmucl } \
-  %{?_with_gcl: --enable-gcl }%{?_without_gcl: --disable-gcl } \
-  %{?_with_sbcl: --enable-sbcl }%{?_without_sbcl: --disable-sbcl }
+  %{?_enable_clisp} %{!?_enable_clisp: --disable-clisp } \
+  %{?_enable_cmucl} %{?_with_cmucl_runtime} %{!?_enable_cmucl: --disable-cmucl } \
+  %{?_enable_gcl} %{!?_enable_gcl: --disable-gcl } \
+  %{?_enable_sbcl} %{!?_enable_sbcl: --disable-sbcl }
+
+make %{?_smp_mflags}
 
 # docs
 pushd doc
@@ -177,9 +193,6 @@ pushd doc
  popd
 
 popd
-
-# everything else
-make %{?_smp_mflags}
 
 
 %check || :
@@ -228,7 +241,7 @@ rm -f $RPM_BUILD_ROOT%{_bindir}/rmaxima
 # docs
 rm -rf $RPM_BUILD_ROOT%{_datadir}/maxima/%{version}/doc/{contributors,implementation,misc,maximabook,EMaximaIntro.ps}
 
-# when --with gcl, this (sometimes) fails to get auto-created, so we'll help out
+# _enable_gcl: debuginfo (sometimes?) fails to get auto-created, so we'll help out
 touch debugfiles.list
 
 
@@ -261,8 +274,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/maxima/%{version}/[a-c,f-r,t-w,y-z,A-Z]*
 %{_datadir}/maxima/%{version}/demo/
 %{_datadir}/maxima/%{version}/share/
-%dir %{_libdir}/maxima
-%dir %{_libdir}/maxima/%{version}
 %{_libexecdir}/maxima
 %{_infodir}/*.info*
 %{_mandir}/man1/maxima.*
@@ -283,32 +294,66 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/applications/*.desktop
 %{_datadir}/pixmaps/*.png
 
-%if "%{?_with_clisp:1}" == "1"
+%if "%{?_enable_clisp:1}" == "1"
 %files runtime-clisp
 %defattr(-,root,root)
+%dir %{_libdir}/maxima/
+%dir %{_libdir}/maxima/%{version}/
 %{_libdir}/maxima/%{version}/binary-clisp
 %endif
 
-%if "%{?_with_cmucl:1}" == "1"
+%if "%{?_enable_cmucl:1}" == "1"
 %files runtime-cmucl
 %defattr(-,root,root)
+%dir %{_libdir}/maxima/
+%dir %{_libdir}/maxima/%{version}/
 %{_libdir}/maxima/%{version}/binary-cmucl
 %endif
 
-%if "%{?_with_gcl:1}" == "1"
+%if "%{?_enable_gcl:1}" == "1"
 %files runtime-gcl
 %defattr(-,root,root)
+%dir %{_libdir}/maxima/
+%dir %{_libdir}/maxima/%{version}/
 %{_libdir}/maxima/%{version}/binary-gcl
 %endif
 
-%if "%{?_with_sbcl:1}" == "1"
+%if "%{?_enable_sbcl:1}" == "1"
 %files runtime-sbcl
 %defattr(-,root,root)
+%dir %{_libdir}/maxima/
+%dir %{_libdir}/maxima/%{version}/
 %{_libdir}/maxima/%{version}/binary-sbcl
 %endif
 
 
 %changelog
+* Wed Oct 12 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-2
+- 5.9.2
+
+* Thu Oct 06 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1.9rc4-4
+- cleanup _with,_enable macros
+- -sbcl: --disable-debugger
+
+* Tue Oct 04 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1.9rc4-3
+- 5.9.1.9rc4
+- banish _without_ macros, use only _with_ (absense of _with_foo implies
+  _without_foo)
+
+* Wed Sep 28 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1.9rc3-1
+- 5.9.1.9rc3
+
+* Mon Sep 26 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1.9rc2-1
+- 5.9.1.9rc2
+
+* Fri Sep 23 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1.9rc1-4
+- --with-clisp only (for now)
+
+* Thu Sep 22 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1.9rc1-3
+- runtime-clisp: workaround "cpio: MD5 sum mismatch" error
+- --with-gcl
+- make %%_libdir/maxima owned by runtime pkgs
+
 * Fri Sep 16 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.1.9rc1-2
 - -runtime-sbcl: with sbcl_ver macro
 - use versioned maxima-exec Obsoletes.
