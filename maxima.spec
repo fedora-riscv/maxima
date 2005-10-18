@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.2
 
-Release: 2%{?dist} 
+Release: 3%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -12,6 +12,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # add ppc (and maybe ppc64)  when lisps build again on ppc 
 #  (clisp: http://bugzilla.redhat.com/bugzilla/166347) 
 ExclusiveArch: %{ix86} x86_64 
+
+%define _with_default_lisp --with-default-lisp=clisp
 
 %ifarch %{ix86} x86_64
 %define _enable_clisp --enable-clisp 
@@ -90,6 +92,7 @@ Requires: %{name} = %{version}-%{release}
 %if "%{?_enable_clisp:1}" == "1"
 # to workaround mysterious(?) "cpio: MD5 sum mismatch" errors on this subpkg
 %define __prelink_undo_cmd %{nil}
+%define _with_clisp_runtime --with-clisp-runtime=%{_libdir}/clisp/base/lisp.run
 %package runtime-clisp
 Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
@@ -172,7 +175,8 @@ autoconf
 
 %build
 %configure \
-  %{?_enable_clisp} %{!?_enable_clisp: --disable-clisp } \
+  %{?_with_default_lisp} \
+  %{?_enable_clisp} %{?_with_clisp_runtime} %{!?_enable_clisp: --disable-clisp } \
   %{?_enable_cmucl} %{?_with_cmucl_runtime} %{!?_enable_cmucl: --disable-cmucl } \
   %{?_enable_gcl} %{!?_enable_gcl: --disable-gcl } \
   %{?_enable_sbcl} %{!?_enable_sbcl: --disable-sbcl }
@@ -328,6 +332,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Oct 18 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-3
+- --with-default-lisp=clisp
+- --with-clisp-runtime=%%_libdir/clisp/base/lisp.run
+
 * Wed Oct 12 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-2
 - 5.9.2
 
