@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.2
 
-Release: 5%{?dist} 
+Release: 6%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -103,8 +103,7 @@ Group:	 Applications/Engineering
 BuildRequires: clisp-devel
 # To appease those who are paranoid about rpm queries at build time
 #define clisp_ver %{expand:%%(rpm -q --qf '%%{VERSION}' clisp )}
-%define clisp_ver %{expand:%%(clisp --version | head -n 1 | cut -d' ' -f3)}
-Requires: clisp >= %{clisp_ver}
+Requires: clisp %{?clisp_ver: >= %{clisp_ver}}
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-clisp < %{version}-%{release}
 Provides: %{name}-runtime = %{version}
@@ -144,8 +143,7 @@ Group:   Applications/Engineering
 BuildRequires: sbcl >= 0.9.6
 ## To appease those who are paranoid about rpm queries at build time
 #define sbcl_ver %{expand:%%(rpm -q --qf '%%{VERSION}' sbcl )}
-%define sbcl_ver %{expand:%%(sbcl --version | cut -d' ' -f2)}
-Requires: sbcl >= %{sbcl_ver}
+Requires: sbcl %{?sbcl_ver: >= %{sbcl_ver}} 
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-sbcl < %{version}-%{release}
 Provides: %{name}-runtime = %{version}
@@ -353,7 +351,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Thu Oct 27 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-5
+* Thu Oct 27 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-6
 - --enable-sbcl
 - avoid rpmquery's at build-time
 
