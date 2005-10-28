@@ -1,0 +1,24 @@
+--- maxima-5.9.2/interfaces/xmaxima/Tkmaxima/Constants.tcl.evince	2004-10-28 13:26:29.000000000 -0500
++++ maxima-5.9.2/interfaces/xmaxima/Tkmaxima/Constants.tcl	2005-10-22 09:33:46.000000000 -0500
+@@ -132,8 +132,8 @@
+     text/html  netmath
+     text/plain netmath
+     image/gif  netmath
+-    application/postscript "ghostview -safer %s"
+-    application/pdf "acroread %s"
++    application/postscript "evince %s"
++    application/pdf "evince %s"
+     application/x-dvi "xdvi %s"
+ }
+ set maxima_priv(imagecounter) 0
+--- maxima-5.9.2/src/plot.lisp.evince	2005-09-25 14:38:48.000000000 -0500
++++ maxima-5.9.2/src/plot.lisp	2005-10-22 09:36:05.000000000 -0500
+@@ -71,7 +71,7 @@
+ 			 "set size 1.5, 1.5;set term postscript eps enhanced color solid 24")
+ 			))
+ 
+-(defvar $viewps_command  "(ghostview \"~a\")")
++(defvar $viewps_command  "(evince \"~a\")")
+ 
+ ;;(defvar $viewps_command  "(gs -I. -Q  ~a)")
+ 
