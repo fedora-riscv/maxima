@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.2
 
-Release: 3%{?dist} 
+Release: 5%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -17,13 +17,13 @@ ExclusiveArch: %{ix86} x86_64
 
 %ifarch %{ix86} x86_64
 %define _enable_clisp --enable-clisp 
+# cmucl review pending: http://bugzilla.redhat.com/bugzilla/166796
 #define _enable_cmucl --enable-cmucl 
 # gcl not built for fc5/development (yet)
 %if "%{?fedora}" < "5"
 %define _enable_gcl --enable-gcl 
 %endif
-# sbcl build fails: http://bugzilla.redhat.com/bugzilla/170026 
-#define _enable_sbcl --enable-sbcl 
+%define _enable_sbcl --enable-sbcl 
 %endif
 
 %ifarch ppc
@@ -42,10 +42,14 @@ Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
 Patch1: maxima-5.9.2-htmlview.patch
-# (mysterious?) xemacs patch
+# (mysterious?) xemacs patch (don't use, for now)
 Patch2: maxima.el-xemacs.patch
 # use sbcl --disable-debugger
 Patch3: maxima-5.9.2-sbcl-disable-debugger.patch
+# ghostview -> evince (ps/pdf viewer)
+Patch4: maxima-5.9.2-evince.patch
+# emaxima fix from Camm Maguire
+Patch5: maxima-5.9.2-emaxima.patch
 
 # Inhibit automatic compressing of info files. Compressed info
 # files break maxima's internal help.
@@ -90,14 +94,16 @@ Requires: %{name} = %{version}-%{release}
 %{name} lisp source code.
 
 %if "%{?_enable_clisp:1}" == "1"
-# to workaround mysterious(?) "cpio: MD5 sum mismatch" errors on this subpkg
+# to workaround mysterious(?) "cpio: MD5 sum mismatch" errors when installing this subpkg
 %define __prelink_undo_cmd %{nil}
 %define _with_clisp_runtime --with-clisp-runtime=%{_libdir}/clisp/base/lisp.run
 %package runtime-clisp
 Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
 BuildRequires: clisp-devel
-%define clisp_ver %{expand:%%(rpm -q --qf '%%{VERSION}' clisp )}
+# To appease those who are paranoid about rpm queries at build time
+#define clisp_ver %{expand:%%(rpm -q --qf '%%{VERSION}' clisp )}
+%define clisp_ver %{expand:%%(clisp --version | head -n 1 | cut -d' ' -f3)}
 Requires: clisp >= %{clisp_ver}
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-clisp < %{version}-%{release}
@@ -135,8 +141,10 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-BuildRequires: sbcl 
-%define sbcl_ver %{expand:%%(rpm -q --qf '%%{VERSION}' sbcl )}
+BuildRequires: sbcl >= 0.9.6
+## To appease those who are paranoid about rpm queries at build time
+#define sbcl_ver %{expand:%%(rpm -q --qf '%%{VERSION}' sbcl )}
+%define sbcl_ver %{expand:%%(sbcl --version | cut -d' ' -f2)}
 Requires: sbcl >= %{sbcl_ver}
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-sbcl < %{version}-%{release}
@@ -153,7 +161,11 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 install -p -m644 %{SOURCE10} .
 
 %patch1 -p1 -b .htmlview
-%patch2 -p1 -b .xemacs
+#patch2 -p1 -b .xemacs
+%if "%{?fedora}" > "3"
+%patch4 -p1 -b .evince
+%endif
+%patch5 -p1 -b .emaxima
 
 sed -i -e 's:/usr/local/info:/usr/share/info:' \
   interfaces/emacs/emaxima/maxima.el
@@ -199,17 +211,17 @@ pushd doc
 popd
 
 
-%check || :
+%check 
 make check
 
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-make install%{!?debug_package:-strip} DESTDIR=$RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT
 
 # app icon
-install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/pixmaps/%{name}.png
+install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/maxima.png
 
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
 desktop-file-install --vendor fedora \
@@ -259,6 +271,15 @@ if [ $1 -eq 0 ]; then
   [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 fi
 
+%post gui
+touch --no-create %{_datadir}/icons/hicolor ||:
+gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
+
+%postun gui
+touch --no-create %{_datadir}/icons/hicolor ||:
+gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
+
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -284,7 +305,7 @@ rm -rf $RPM_BUILD_ROOT
 # emaxima     
 %{_datadir}/maxima/%{version}/emacs
 %{_datadir}/emacs/site-lisp/*
-%{_datadir}/xemacs/site-packages/lisp/*
+%{_datadir}/xemacs/site-packages/*
 %{_datadir}/texmf/tex/latex/emaxima/
 
 %files src
@@ -296,7 +317,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/xmaxima
 %{_datadir}/maxima/%{version}/xmaxima
 %{_datadir}/applications/*.desktop
-%{_datadir}/pixmaps/*.png
+%{_datadir}/icons/hicolor/*/*
 
 %if "%{?_enable_clisp:1}" == "1"
 %files runtime-clisp
@@ -332,7 +353,15 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue Oct 18 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-3
+* Thu Oct 27 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-5
+- --enable-sbcl
+- avoid rpmquery's at build-time
+
+* Sat Oct 22 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-4
+- emaxima patch
+- follow icon spec
+
+* Wed Oct 18 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-3
 - --with-default-lisp=clisp
 - --with-clisp-runtime=%%_libdir/clisp/base/lisp.run
 
