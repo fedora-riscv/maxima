@@ -3,14 +3,16 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.2
 
-Release: 6%{?dist} 
+Release: 9%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-# add ppc (and maybe ppc64)  when lisps build again on ppc 
+# add ppc (and maybe ppc64)  when lisps are available for ppc 
 #  (clisp: http://bugzilla.redhat.com/bugzilla/166347) 
+#  (gcl:   http://bugzilla.redhat.com/bugzilla/167952)
+#  (sbcl:  https://bugzilla.redhat.com/bugzilla/177029)
 ExclusiveArch: %{ix86} x86_64 
 
 %define _with_default_lisp --with-default-lisp=clisp
@@ -19,8 +21,8 @@ ExclusiveArch: %{ix86} x86_64
 %define _enable_clisp --enable-clisp 
 # cmucl review pending: http://bugzilla.redhat.com/bugzilla/166796
 #define _enable_cmucl --enable-cmucl 
-# gcl not built for fc5/development (yet)
-%if "%{?fedora}" < "5"
+%if "%{?fedora}" != "5"
+# gcl not available for fc5/devel: http://bugzilla.redhat.com/bugzilla/177026
 %define _enable_gcl --enable-gcl 
 %endif
 %define _enable_sbcl --enable-sbcl 
@@ -101,8 +103,7 @@ Requires: %{name} = %{version}-%{release}
 Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
 BuildRequires: clisp-devel
-# To appease those who are paranoid about rpm queries at build time
-#define clisp_ver %{expand:%%(rpm -q --qf '%%{VERSION}' clisp )}
+#define clisp_ver %{expand:%%(clisp --version | head -n 1 | cut -d' ' -f3 )}
 Requires: clisp %{?clisp_ver: >= %{clisp_ver}}
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-clisp < %{version}-%{release}
@@ -140,9 +141,8 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-BuildRequires: sbcl >= 0.9.6
-## To appease those who are paranoid about rpm queries at build time
-#define sbcl_ver %{expand:%%(rpm -q --qf '%%{VERSION}' sbcl )}
+BuildRequires: sbcl 
+#define sbcl_ver %{expand:%%(sbcl --version | cut -d' ' -f2)}
 Requires: sbcl %{?sbcl_ver: >= %{sbcl_ver}} 
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-sbcl < %{version}-%{release}
@@ -315,7 +315,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/xmaxima
 %{_datadir}/maxima/%{version}/xmaxima
 %{_datadir}/applications/*.desktop
-%{_datadir}/icons/hicolor/*/*
+%{_datadir}/icons/hicolor/*/*/*
 
 %if "%{?_enable_clisp:1}" == "1"
 %files runtime-clisp
@@ -351,6 +351,15 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jan 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-9
+- OK, loosen Req's again (buildsystem can't handle it)
+
+* Thu Jan 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-8
+- tighten Req: on clisp/sbcl runtimes
+
+* Thu Jan 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-7
+- rebuild for/with new clisp,sbcl
+
 * Thu Oct 27 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-6
 - --enable-sbcl
 - avoid rpmquery's at build-time
