@@ -12,6 +12,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # add ppc (and maybe ppc64)  when lisps are available for ppc 
 #  (clisp: http://bugzilla.redhat.com/bugzilla/166347) 
 #  (gcl:   http://bugzilla.redhat.com/bugzilla/167952)
+#  (sbcl:  https://bugzilla.redhat.com/bugzilla/177029)
 ExclusiveArch: %{ix86} x86_64 
 
 %define _with_default_lisp --with-default-lisp=clisp
