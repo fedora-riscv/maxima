@@ -3,14 +3,15 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.2
 
-Release: 6%{?dist} 
+Release: 7%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-# add ppc (and maybe ppc64)  when lisps build again on ppc 
+# add ppc (and maybe ppc64)  when lisps are available for ppc 
 #  (clisp: http://bugzilla.redhat.com/bugzilla/166347) 
+#  (gcl:   http://bugzilla.redhat.com/bugzilla/167952)
 ExclusiveArch: %{ix86} x86_64 
 
 %define _with_default_lisp --with-default-lisp=clisp
@@ -19,8 +20,8 @@ ExclusiveArch: %{ix86} x86_64
 %define _enable_clisp --enable-clisp 
 # cmucl review pending: http://bugzilla.redhat.com/bugzilla/166796
 #define _enable_cmucl --enable-cmucl 
-# gcl not built for fc5/development (yet)
-%if "%{?fedora}" < "5"
+%if "%{?fedora}" != "5"
+# gcl not available for fc5/devel: http://bugzilla.redhat.com/bugzilla/177026
 %define _enable_gcl --enable-gcl 
 %endif
 %define _enable_sbcl --enable-sbcl 
@@ -351,6 +352,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jan 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-7
+- rebuild for/with new clisp,sbcl
+
 * Thu Oct 27 2005 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-6
 - --enable-sbcl
 - avoid rpmquery's at build-time
