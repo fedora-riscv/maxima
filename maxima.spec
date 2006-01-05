@@ -316,7 +316,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/xmaxima
 %{_datadir}/maxima/%{version}/xmaxima
 %{_datadir}/applications/*.desktop
-%{_datadir}/icons/hicolor/*/*
+%{_datadir}/icons/hicolor/*/*/*
 
 %if "%{?_enable_clisp:1}" == "1"
 %files runtime-clisp
