@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.2
 
-Release: 7%{?dist} 
+Release: 8%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -102,8 +102,7 @@ Requires: %{name} = %{version}-%{release}
 Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
 BuildRequires: clisp-devel
-# To appease those who are paranoid about rpm queries at build time
-#define clisp_ver %{expand:%%(rpm -q --qf '%%{VERSION}' clisp )}
+%define clisp_ver %{expand:%%(clisp --version | head -n 1 | cut -d' ' -f3 )}
 Requires: clisp %{?clisp_ver: >= %{clisp_ver}}
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-clisp < %{version}-%{release}
@@ -141,9 +140,8 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-BuildRequires: sbcl >= 0.9.6
-## To appease those who are paranoid about rpm queries at build time
-#define sbcl_ver %{expand:%%(rpm -q --qf '%%{VERSION}' sbcl )}
+BuildRequires: sbcl 
+%define sbcl_ver %{expand:%%(sbcl --version | cut -d' ' -f2)}
 Requires: sbcl %{?sbcl_ver: >= %{sbcl_ver}} 
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-sbcl < %{version}-%{release}
@@ -352,6 +350,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jan 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-8
+- tighten Req: on clisp/sbcl runtimes
+
 * Thu Jan 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-7
 - rebuild for/with new clisp,sbcl
 
