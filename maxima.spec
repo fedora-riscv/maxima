@@ -3,13 +3,13 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.2
 
-Release: 9%{?dist} 
+Release: 10%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-# add ppc (and maybe ppc64)  when lisps are available for ppc 
+# add ppc when lisps are available:
 #  (clisp: http://bugzilla.redhat.com/bugzilla/166347) 
 #  (gcl:   http://bugzilla.redhat.com/bugzilla/167952)
 #  (sbcl:  https://bugzilla.redhat.com/bugzilla/177029)
@@ -186,10 +186,10 @@ autoconf
 %build
 %configure \
   %{?_with_default_lisp} \
-  %{?_enable_clisp} %{?_with_clisp_runtime} %{!?_enable_clisp: --disable-clisp } \
-  %{?_enable_cmucl} %{?_with_cmucl_runtime} %{!?_enable_cmucl: --disable-cmucl } \
-  %{?_enable_gcl} %{!?_enable_gcl: --disable-gcl } \
-  %{?_enable_sbcl} %{!?_enable_sbcl: --disable-sbcl }
+  %{?_enable_clisp} %{!?_enable_clisp: --disable-clisp } %{?_with_clisp_runtime} \
+  %{?_enable_cmucl} %{!?_enable_cmucl: --disable-cmucl } %{?_with_cmucl_runtime} \
+  %{?_enable_gcl}   %{!?_enable_gcl:   --disable-gcl } \
+  %{?_enable_sbcl}  %{!?_enable_sbcl:  --disable-sbcl }
 
 make %{?_smp_mflags}
 
@@ -284,7 +284,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %files
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %doc AUTHORS ChangeLog COPYING INSTALL README README.lisps
 %doc doc/misc/ doc/implementation/
 %doc doc/intromax/intromax.pdf
@@ -307,11 +307,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/texmf/tex/latex/emaxima/
 
 %files src
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %{_datadir}/maxima/%{version}/src/
 
 %files gui
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %{_bindir}/xmaxima
 %{_datadir}/maxima/%{version}/xmaxima
 %{_datadir}/applications/*.desktop
@@ -319,7 +319,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %if "%{?_enable_clisp:1}" == "1"
 %files runtime-clisp
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{version}/
 %{_libdir}/maxima/%{version}/binary-clisp
@@ -327,7 +327,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %if "%{?_enable_cmucl:1}" == "1"
 %files runtime-cmucl
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{version}/
 %{_libdir}/maxima/%{version}/binary-cmucl
@@ -335,7 +335,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %if "%{?_enable_gcl:1}" == "1"
 %files runtime-gcl
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{version}/
 %{_libdir}/maxima/%{version}/binary-gcl
@@ -343,7 +343,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %if "%{?_enable_sbcl:1}" == "1"
 %files runtime-sbcl
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{version}/
 %{_libdir}/maxima/%{version}/binary-sbcl
@@ -351,6 +351,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Feb 27 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-10
+- respin for sbcl-0.9.10
+
 * Thu Jan 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-9
 - OK, loosen Req's again (buildsystem can't handle it)
 
