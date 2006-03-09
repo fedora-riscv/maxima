@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.2
 
-Release: 11%{?dist}
+Release: 12%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -17,10 +17,13 @@ ExclusiveArch: %{ix86} x86_64
 
 %define _with_default_lisp --with-default-lisp=clisp
 
+%ifarch %{ix86}
+# cmucl review (done): http://bugzilla.redhat.com/bugzilla/166796
+%define _enable_cmucl --enable-cmucl
+%endif
+
 %ifarch %{ix86} x86_64
 %define _enable_clisp --enable-clisp 
-# cmucl review pending: http://bugzilla.redhat.com/bugzilla/166796
-#define _enable_cmucl --enable-cmucl 
 # gcl *was* not available for fc5/devel: http://bugzilla.redhat.com/bugzilla/177026
 %define _enable_gcl --enable-gcl 
 %define _enable_sbcl --enable-sbcl 
@@ -354,6 +357,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Mar 09 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-12
+- enable runtime-cmucl (%%ix86 only, atm)
+
 * Wed Mar 08 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-11
 - fc5: enable runtime-gcl
 - runtime-sbcl: Requires: sbcl = %%{sbcl_version_used_to_build}
