@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.2
 
-Release: 10%{?dist} 
+Release: 11%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -21,10 +21,8 @@ ExclusiveArch: %{ix86} x86_64
 %define _enable_clisp --enable-clisp 
 # cmucl review pending: http://bugzilla.redhat.com/bugzilla/166796
 #define _enable_cmucl --enable-cmucl 
-%if "%{?fedora}" != "5"
-# gcl not available for fc5/devel: http://bugzilla.redhat.com/bugzilla/177026
+# gcl *was* not available for fc5/devel: http://bugzilla.redhat.com/bugzilla/177026
 %define _enable_gcl --enable-gcl 
-%endif
 %define _enable_sbcl --enable-sbcl 
 %endif
 
@@ -142,8 +140,13 @@ Maxima compiled with Gnu Common Lisp (gcl)
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
 BuildRequires: sbcl 
-#define sbcl_ver %{expand:%%(sbcl --version | cut -d' ' -f2)}
-Requires: sbcl %{?sbcl_ver: >= %{sbcl_ver}} 
+# maxima requires the *same* version it was built against
+# this hack should work, even in mock (-: -- Rex
+%global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
+%if "%{?sbcl_ver}" >= "0.9"
+%define sbcl_ver2 = %{sbcl_ver}
+%endif
+Requires: sbcl %{?sbcl_ver2} 
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-sbcl < %{version}-%{release}
 Provides: %{name}-runtime = %{version}
@@ -351,6 +354,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Mar 08 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-11
+- fc5: enable runtime-gcl
+- runtime-sbcl: Requires: sbcl = %%{sbcl_version_used_to_build}
+
 * Mon Feb 27 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-10
 - respin for sbcl-0.9.10
 
