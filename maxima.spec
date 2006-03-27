@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.2
 
-Release: 12%{?dist}
+Release: 12%{?dist}.1
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -61,7 +61,12 @@ Patch5: maxima-5.9.2-emaxima.patch
 %define debug_package   %{nil}
 
 BuildRequires: time
+# texi2dvi
+%if "%{?fedora}" > "4"
+BuildRequires: texinfo-tex
+%else
 BuildRequires: texinfo
+%endif
 BuildRequires: tetex-latex
 BuildRequires: desktop-file-utils
 # /usr/bin/wish
@@ -205,7 +210,7 @@ pushd doc
  install -D -p -m644 %{SOURCE11} maximabook/maxima.pdf
 
  pushd info
-  texi2dvi -p maxima.texi
+  texi2dvi --pdf maxima.texi
  popd
 
  pushd intromax
@@ -357,6 +362,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Mar 27 2006 Rex Dieter <rexdieter[AT]users.sf.net>
+- fc5+: BR: texinfo -> texinfo-tex (#186827)
+
 * Thu Mar 09 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-12
 - enable runtime-cmucl (%%ix86 only, atm)
 
