@@ -62,7 +62,7 @@ Patch5: maxima-5.9.2-emaxima.patch
 
 BuildRequires: time
 # texi2dvi
-%if "%{?fedora}" > "4"
+%if "%{?fedora}" > "5"
 BuildRequires: texinfo-tex
 %else
 BuildRequires: texinfo
@@ -366,7 +366,7 @@ rm -rf $RPM_BUILD_ROOT
 - respin for sbcl-0.9.11
 
 * Mon Mar 27 2006 Rex Dieter <rexdieter[AT]users.sf.net>
-- fc5+: BR: texinfo -> texinfo-tex (#186827)
+- fc6+: BR: texinfo -> texinfo-tex (#186827)
 
 * Thu Mar 09 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-12
 - enable runtime-cmucl (%%ix86 only, atm)
