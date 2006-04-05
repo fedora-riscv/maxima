@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.9.2
+Version: 5.9.3
 
-Release: 13%{?dist}
+Release: 1%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -18,13 +18,11 @@ ExclusiveArch: %{ix86} x86_64
 %define _with_default_lisp --with-default-lisp=clisp
 
 %ifarch %{ix86}
-# cmucl review (done): http://bugzilla.redhat.com/bugzilla/166796
 %define _enable_cmucl --enable-cmucl
 %endif
 
 %ifarch %{ix86} x86_64
 %define _enable_clisp --enable-clisp 
-# gcl *was* not available for fc5/devel: http://bugzilla.redhat.com/bugzilla/177026
 %define _enable_gcl --enable-gcl 
 %define _enable_sbcl --enable-sbcl 
 %endif
@@ -71,7 +69,6 @@ BuildRequires: tetex-latex
 BuildRequires: desktop-file-utils
 # /usr/bin/wish
 BuildRequires: tk
-BuildRequires: automake
 
 Requires: %{name}-runtime = %{version}
 Requires: gnuplot
@@ -147,7 +144,7 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-BuildRequires: sbcl >= 0.9.11
+BuildRequires: sbcl 
 # maxima requires the *same* version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
@@ -185,13 +182,10 @@ sed -i -e \
 # remove CVS crud
 find -name CVS -type d | xargs rm -r
 
-%if "%{?_enable_sbcl:1}" == "1"
-%patch3 -p1 -b .sbcl-disable-debugger
-# seems to be needed only if --enable-sbcl
-aclocal
-automake --add-missing --copy
-autoconf
-%endif
+#patch3 -p1 -b .sbcl-disable-debugger
+#aclocal
+#automake --add-missing --copy
+#autoconf
 
 
 %build
@@ -362,6 +356,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Apr 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-1
+- 5.9.3
+
 * Thu Mar 30 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-13
 - respin for sbcl-0.9.11
 
