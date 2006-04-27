@@ -1,0 +1,11 @@
+--- maxima-5.9.3/src/maxima.in.setarch	2005-11-07 11:37:11.000000000 -0600
++++ maxima-5.9.3/src/maxima.in	2006-04-27 07:07:42.000000000 -0500
+@@ -128,7 +128,7 @@
+ 	exec "@SCL_NAME@" -quiet -core "$maxima_image_base.core" -eval '(cl-user::run)' -- "$arg1" "$arg2" "$arg3" "$arg4" "$arg5" "$arg6" "$arg7" "$arg8" "$arg9"
+     fi
+ elif [ "$MAXIMA_LISP" = "gcl" ]; then
+-    exec "$maxima_image_base" -eval '(cl-user::run)' -f -- "$arg1" "$arg2" "$arg3" "$arg4" "$arg5" "$arg6" "$arg7" "$arg8" "$arg9"
++    exec "setarch" "@ARCH@" "-X" "$maxima_image_base" -eval '(cl-user::run)' -f -- "$arg1" "$arg2" "$arg3" "$arg4" "$arg5" "$arg6" "$arg7" "$arg8" "$arg9"
+ elif [ "$MAXIMA_LISP" = "acl6" ]; then
+ # FIXME: arguments need in a manner consistent with the way they are extracted
+ #        in the function get-application-args in command-line.lisp

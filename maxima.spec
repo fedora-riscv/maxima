@@ -1,9 +1,14 @@
 
+%if "%{?fedora}" > "4"
+# See http://bugzilla.redhat.com/bugzilla/187647
+%define setarch_hack 1
+%endif
+
 Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.3
 
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -15,19 +20,19 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 #  (sbcl:  https://bugzilla.redhat.com/bugzilla/177029)
 ExclusiveArch: %{ix86} x86_64 
 
-%define _with_default_lisp --with-default-lisp=clisp
-
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
 %endif
 
 %ifarch %{ix86} x86_64
+%define default_lisp clisp
 %define _enable_clisp --enable-clisp 
 %define _enable_gcl --enable-gcl 
 %define _enable_sbcl --enable-sbcl 
 %endif
 
 %ifarch ppc
+#define default_lisp sbcl
 #define _enable_clisp --enable-clisp 
 #define _enable_cmucl --enable-cmucl 
 #define _enable_gcl --enable-gcl 
@@ -46,11 +51,13 @@ Patch1: maxima-5.9.2-htmlview.patch
 # (mysterious?) xemacs patch (don't use, for now)
 Patch2: maxima.el-xemacs.patch
 # use sbcl --disable-debugger
-Patch3: maxima-5.9.2-sbcl-disable-debugger.patch
+Patch3: maxima-5.9.3-sbcl-disable-debugger.patch
 # ghostview -> evince (ps/pdf viewer)
 Patch4: maxima-5.9.2-evince.patch
 # emaxima fix from Camm Maguire
 Patch5: maxima-5.9.2-emaxima.patch
+# maxima-runtime-gcl: Unrecoverable error: fault count too high (bug #187647)
+Patch6: maxima-5.9.3-gcl-setarch.patch
 
 # Inhibit automatic compressing of info files. Compressed info
 # files break maxima's internal help.
@@ -71,6 +78,10 @@ BuildRequires: desktop-file-utils
 BuildRequires: tk
 
 Requires: %{name}-runtime = %{version}
+## Consider this when rpm supports it -- Rex
+#if "%{?default_lisp:1}" == "1"
+#Requires(hint): %{name}-runtime-%{default_lisp} = %{version}
+#endif
 Requires: gnuplot
 Requires(post): /sbin/install-info
 Requires(postun): /sbin/install-info
@@ -134,8 +145,13 @@ Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}
+%if "%{?setarch_hack}" == "1"
+BuildRequires: setarch
+Requires:  setarch
+%endif
 Obsoletes: maxima-exec-gcl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}
+Provides:  %{name}-runtime-gcl = %{version}-%{release}
 %description runtime-gcl
 Maxima compiled with Gnu Common Lisp (gcl)
 %endif
@@ -168,10 +184,16 @@ install -p -m644 %{SOURCE10} .
 
 %patch1 -p1 -b .htmlview
 #patch2 -p1 -b .xemacs
+%patch3 -p1 -b .sbcl-disable-debugger
 %if "%{?fedora}" > "3"
 %patch4 -p1 -b .evince
 %endif
 %patch5 -p1 -b .emaxima
+%if "%{?setarch_hack}" == "1"
+%patch6 -p1 -b .gcl-setarch
+%endif
+
+sed -i -e 's|@ARCH@|%{_target_cpu}|' src/maxima.in
 
 sed -i -e 's:/usr/local/info:/usr/share/info:' \
   interfaces/emacs/emaxima/maxima.el
@@ -182,15 +204,10 @@ sed -i -e \
 # remove CVS crud
 find -name CVS -type d | xargs rm -r
 
-#patch3 -p1 -b .sbcl-disable-debugger
-#aclocal
-#automake --add-missing --copy
-#autoconf
-
 
 %build
 %configure \
-  %{?_with_default_lisp} \
+  %{?default_lisp:--with-default-lisp=%{default_lisp} } \
   %{?_enable_clisp} %{!?_enable_clisp: --disable-clisp } %{?_with_clisp_runtime} \
   %{?_enable_cmucl} %{!?_enable_cmucl: --disable-cmucl } %{?_with_cmucl_runtime} \
   %{?_enable_gcl}   %{!?_enable_gcl:   --disable-gcl } \
@@ -356,6 +373,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Apr 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-2
+- use setarch -X hack to allow runtime-gcl to function (#187647)
+- respin for sbcl-0.9.12
+
 * Wed Apr 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-1
 - 5.9.3
 
