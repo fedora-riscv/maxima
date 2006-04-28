@@ -1,14 +1,9 @@
 
-%if "%{?fedora}" > "4"
-# See http://bugzilla.redhat.com/bugzilla/187647
-%define setarch_hack 1
-%endif
-
 Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.3
 
-Release: 2%{?dist}
+Release: 2%{?dist}.1
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -18,7 +13,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 #  (clisp: http://bugzilla.redhat.com/bugzilla/166347) 
 #  (gcl:   http://bugzilla.redhat.com/bugzilla/167952)
 #  (sbcl:  https://bugzilla.redhat.com/bugzilla/177029)
-ExclusiveArch: %{ix86} x86_64 
+#ExclusiveArch: %{ix86} x86_64 
+ExclusiveArch: ppc
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
@@ -32,11 +28,11 @@ ExclusiveArch: %{ix86} x86_64
 %endif
 
 %ifarch ppc
-#define default_lisp sbcl
+%define default_lisp sbcl
 #define _enable_clisp --enable-clisp 
 #define _enable_cmucl --enable-cmucl 
 #define _enable_gcl --enable-gcl 
-#define _enable_sbcl --enable-sbcl 
+%define _enable_sbcl --enable-sbcl 
 %endif
 
 Source1: maxima.png
@@ -145,7 +141,9 @@ Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}
-%if "%{?setarch_hack}" == "1"
+%if "%{?fedora}" > "4"
+# See http://bugzilla.redhat.com/bugzilla/187647
+%define setarch_hack 1
 BuildRequires: setarch
 Requires:  setarch
 %endif
@@ -373,6 +371,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 28 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-2.1
+- try ppc build against sbcl
+
 * Wed Apr 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-2
 - use setarch -X hack to allow runtime-gcl to function (#187647)
 - respin for sbcl-0.9.12
