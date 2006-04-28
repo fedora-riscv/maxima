@@ -3,18 +3,13 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.3
 
-Release: 2%{?dist}.1
+Release: 3%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-# add ppc when lisps are available:
-#  (clisp: http://bugzilla.redhat.com/bugzilla/166347) 
-#  (gcl:   http://bugzilla.redhat.com/bugzilla/167952)
-#  (sbcl:  https://bugzilla.redhat.com/bugzilla/177029)
-#ExclusiveArch: %{ix86} x86_64 
-ExclusiveArch: ppc
+ExclusiveArch: %{ix86} x86_64 ppc
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
@@ -29,8 +24,9 @@ ExclusiveArch: ppc
 
 %ifarch ppc
 %define default_lisp sbcl
+# clisp: http://bugzilla.redhat.com/bugzilla/166347
 #define _enable_clisp --enable-clisp 
-#define _enable_cmucl --enable-cmucl 
+# gcl:   http://bugzilla.redhat.com/bugzilla/167952
 #define _enable_gcl --enable-gcl 
 %define _enable_sbcl --enable-sbcl 
 %endif
@@ -113,8 +109,7 @@ Requires: %{name} = %{version}-%{release}
 Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
 BuildRequires: clisp-devel
-#define clisp_ver %{expand:%%(clisp --version | head -n 1 | cut -d' ' -f3 )}
-Requires: clisp %{?clisp_ver: >= %{clisp_ver}}
+Requires: clisp
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-clisp < %{version}-%{release}
 Provides: %{name}-runtime = %{version}
@@ -371,6 +366,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Apr 28 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-3 
+- respin, using new ppc bootstrap
+
 * Fri Apr 28 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-2.1
 - try ppc build against sbcl
 
