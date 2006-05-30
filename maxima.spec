@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.3
 
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -366,6 +366,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue May 30 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-4
+- respin for sbcl-0.9.13
+
 * Mon Apr 28 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-3 
 - respin, using new ppc bootstrap
 
