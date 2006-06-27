@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.3
 
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -154,11 +154,11 @@ Maxima compiled with Gnu Common Lisp (gcl)
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
 BuildRequires: sbcl 
-# maxima requires the *same* version it was built against
+# maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
 %if "%{?sbcl_ver}" >= "0.9"
-%define sbcl_ver2 = %{sbcl_ver}
+%define sbcl_ver2 >= %{sbcl_ver}
 %endif
 Requires: sbcl %{?sbcl_ver2} 
 Requires: %{name} = %{version}
@@ -366,6 +366,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jun 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-5
+- respin for sbcl-0.9.14 (and relax Requires = to >= )
+
 * Tue May 30 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-4
 - respin for sbcl-0.9.13
 
