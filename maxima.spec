@@ -1,15 +1,22 @@
 
+%define beta rc2
+
+%define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
+%define xemacs_sitelisp %{_datadir}/xemacs/site-packages/lisp/
+
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.9.3
+Version: 5.9.3.99
 
-Release: 5%{?dist}
+Release: 0.2.%{beta}%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
-Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}.tar.gz
+Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 ExclusiveArch: %{ix86} x86_64 ppc
+
+%define maxima_ver %{version}%{?beta}
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
@@ -43,9 +50,9 @@ Patch1: maxima-5.9.2-htmlview.patch
 # (mysterious?) xemacs patch (don't use, for now)
 Patch2: maxima.el-xemacs.patch
 # use sbcl --disable-debugger
-Patch3: maxima-5.9.3-sbcl-disable-debugger.patch
+Patch3: maxima-5.9.4-sbcl-disable-debugger.patch
 # ghostview -> evince (ps/pdf viewer)
-Patch4: maxima-5.9.2-evince.patch
+Patch4: maxima-5.9.4-evince.patch
 # emaxima fix from Camm Maguire
 Patch5: maxima-5.9.2-emaxima.patch
 # maxima-runtime-gcl: Unrecoverable error: fault count too high (bug #187647)
@@ -170,7 +177,7 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 
 
 %prep
-%setup -q  -n %{name}%{!?cvs:-%{version}}
+%setup -q  -n %{name}%{!?cvs:-%{version}%{?beta}}
 
 # Extra docs
 install -p -m644 %{SOURCE10} .
@@ -213,9 +220,9 @@ pushd doc
 
  install -D -p -m644 %{SOURCE11} maximabook/maxima.pdf
 
- pushd info
-  texi2dvi --pdf maxima.texi
- popd
+# pushd info
+#  texi2dvi --pdf maxima.texi
+# popd
 
  pushd intromax
   pdflatex intromax.ltx
@@ -242,33 +249,29 @@ desktop-file-install --vendor fedora \
   --add-category "X-Fedora" \
   %{SOURCE2} 
 
-## emaxima
-# LaTeX style
+# emaxima LaTeX style
 install -d $RPM_BUILD_ROOT%{_datadir}/texmf/tex/latex/emaxima
-cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.sty \
+cp -alf $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/emacs/*.sty \
 	$RPM_BUILD_ROOT%{_datadir}/texmf/tex/latex/emaxima/
-# emacs
-install -d $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/{maxima,site-start.d}
-cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.el \
-	$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.lisp \
-	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/maxima/
-install -D -m644 -p %{SOURCE6} \
-	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d/maxima.el
+# (x)emacs
+install -D -m644 -p %{SOURCE6} $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el
 
-# xemacs
-install -d $RPM_BUILD_ROOT%{_datadir}/xemacs/site-packages/lisp/{maxima,site-start.d}
-cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.el \
-	$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.lisp \
-	$RPM_BUILD_ROOT%{_datadir}/xemacs/site-packages/lisp/maxima/
-install -D -m644 -p %{SOURCE6} \
-	$RPM_BUILD_ROOT%{_datadir}/xemacs/site-packages/lisp/site-start.d/maxima.el
+for dir in %{emacs_sitelisp} %{xemacs_sitelisp} ; do
+  install -d -m755 $RPM_BUILD_ROOT$dir/{,site-start.d}
+  ln -s %{_datadir}/maxima/%{maxima_ver}/emacs $RPM_BUILD_ROOT$dir/maxima
+  for file in $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/emacs/*.el ; do
+    touch `dirname $file`/`basename $file .el`.elc
+  done
+  ln -s %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el $RPM_BUILD_ROOT$dir/site-start.d/
+  touch $RPM_BUILD_ROOT$dir/site-start.d/maxima-modes.elc
+done
 
 ## unwanted/unpackaged files
 rm -f $RPM_BUILD_ROOT%{_infodir}/dir
 # until we get/Require rlwrap from http://utopia.knoware.nl/~hlub/uck/rlwrap/
 rm -f $RPM_BUILD_ROOT%{_bindir}/rmaxima
 # docs
-rm -rf $RPM_BUILD_ROOT%{_datadir}/maxima/%{version}/doc/{contributors,implementation,misc,maximabook,EMaximaIntro.ps}
+rm -rf $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/doc/{contributors,implementation,misc,maximabook,EMaximaIntro.ps}
 
 # _enable_gcl: debuginfo (sometimes?) fails to get auto-created, so we'll help out
 touch debugfiles.list
@@ -292,6 +295,26 @@ gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 touch --no-create %{_datadir}/icons/hicolor ||:
 gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 
+%triggerin -- emacs-common
+if [ -d %{emacs_sitelisp} ]; then
+  rm -rf %{emacs_sitelisp}/maxima   
+  ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs  %{emacs_sitelisp}/maxima ||:
+fi
+ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el %{emacs_sitelisp}/site-start.d/ ||:
+
+%triggerin -- xemacs-common
+if [ -d %{xemacs_sitelisp} ]; then
+  rm -rf %{xemacs_sitelisp}/maxima
+  ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs  %{xemacs_sitelisp}/maxima ||:
+fi
+ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el %{xemacs_sitelisp}/site-start.d/ ||:
+
+%triggerun -- emacs-common
+[ $2 -eq 0 ] && rm -f %{emacs_sitelisp}/M2*.el* || :
+
+%triggerun -- xemacs-common
+[ $2 -eq 0 ] && rm -f %{xemacs_sitelisp}/M2*.el* || :
+
 
 
 %clean
@@ -300,72 +323,77 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS ChangeLog COPYING INSTALL README README.lisps
+%doc AUTHORS ChangeLog COPYING README README.lisps
 %doc doc/misc/ doc/implementation/
 %doc doc/intromax/intromax.pdf
 %doc doc/maximabook/maxima.pdf
 %doc macref.pdf
-%doc %{_datadir}/maxima/%{version}/doc
 %{_bindir}/maxima
 %dir %{_datadir}/maxima
-%dir %{_datadir}/maxima/%{version}
-%{_datadir}/maxima/%{version}/[a-c,f-r,t-w,y-z,A-Z]*
-%{_datadir}/maxima/%{version}/demo/
-%{_datadir}/maxima/%{version}/share/
+%dir %{_datadir}/maxima/%{maxima_ver}
+%{_datadir}/maxima/%{maxima_ver}/[a-c,f-r,t-w,y-z,A-Z]*
+%{_datadir}/maxima/%{maxima_ver}/demo/
+%doc %{_datadir}/maxima/%{maxima_ver}/doc
+%{_datadir}/maxima/%{maxima_ver}/share/
+%dir %{_libdir}/maxima/
+%dir %{_libdir}/maxima/%{maxima_ver}/
 %{_libexecdir}/maxima
 %{_infodir}/*.info*
 %{_mandir}/man1/maxima.*
-# emaxima     
-%{_datadir}/maxima/%{version}/emacs
-%{_datadir}/emacs/site-lisp/*
-%{_datadir}/xemacs/site-packages/*
 %{_datadir}/texmf/tex/latex/emaxima/
+%dir %{_datadir}/maxima/%{maxima_ver}/emacs
+%{_datadir}/maxima/%{maxima_ver}/emacs/emaxima.*
+%{_datadir}/maxima/%{maxima_ver}/emacs/*.el
+%ghost %{_datadir}/maxima/%{maxima_ver}/emacs/*.elc
+%dir %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/
+%{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/*.el
+%ghost %{emacs_sitelisp}
+%ghost %{xemacs_sitelisp}
 
 %files src
 %defattr(-,root,root,-)
-%{_datadir}/maxima/%{version}/src/
+%{_datadir}/maxima/%{maxima_ver}/src/
 
 %files gui
 %defattr(-,root,root,-)
 %{_bindir}/xmaxima
-%{_datadir}/maxima/%{version}/xmaxima
+%{_datadir}/maxima/%{maxima_ver}/xmaxima/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/*/*
 
 %if "%{?_enable_clisp:1}" == "1"
 %files runtime-clisp
 %defattr(-,root,root,-)
-%dir %{_libdir}/maxima/
-%dir %{_libdir}/maxima/%{version}/
-%{_libdir}/maxima/%{version}/binary-clisp
+%{_libdir}/maxima/%{maxima_ver}/binary-clisp
 %endif
 
 %if "%{?_enable_cmucl:1}" == "1"
 %files runtime-cmucl
 %defattr(-,root,root,-)
-%dir %{_libdir}/maxima/
-%dir %{_libdir}/maxima/%{version}/
-%{_libdir}/maxima/%{version}/binary-cmucl
+%{_libdir}/maxima/%{maxima_ver}/binary-cmucl
 %endif
 
 %if "%{?_enable_gcl:1}" == "1"
 %files runtime-gcl
 %defattr(-,root,root,-)
-%dir %{_libdir}/maxima/
-%dir %{_libdir}/maxima/%{version}/
-%{_libdir}/maxima/%{version}/binary-gcl
+%{_libdir}/maxima/%{maxima_ver}/binary-gcl
 %endif
 
 %if "%{?_enable_sbcl:1}" == "1"
 %files runtime-sbcl
 %defattr(-,root,root,-)
-%dir %{_libdir}/maxima/
-%dir %{_libdir}/maxima/%{version}/
-%{_libdir}/maxima/%{version}/binary-sbcl
+%{_libdir}/maxima/%{maxima_ver}/binary-sbcl
 %endif
 
 
 %changelog
+* Wed Aug 09 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.2.rc2
+- 5.9.3.99rc2
+
+* Tue Aug 01 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.1.rc1
+- 5.9.3.99rc1
+- - %ghost (x)emacs site-lisp bits (using hints from fedora-rpmdevtools)
+
 * Mon Jun 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-5
 - respin for sbcl-0.9.14 (and relax Requires = to >= )
 
