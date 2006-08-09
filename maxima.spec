@@ -8,7 +8,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.3.99
 
-Release: 0.3.%{beta}%{?dist}
+Release: 0.4.%{beta}%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -56,7 +56,7 @@ Patch4: maxima-5.9.4-evince.patch
 # emaxima fix from Camm Maguire
 Patch5: maxima-5.9.2-emaxima.patch
 # maxima-runtime-gcl: Unrecoverable error: fault count too high (bug #187647)
-Patch6: maxima-5.9.3-gcl-setarch.patch
+Patch6: maxima-5.9.4-gcl_setarch.patch
 
 # Inhibit automatic compressing of info files. Compressed info
 # files break maxima's internal help.
@@ -143,12 +143,12 @@ Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}
-%if "%{?fedora}" > "4"
+#if "%{?fedora}" > "4"
 # See http://bugzilla.redhat.com/bugzilla/187647
 %define setarch_hack 1
 BuildRequires: setarch
 Requires:  setarch
-%endif
+#endif
 Obsoletes: maxima-exec-gcl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}
 Provides:  %{name}-runtime-gcl = %{version}-%{release}
@@ -387,6 +387,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Aug 09 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.4.rc2
+- update gcl_setarch patch
+
 * Wed Aug 09 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.3.rc2
 - 5.9.3.99rc2
 
