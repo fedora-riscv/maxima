@@ -8,7 +8,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.3.99
 
-Release: 0.4.%{beta}%{?dist}
+Release: 0.5.%{beta}%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -143,12 +143,12 @@ Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}
-#if "%{?fedora}" > "4"
+%if "%{?fedora}" > "4"
 # See http://bugzilla.redhat.com/bugzilla/187647
 %define setarch_hack 1
 BuildRequires: setarch
 Requires:  setarch
-#endif
+%endif
 Obsoletes: maxima-exec-gcl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}
 Provides:  %{name}-runtime-gcl = %{version}-%{release}
@@ -387,6 +387,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Aug 27 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.5.rc2
+- respin (against newer sbcl)
+
 * Wed Aug 09 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.4.rc2
 - update gcl_setarch patch
 
@@ -395,7 +398,7 @@ rm -rf $RPM_BUILD_ROOT
 
 * Tue Aug 01 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.1.rc1
 - 5.9.3.99rc1
-- - %ghost (x)emacs site-lisp bits (using hints from fedora-rpmdevtools)
+- - %ghost (x)emacs site-lisp bits (hint from fedora-rpmdevtools)
 
 * Mon Jun 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-5
 - respin for sbcl-0.9.14 (and relax Requires = to >= )
