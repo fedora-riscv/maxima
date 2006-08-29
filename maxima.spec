@@ -8,7 +8,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.3.99
 
-Release: 0.5.%{beta}%{?dist}
+Release: 0.6.%{beta}%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -31,9 +31,9 @@ ExclusiveArch: %{ix86} x86_64 ppc
 
 %ifarch ppc
 %define default_lisp sbcl
-# clisp: http://bugzilla.redhat.com/bugzilla/166347
+# clisp: http://bugzilla.redhat.com/166347
 #define _enable_clisp --enable-clisp 
-# gcl:   http://bugzilla.redhat.com/bugzilla/167952
+# gcl:   http://bugzilla.redhat.com/167952
 #define _enable_gcl --enable-gcl 
 %define _enable_sbcl --enable-sbcl 
 %endif
@@ -144,7 +144,7 @@ Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}
 %if "%{?fedora}" > "4"
-# See http://bugzilla.redhat.com/bugzilla/187647
+# See http://bugzilla.redhat.com/187647
 %define setarch_hack 1
 BuildRequires: setarch
 Requires:  setarch
@@ -243,10 +243,9 @@ make install DESTDIR=$RPM_BUILD_ROOT
 # app icon
 install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/maxima.png
 
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
-desktop-file-install --vendor fedora \
+desktop-file-install \
   --dir $RPM_BUILD_ROOT%{_datadir}/applications \
-  --add-category "X-Fedora" \
+  --add-category "X-Fedora" --vendor="fedora" \
   %{SOURCE2} 
 
 # emaxima LaTeX style
@@ -387,6 +386,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Aug 29 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.6.rc2
+- fc6 respin
+
 * Sun Aug 27 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.5.rc2
 - respin (against newer sbcl)
 
