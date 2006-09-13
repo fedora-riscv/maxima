@@ -1,5 +1,5 @@
 
-%define beta rc3
+%define beta rc4
 
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
 %define xemacs_sitelisp %{_datadir}/xemacs/site-packages/lisp/
@@ -8,7 +8,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.3.99
 
-Release: 0.7.%{beta}%{?dist}
+Release: 0.8.%{beta}%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -386,6 +386,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Sep 13 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.8.rc4
+- 5.9.3.99rc4
+
 * Wed Sep 06 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.7.rc3
 - 5.9.3.99rc3
 
