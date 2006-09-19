@@ -8,7 +8,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.3.99
 
-Release: 0.8.%{beta}%{?dist}
+Release: 0.9.%{beta}%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -165,9 +165,8 @@ BuildRequires: sbcl
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
 %if "%{?sbcl_ver}" >= "0.9"
-%define sbcl_ver2 >= %{sbcl_ver}
+Requires: sbcl = %{sbcl_ver}
 %endif
-Requires: sbcl %{?sbcl_ver2} 
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-sbcl < %{version}-%{release}
 Provides: %{name}-runtime = %{version}
@@ -386,6 +385,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 19 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.9.rc4
+- respin for new(er) sbcl (#207063)
+
 * Wed Sep 13 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.8.rc4
 - 5.9.3.99rc4
 
