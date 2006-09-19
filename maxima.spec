@@ -8,7 +8,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.9.3.99
 
-Release: 0.9.%{beta}%{?dist}
+Release: 0.10.%{beta}%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -385,7 +385,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue Sep 19 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.9.rc4
+* Tue Sep 19 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.10.rc4
 - respin for new(er) sbcl (#207063)
 
 * Wed Sep 13 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.8.rc4
