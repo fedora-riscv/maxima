@@ -6,7 +6,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.10.0
 
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -44,7 +44,7 @@ Source6: maxima-modes.el
 Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
-Patch1: maxima-5.9.2-htmlview.patch
+Patch1: maxima-5.10.0-xdg_open.patch
 # (mysterious?) xemacs patch (don't use, for now)
 Patch2: maxima.el-xemacs.patch
 # use sbcl --disable-debugger
@@ -96,6 +96,8 @@ Group:	 Applications/Engineering
 Requires: %{name} = %{version}-%{release} 
 Obsoletes: %{name}-xmaxima < %{version}-%{release}
 Requires: tk
+Requires: xdg-open
+#Requires: htmlview
 %description gui
 Tcl/Tk GUI interface for %{name}
 
@@ -180,7 +182,7 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 # Extra docs
 install -p -m644 %{SOURCE10} .
 
-%patch1 -p1 -b .htmlview
+%patch1 -p1 -b .xdg_open
 #patch2 -p1 -b .xemacs
 %patch3 -p1 -b .sbcl-disable-debugger
 %if "%{?fedora}" > "3"
@@ -384,6 +386,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Oct 02 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-3
+- htmlview -> xdg-open
+
 * Tue Sep 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-2
 - respin for sbcl-0.9.17
 

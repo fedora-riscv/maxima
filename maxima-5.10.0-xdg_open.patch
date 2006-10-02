@@ -5,10 +5,10 @@
      } else {
  	
 -	set selectedbrowser mozilla
-+	set selectedbrowser htmlview 
++	set selectedbrowser xdg-open
  
 -	foreach b { mozilla konqueror epiphany firefox netscape } {
-+	foreach b { htmlview firefox konqueror mozilla epiphany netscape } {
++	foreach b { xdg-open htmlview firefox konqueror mozilla epiphany netscape } {
  	    if { ! [catch {exec which $b} ] } {
  		set selectedbrowser $b
  		break } }
