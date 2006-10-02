@@ -6,7 +6,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.10.0
 
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -96,7 +96,7 @@ Group:	 Applications/Engineering
 Requires: %{name} = %{version}-%{release} 
 Obsoletes: %{name}-xmaxima < %{version}-%{release}
 Requires: tk
-Requires: xdg-open
+Requires: xdg-utils
 #Requires: htmlview
 %description gui
 Tcl/Tk GUI interface for %{name}
@@ -386,8 +386,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Oct 02 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-3
-- htmlview -> xdg-open
+* Mon Oct 02 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-4
+- -gui: htmlview -> xdg-open,Requires: xdg-utils
 
 * Tue Sep 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-2
 - respin for sbcl-0.9.17
