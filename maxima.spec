@@ -6,7 +6,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.10.0
 
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -303,11 +303,16 @@ fi
 ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el %{xemacs_sitelisp}/site-start.d/ ||:
 
 %triggerun -- emacs-common
-[ $2 -eq 0 ] && rm -f %{emacs_sitelisp}/M2*.el* || :
+if [ $2 -eq 0 ]; then
+ rm -f %{emacs_sitelisp}/maxima || :
+ rm -f %{emacs_sitelisp}/site-start.d/maxima-modes.el* ||:
+fi
 
 %triggerun -- xemacs-common
-[ $2 -eq 0 ] && rm -f %{xemacs_sitelisp}/M2*.el* || :
-
+if [ $2 -eq 0 ]; then
+ rm -f %{xemacs_sitelisp}/maxima || :
+ rm -f %{xemacs_sitelisp}/site-start.d/maxima-modes.el* ||:
+fi
 
 
 %clean
@@ -380,6 +385,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Oct 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10-0-6
+- respin for sbcl-0.9.18
+- fixup %%triggerun's
+
 * Mon Oct 02 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-5
 - update xdg-utils patch (for .dvi handling too)
 
