@@ -6,7 +6,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.10.0
 
-Release: 5%{?dist}
+Release: 7%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -158,7 +158,7 @@ Maxima compiled with Gnu Common Lisp (gcl)
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
 # almost any sbcl will do, but we want to be sure we're using the latest -- Rex
-BuildRequires: sbcl >= 0.9.17
+BuildRequires: sbcl >= 0.9.18
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
@@ -239,7 +239,7 @@ install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/ap
 
 desktop-file-install \
   --dir $RPM_BUILD_ROOT%{_datadir}/applications \
-  --add-category "X-Fedora" --vendor="fedora" \
+  --vendor="fedora" \
   %{SOURCE2} 
 
 # emaxima LaTeX style
@@ -303,11 +303,16 @@ fi
 ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el %{xemacs_sitelisp}/site-start.d/ ||:
 
 %triggerun -- emacs-common
-[ $2 -eq 0 ] && rm -f %{emacs_sitelisp}/M2*.el* || :
+if [ $2 -eq 0 ]; then
+ rm -f %{emacs_sitelisp}/maxima || :
+ rm -f %{emacs_sitelisp}/site-start.d/maxima-modes.el* ||:
+fi
 
 %triggerun -- xemacs-common
-[ $2 -eq 0 ] && rm -f %{xemacs_sitelisp}/M2*.el* || :
-
+if [ $2 -eq 0 ]; then
+ rm -f %{xemacs_sitelisp}/maxima || :
+ rm -f %{xemacs_sitelisp}/site-start.d/maxima-modes.el* ||:
+fi
 
 
 %clean
@@ -380,6 +385,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Oct 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-7
+- respin for sbcl-0.9.18
+- fixup %%triggerun's
+- drop dfi --add-category=X-Fedora
+
 * Mon Oct 02 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-5
 - update xdg-utils patch (for .dvi handling too)
 
