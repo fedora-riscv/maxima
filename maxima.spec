@@ -6,7 +6,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.10.0
 
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -181,7 +181,7 @@ install -p -m644 %{SOURCE10} .
 
 %patch1 -p1 -b .xdg_open
 #patch2 -p1 -b .xemacs
-%patch3 -p1 -b .sbcl-disable-debugger
+#patch3 -p1 -b .sbcl-disable-debugger
 %patch5 -p1 -b .emaxima
 %if "%{?setarch_hack}" == "1"
 %patch6 -p1 -b .gcl-setarch
@@ -385,6 +385,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Nov 10 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-8
+- omit sbcl-disable-debugger patch (#214568)
+
 * Thu Oct 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-7
 - respin for sbcl-0.9.18
 - fixup %%triggerun's
