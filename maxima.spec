@@ -6,7 +6,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.10.0
 
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -385,6 +385,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Dec 06 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-9
+- respin (for sbcl-1.0)
+
 * Fri Nov 10 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-8
 - omit sbcl-disable-debugger patch (#214568)
 
