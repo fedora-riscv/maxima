@@ -6,7 +6,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.10.0
 
-Release: 9%{?dist}.1
+Release: 9%{?dist}.2
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -21,7 +21,7 @@ ExclusiveArch: %{ix86} x86_64 ppc
 %endif
 
 %ifarch %{ix86} x86_64
-%define default_lisp clisp
+%define default_lisp gcl 
 ## skip clisp, for now, rawhide breakage
 #define _enable_clisp --enable-clisp 
 %define _enable_gcl --enable-gcl 
