@@ -1,12 +1,13 @@
 
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
 %define xemacs_sitelisp %{_datadir}/xemacs/site-packages/lisp/
+%define beta rc2
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.10.0
+Version: 5.10.99
 
-Release: 9%{?dist}.2
+Release: 0.1.%{beta}%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -22,8 +23,7 @@ ExclusiveArch: %{ix86} x86_64 ppc
 
 %ifarch %{ix86} x86_64
 %define default_lisp gcl 
-## skip clisp, for now, rawhide breakage
-#define _enable_clisp --enable-clisp 
+%define _enable_clisp --enable-clisp 
 %define _enable_gcl --enable-gcl 
 %define _enable_sbcl --enable-sbcl 
 %endif
@@ -45,9 +45,7 @@ Source6: maxima-modes.el
 Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
-Patch1: maxima-5.10.0-xdg-utils.patch
-# (mysterious?) xemacs patch (don't use, for now)
-Patch2: maxima.el-xemacs.patch
+Patch1: maxima-5.11.0-xdg_utils.patch
 # use sbcl --disable-debugger
 Patch3: maxima-5.9.4-sbcl-disable-debugger.patch
 # emaxima fix from Camm Maguire
@@ -63,7 +61,7 @@ Patch6: maxima-5.9.4-gcl_setarch.patch
 
 BuildRequires: time
 # texi2dvi
-%if "%{?fedora}" > "5"
+%if 0%{?fedora} > 5 || 0%{?rhel} > 4
 BuildRequires: texinfo-tex
 %else
 BuildRequires: texinfo
@@ -141,7 +139,7 @@ Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}
-%if "%{?fedora}" > "4"
+%if 0%{?fedora} > 4 || 0%{?rhel} > 4
 # See http://bugzilla.redhat.com/187647
 %define setarch_hack 1
 BuildRequires: setarch
@@ -158,8 +156,7 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-# almost any sbcl will do, but we want to be sure we're using the latest -- Rex
-BuildRequires: sbcl >= 0.9.18
+BuildRequires: sbcl 
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
@@ -181,7 +178,6 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 install -p -m644 %{SOURCE10} .
 
 %patch1 -p1 -b .xdg_open
-#patch2 -p1 -b .xemacs
 #patch3 -p1 -b .sbcl-disable-debugger
 %patch5 -p1 -b .emaxima
 %if "%{?setarch_hack}" == "1"
@@ -337,7 +333,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{maxima_ver}/
 %{_libexecdir}/maxima
-%{_infodir}/*.info*
+%{_infodir}/*
 %{_mandir}/man1/maxima.*
 %{_datadir}/texmf/tex/latex/emaxima/
 %dir %{_datadir}/maxima/%{maxima_ver}/emacs
@@ -386,6 +382,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Dec 13 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.99-0.1.rc2
+- maxima-5.10.99rc2
+
 * Wed Dec 06 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-9
 - respin (for sbcl-1.0)
 
