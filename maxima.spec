@@ -46,8 +46,6 @@ Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
 Patch1: maxima-5.11.0-xdg_utils.patch
-# use sbcl --disable-debugger
-Patch3: maxima-5.9.4-sbcl-disable-debugger.patch
 # emaxima fix from Camm Maguire
 Patch5: maxima-5.9.2-emaxima.patch
 # maxima-runtime-gcl: Unrecoverable error: fault count too high (bug #187647)
@@ -178,7 +176,6 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 install -p -m644 %{SOURCE10} .
 
 %patch1 -p1 -b .xdg_open
-#patch3 -p1 -b .sbcl-disable-debugger
 %patch5 -p1 -b .emaxima
 %if "%{?setarch_hack}" == "1"
 %patch6 -p1 -b .gcl-setarch
