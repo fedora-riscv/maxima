@@ -1,19 +1,23 @@
 
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
 %define xemacs_sitelisp %{_datadir}/xemacs/site-packages/lisp/
-%define beta rc3
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.10.99
+Version: 5.11.0
 
-Release: 0.3.%{beta}%{?dist}
+Release: 1%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+%if 0%{?fedora} > 2
 ExclusiveArch: %{ix86} x86_64 ppc
+%else
+# no ppc lisp available for epel (http://bugzilla.redhat.com/220053)
+ExclusiveArch: %{ix86} x86_64
+%endif
 
 %define maxima_ver %{version}%{?beta}
 
@@ -22,10 +26,14 @@ ExclusiveArch: %{ix86} x86_64 ppc
 %endif
 
 %ifarch %{ix86} x86_64
+%if 0%{?fedora} > 2
 %define default_lisp gcl 
 %define _enable_clisp --enable-clisp 
 %define _enable_gcl --enable-gcl 
+%else
+%define default_lisp sbcl 
 %define _enable_sbcl --enable-sbcl 
+%endif
 %endif
 
 %ifarch ppc
@@ -379,6 +387,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Dec 21 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-1
+- maxima-5.11.0 (#220512)
+
 * Mon Dec 18 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.99-0.3.rc3
 - maxima-5.10.99rc3
 
