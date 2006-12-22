@@ -1,25 +1,21 @@
 
-%define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
-%define xemacs_sitelisp %{_datadir}/xemacs/site-packages/lisp/
-
 Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.11.0
 
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%if 0%{?fedora} > 2
-ExclusiveArch: %{ix86} x86_64 ppc
-%else
-# no ppc lisp available for epel (http://bugzilla.redhat.com/220053)
+
 ExclusiveArch: %{ix86} x86_64
-%endif
 
 %define maxima_ver %{version}%{?beta}
+%define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
+%define xemacs_sitelisp %{_datadir}/xemacs/site-packages/lisp/
+%define texmf %{_datadir}/texmf
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
@@ -37,12 +33,13 @@ ExclusiveArch: %{ix86} x86_64
 %endif
 
 %ifarch ppc
-%define default_lisp sbcl
+# define default_lisp sbcl
 # clisp: http://bugzilla.redhat.com/166347
 #define _enable_clisp --enable-clisp 
 # gcl:   http://bugzilla.redhat.com/167952
 #define _enable_gcl --enable-gcl 
-%define _enable_sbcl --enable-sbcl 
+# sbcl/ppc borked: http://bugzilla.redhat.com/220053
+#define _enable_sbcl --enable-sbcl 
 %endif
 
 Source1: maxima.png
@@ -244,10 +241,6 @@ desktop-file-install \
   --vendor="fedora" \
   %{SOURCE2} 
 
-# emaxima LaTeX style
-install -d $RPM_BUILD_ROOT%{_datadir}/texmf/tex/latex/emaxima
-cp -alf $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/emacs/*.sty \
-	$RPM_BUILD_ROOT%{_datadir}/texmf/tex/latex/emaxima/
 # (x)emacs
 install -D -m644 -p %{SOURCE6} $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el
 
@@ -260,6 +253,11 @@ for dir in %{emacs_sitelisp} %{xemacs_sitelisp} ; do
   ln -s %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el $RPM_BUILD_ROOT$dir/site-start.d/
   touch $RPM_BUILD_ROOT$dir/site-start.d/maxima-modes.elc
 done
+
+# emaxima LaTeX style (%ghost)
+install -d $RPM_BUILD_ROOT%{texmf}/tex/latex/
+ln -sf  %{_datadir}/maxima/%{maxima_ver}/emacs \
+        $RPM_BUILD_ROOT%{texmf}/tex/latex/emaxima
 
 ## unwanted/unpackaged files
 rm -f $RPM_BUILD_ROOT%{_infodir}/dir
@@ -284,11 +282,9 @@ fi
 
 %post gui
 touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 
 %postun gui
 touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
@@ -316,6 +312,18 @@ if [ $2 -eq 0 ]; then
  rm -f %{xemacs_sitelisp}/site-start.d/maxima-modes.el* ||:
 fi
 
+%triggerin -- tetex-latex
+if [ -d %{texmf}/tex/latex ]; then
+  rm -rf %{texmf}/tex/latex/emaxima ||:
+  ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs %{texmf}/tex/latex/emaxima ||:
+  %{_bindir}/texhash 2> /dev/null ||:
+fi
+
+%triggerun -- tetex-latex
+if [ $2 -eq 0 ]; then
+  rm -f %{texmf}/tex/latex/emaxima ||:
+fi
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -340,7 +348,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libexecdir}/maxima
 %{_infodir}/*
 %{_mandir}/man1/maxima.*
-%{_datadir}/texmf/tex/latex/emaxima/
 %dir %{_datadir}/maxima/%{maxima_ver}/emacs
 %{_datadir}/maxima/%{maxima_ver}/emacs/emaxima.*
 %{_datadir}/maxima/%{maxima_ver}/emacs/*.el
@@ -349,6 +356,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/*.el
 %ghost %{emacs_sitelisp}
 %ghost %{xemacs_sitelisp}
+%ghost %{texmf}/tex/latex/emaxima
 
 %files src
 %defattr(-,root,root,-)
@@ -387,6 +395,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Dec 21 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-2
+- %%triggerin -- tetex-latex (for emaxima.sty)
+- disable ppc builds (for now), sbcl/ppc is segfaulting (#220053)
+
 * Thu Dec 21 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-1
 - maxima-5.11.0 (#220512)
 
