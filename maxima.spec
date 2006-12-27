@@ -1,37 +1,44 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.9.2
+Version: 5.11.0
 
-Release: 10%{?dist} 
+Release: 3%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
-Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}.tar.gz
+Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-# add ppc when lisps are available:
-#  (clisp: http://bugzilla.redhat.com/bugzilla/166347) 
-#  (gcl:   http://bugzilla.redhat.com/bugzilla/167952)
-#  (sbcl:  https://bugzilla.redhat.com/bugzilla/177029)
-ExclusiveArch: %{ix86} x86_64 
 
-%define _with_default_lisp --with-default-lisp=clisp
+ExclusiveArch: %{ix86} x86_64
+
+%define maxima_ver %{version}%{?beta}
+%define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
+%define xemacs_sitelisp %{_datadir}/xemacs/site-packages/lisp/
+%define texmf %{_datadir}/texmf
+
+%ifarch %{ix86}
+%define _enable_cmucl --enable-cmucl
+%endif
 
 %ifarch %{ix86} x86_64
+%if 0%{?fedora} > 2
+%define default_lisp gcl 
 %define _enable_clisp --enable-clisp 
-# cmucl review pending: http://bugzilla.redhat.com/bugzilla/166796
-#define _enable_cmucl --enable-cmucl 
-%if "%{?fedora}" != "5"
-# gcl not available for fc5/devel: http://bugzilla.redhat.com/bugzilla/177026
 %define _enable_gcl --enable-gcl 
-%endif
+%else
+%define default_lisp sbcl 
 %define _enable_sbcl --enable-sbcl 
+%endif
 %endif
 
 %ifarch ppc
+# define default_lisp sbcl
+# clisp: http://bugzilla.redhat.com/166347
 #define _enable_clisp --enable-clisp 
-#define _enable_cmucl --enable-cmucl 
+# gcl:   http://bugzilla.redhat.com/167952
 #define _enable_gcl --enable-gcl 
+# sbcl:  http://bugzilla.redhat.com/220053
 #define _enable_sbcl --enable-sbcl 
 %endif
 
@@ -43,15 +50,11 @@ Source6: maxima-modes.el
 Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
-Patch1: maxima-5.9.2-htmlview.patch
-# (mysterious?) xemacs patch (don't use, for now)
-Patch2: maxima.el-xemacs.patch
-# use sbcl --disable-debugger
-Patch3: maxima-5.9.2-sbcl-disable-debugger.patch
-# ghostview -> evince (ps/pdf viewer)
-Patch4: maxima-5.9.2-evince.patch
+Patch1: maxima-5.11.0-xdg_utils.patch
 # emaxima fix from Camm Maguire
 Patch5: maxima-5.9.2-emaxima.patch
+# maxima-runtime-gcl: Unrecoverable error: fault count too high (bug #187647)
+Patch6: maxima-5.9.4-gcl_setarch.patch
 
 # Inhibit automatic compressing of info files. Compressed info
 # files break maxima's internal help.
@@ -60,14 +63,22 @@ Patch5: maxima-5.9.2-emaxima.patch
 %define debug_package   %{nil}
 
 BuildRequires: time
+# texi2dvi
+%if 0%{?fedora} > 5 || 0%{?rhel} > 4
+BuildRequires: texinfo-tex
+%else
 BuildRequires: texinfo
+%endif
 BuildRequires: tetex-latex
 BuildRequires: desktop-file-utils
 # /usr/bin/wish
 BuildRequires: tk
-BuildRequires: automake
 
 Requires: %{name}-runtime = %{version}
+## Consider this when rpm supports it -- Rex
+#if "%{?default_lisp:1}" == "1"
+#Requires(hint): %{name}-runtime-%{default_lisp} = %{version}
+#endif
 Requires: gnuplot
 Requires(post): /sbin/install-info
 Requires(postun): /sbin/install-info
@@ -85,6 +96,7 @@ Group:	 Applications/Engineering
 Requires: %{name} = %{version}-%{release} 
 Obsoletes: %{name}-xmaxima < %{version}-%{release}
 Requires: tk
+Requires: xdg-utils
 %description gui
 Tcl/Tk GUI interface for %{name}
 
@@ -103,8 +115,7 @@ Requires: %{name} = %{version}-%{release}
 Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
 BuildRequires: clisp-devel
-#define clisp_ver %{expand:%%(clisp --version | head -n 1 | cut -d' ' -f3 )}
-Requires: clisp %{?clisp_ver: >= %{clisp_ver}}
+Requires: clisp
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-clisp < %{version}-%{release}
 Provides: %{name}-runtime = %{version}
@@ -131,8 +142,15 @@ Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}
+%if 0%{?fedora} > 4 || 0%{?rhel} > 4
+# See http://bugzilla.redhat.com/187647
+%define setarch_hack 1
+BuildRequires: setarch
+Requires:  setarch
+%endif
 Obsoletes: maxima-exec-gcl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}
+Provides:  %{name}-runtime-gcl = %{version}-%{release}
 %description runtime-gcl
 Maxima compiled with Gnu Common Lisp (gcl)
 %endif
@@ -141,9 +159,13 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-BuildRequires: sbcl 
-#define sbcl_ver %{expand:%%(sbcl --version | cut -d' ' -f2)}
-Requires: sbcl %{?sbcl_ver: >= %{sbcl_ver}} 
+BuildRequires: sbcl >= 1.0.1
+# maxima requires the *same* (or very similar) version it was built against
+# this hack should work, even in mock (-: -- Rex
+%global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
+%if "%{?sbcl_ver}" >= "1.0"
+Requires: sbcl = %{sbcl_ver}
+%endif
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-sbcl < %{version}-%{release}
 Provides: %{name}-runtime = %{version}
@@ -153,17 +175,18 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 
 
 %prep
-%setup -q  -n %{name}%{!?cvs:-%{version}}
+%setup -q  -n %{name}%{!?cvs:-%{version}%{?beta}}
 
 # Extra docs
 install -p -m644 %{SOURCE10} .
 
-%patch1 -p1 -b .htmlview
-#patch2 -p1 -b .xemacs
-%if "%{?fedora}" > "3"
-%patch4 -p1 -b .evince
-%endif
+%patch1 -p1 -b .xdg_open
 %patch5 -p1 -b .emaxima
+%if "%{?setarch_hack}" == "1"
+%patch6 -p1 -b .gcl-setarch
+%endif
+
+sed -i -e 's|@ARCH@|%{_target_cpu}|' src/maxima.in
 
 sed -i -e 's:/usr/local/info:/usr/share/info:' \
   interfaces/emacs/emaxima/maxima.el
@@ -174,18 +197,10 @@ sed -i -e \
 # remove CVS crud
 find -name CVS -type d | xargs rm -r
 
-%if "%{?_enable_sbcl:1}" == "1"
-%patch3 -p1 -b .sbcl-disable-debugger
-# seems to be needed only if --enable-sbcl
-aclocal
-automake --add-missing --copy
-autoconf
-%endif
-
 
 %build
 %configure \
-  %{?_with_default_lisp} \
+  %{?default_lisp:--with-default-lisp=%{default_lisp} } \
   %{?_enable_clisp} %{!?_enable_clisp: --disable-clisp } %{?_with_clisp_runtime} \
   %{?_enable_cmucl} %{!?_enable_cmucl: --disable-cmucl } %{?_with_cmucl_runtime} \
   %{?_enable_gcl}   %{!?_enable_gcl:   --disable-gcl } \
@@ -198,9 +213,9 @@ pushd doc
 
  install -D -p -m644 %{SOURCE11} maximabook/maxima.pdf
 
- pushd info
-  texi2dvi -p maxima.texi
- popd
+# pushd info
+#  texi2dvi --pdf maxima.texi
+# popd
 
  pushd intromax
   pdflatex intromax.ltx
@@ -221,39 +236,35 @@ make install DESTDIR=$RPM_BUILD_ROOT
 # app icon
 install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/maxima.png
 
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
-desktop-file-install --vendor fedora \
+desktop-file-install \
   --dir $RPM_BUILD_ROOT%{_datadir}/applications \
-  --add-category "X-Fedora" \
+  --vendor="fedora" \
   %{SOURCE2} 
 
-## emaxima
-# LaTeX style
-install -d $RPM_BUILD_ROOT%{_datadir}/texmf/tex/latex/emaxima
-cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.sty \
-	$RPM_BUILD_ROOT%{_datadir}/texmf/tex/latex/emaxima/
-# emacs
-install -d $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/{maxima,site-start.d}
-cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.el \
-	$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.lisp \
-	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/maxima/
-install -D -m644 -p %{SOURCE6} \
-	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d/maxima.el
+# (x)emacs
+install -D -m644 -p %{SOURCE6} $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el
 
-# xemacs
-install -d $RPM_BUILD_ROOT%{_datadir}/xemacs/site-packages/lisp/{maxima,site-start.d}
-cp -alf $RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.el \
-	$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/emacs/*.lisp \
-	$RPM_BUILD_ROOT%{_datadir}/xemacs/site-packages/lisp/maxima/
-install -D -m644 -p %{SOURCE6} \
-	$RPM_BUILD_ROOT%{_datadir}/xemacs/site-packages/lisp/site-start.d/maxima.el
+for dir in %{emacs_sitelisp} %{xemacs_sitelisp} ; do
+  install -d -m755 $RPM_BUILD_ROOT$dir/{,site-start.d}
+  ln -s %{_datadir}/maxima/%{maxima_ver}/emacs $RPM_BUILD_ROOT$dir/maxima
+  for file in $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/emacs/*.el ; do
+    touch `dirname $file`/`basename $file .el`.elc
+  done
+  ln -s %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el $RPM_BUILD_ROOT$dir/site-start.d/
+  touch $RPM_BUILD_ROOT$dir/site-start.d/maxima-modes.elc
+done
+
+# emaxima LaTeX style (%ghost)
+install -d $RPM_BUILD_ROOT%{texmf}/tex/latex/
+ln -sf  %{_datadir}/maxima/%{maxima_ver}/emacs \
+        $RPM_BUILD_ROOT%{texmf}/tex/latex/emaxima
 
 ## unwanted/unpackaged files
 rm -f $RPM_BUILD_ROOT%{_infodir}/dir
 # until we get/Require rlwrap from http://utopia.knoware.nl/~hlub/uck/rlwrap/
 rm -f $RPM_BUILD_ROOT%{_bindir}/rmaxima
 # docs
-rm -rf $RPM_BUILD_ROOT%{_datadir}/maxima/%{version}/doc/{contributors,implementation,misc,maximabook,EMaximaIntro.ps}
+rm -rf $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/doc/{contributors,implementation,misc,maximabook,EMaximaIntro.ps}
 
 # _enable_gcl: debuginfo (sometimes?) fails to get auto-created, so we'll help out
 touch debugfiles.list
@@ -271,12 +282,47 @@ fi
 
 %post gui
 touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 
 %postun gui
 touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 
+%triggerin -- emacs-common
+if [ -d %{emacs_sitelisp} ]; then
+  rm -rf %{emacs_sitelisp}/maxima   
+  ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs  %{emacs_sitelisp}/maxima ||:
+fi
+ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el %{emacs_sitelisp}/site-start.d/ ||:
+
+%triggerin -- xemacs-common
+if [ -d %{xemacs_sitelisp} ]; then
+  rm -rf %{xemacs_sitelisp}/maxima
+  ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs  %{xemacs_sitelisp}/maxima ||:
+fi
+ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el %{xemacs_sitelisp}/site-start.d/ ||:
+
+%triggerun -- emacs-common
+if [ $2 -eq 0 ]; then
+ rm -f %{emacs_sitelisp}/maxima || :
+ rm -f %{emacs_sitelisp}/site-start.d/maxima-modes.el* ||:
+fi
+
+%triggerun -- xemacs-common
+if [ $2 -eq 0 ]; then
+ rm -f %{xemacs_sitelisp}/maxima || :
+ rm -f %{xemacs_sitelisp}/site-start.d/maxima-modes.el* ||:
+fi
+
+%triggerin -- tetex-latex
+if [ -d %{texmf}/tex/latex ]; then
+  rm -rf %{texmf}/tex/latex/emaxima ||:
+  ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs %{texmf}/tex/latex/emaxima ||:
+  %{_bindir}/texhash 2> /dev/null ||:
+fi
+
+%triggerun -- tetex-latex
+if [ $2 -eq 0 ]; then
+  rm -f %{texmf}/tex/latex/emaxima ||:
+fi
 
 
 %clean
@@ -285,72 +331,166 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS ChangeLog COPYING INSTALL README README.lisps
+%doc AUTHORS ChangeLog COPYING README README.lisps
 %doc doc/misc/ doc/implementation/
 %doc doc/intromax/intromax.pdf
 %doc doc/maximabook/maxima.pdf
 %doc macref.pdf
-%doc %{_datadir}/maxima/%{version}/doc
 %{_bindir}/maxima
 %dir %{_datadir}/maxima
-%dir %{_datadir}/maxima/%{version}
-%{_datadir}/maxima/%{version}/[a-c,f-r,t-w,y-z,A-Z]*
-%{_datadir}/maxima/%{version}/demo/
-%{_datadir}/maxima/%{version}/share/
+%dir %{_datadir}/maxima/%{maxima_ver}
+%{_datadir}/maxima/%{maxima_ver}/[a-c,f-r,t-w,y-z,A-Z]*
+%{_datadir}/maxima/%{maxima_ver}/demo/
+%doc %{_datadir}/maxima/%{maxima_ver}/doc
+%{_datadir}/maxima/%{maxima_ver}/share/
+%dir %{_libdir}/maxima/
+%dir %{_libdir}/maxima/%{maxima_ver}/
 %{_libexecdir}/maxima
-%{_infodir}/*.info*
+%{_infodir}/*
 %{_mandir}/man1/maxima.*
-# emaxima     
-%{_datadir}/maxima/%{version}/emacs
-%{_datadir}/emacs/site-lisp/*
-%{_datadir}/xemacs/site-packages/*
-%{_datadir}/texmf/tex/latex/emaxima/
+%dir %{_datadir}/maxima/%{maxima_ver}/emacs
+%{_datadir}/maxima/%{maxima_ver}/emacs/emaxima.*
+%{_datadir}/maxima/%{maxima_ver}/emacs/*.el
+%ghost %{_datadir}/maxima/%{maxima_ver}/emacs/*.elc
+%dir %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/
+%{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/*.el
+%ghost %{emacs_sitelisp}
+%ghost %{xemacs_sitelisp}
+%ghost %{texmf}/tex/latex/emaxima
 
 %files src
 %defattr(-,root,root,-)
-%{_datadir}/maxima/%{version}/src/
+%{_datadir}/maxima/%{maxima_ver}/src/
 
 %files gui
 %defattr(-,root,root,-)
 %{_bindir}/xmaxima
-%{_datadir}/maxima/%{version}/xmaxima
+%{_datadir}/maxima/%{maxima_ver}/xmaxima/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/*/*
 
 %if "%{?_enable_clisp:1}" == "1"
 %files runtime-clisp
 %defattr(-,root,root,-)
-%dir %{_libdir}/maxima/
-%dir %{_libdir}/maxima/%{version}/
-%{_libdir}/maxima/%{version}/binary-clisp
+%{_libdir}/maxima/%{maxima_ver}/binary-clisp
 %endif
 
 %if "%{?_enable_cmucl:1}" == "1"
 %files runtime-cmucl
 %defattr(-,root,root,-)
-%dir %{_libdir}/maxima/
-%dir %{_libdir}/maxima/%{version}/
-%{_libdir}/maxima/%{version}/binary-cmucl
+%{_libdir}/maxima/%{maxima_ver}/binary-cmucl
 %endif
 
 %if "%{?_enable_gcl:1}" == "1"
 %files runtime-gcl
 %defattr(-,root,root,-)
-%dir %{_libdir}/maxima/
-%dir %{_libdir}/maxima/%{version}/
-%{_libdir}/maxima/%{version}/binary-gcl
+%{_libdir}/maxima/%{maxima_ver}/binary-gcl
 %endif
 
 %if "%{?_enable_sbcl:1}" == "1"
 %files runtime-sbcl
 %defattr(-,root,root,-)
-%dir %{_libdir}/maxima/
-%dir %{_libdir}/maxima/%{version}/
-%{_libdir}/maxima/%{version}/binary-sbcl
+%{_libdir}/maxima/%{maxima_ver}/binary-sbcl
 %endif
 
 
 %changelog
+* Wed Dec 27 2006 Rex Dieter <rdieter[AT]fedoraproject.org. 5.11.0-3
+- updated xdg_utils patch (sent upstream)
+
+* Thu Dec 21 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-2
+- %%triggerin -- tetex-latex (for emaxima.sty)
+- disable ppc builds (for now), sbcl/ppc is segfaulting (#220053)
+
+* Thu Dec 21 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-1
+- maxima-5.11.0 (#220512)
+
+* Mon Dec 18 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.99-0.3.rc3
+- maxima-5.10.99rc3
+
+* Wed Dec 13 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.99-0.2.rc2
+- maxima-5.10.99rc2
+
+* Wed Dec 06 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-9
+- respin (for sbcl-1.0)
+
+* Fri Nov 10 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-8
+- omit sbcl-disable-debugger patch (#214568)
+
+* Thu Oct 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-7
+- respin for sbcl-0.9.18
+- fixup %%triggerun's
+- drop dfi --add-category=X-Fedora
+
+* Mon Oct 02 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-5
+- update xdg-utils patch (for .dvi handling too)
+
+* Mon Oct 02 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-4
+- -gui: htmlview -> xdg-open, Requires: xdg-utils
+
+* Tue Sep 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-2
+- respin for sbcl-0.9.17
+
+* Thu Sep 21 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-1
+- 5.10.0
+
+* Tue Sep 19 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.10.rc4
+- respin for new(er) sbcl (#207063)
+
+* Wed Sep 13 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.8.rc4
+- 5.9.3.99rc4
+
+* Wed Sep 06 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.7.rc3
+- 5.9.3.99rc3
+
+* Tue Aug 29 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.6.rc2
+- fc6 respin
+
+* Sun Aug 27 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.5.rc2
+- respin (against newer sbcl)
+
+* Wed Aug 09 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.4.rc2
+- update gcl_setarch patch
+
+* Wed Aug 09 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.3.rc2
+- 5.9.3.99rc2
+
+* Tue Aug 01 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3.99-0.1.rc1
+- 5.9.3.99rc1
+- - %ghost (x)emacs site-lisp bits (hint from fedora-rpmdevtools)
+
+* Mon Jun 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-5
+- respin for sbcl-0.9.14 (and relax Requires = to >= )
+
+* Tue May 30 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-4
+- respin for sbcl-0.9.13
+
+* Mon Apr 28 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-3 
+- respin, using new ppc bootstrap
+
+* Fri Apr 28 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-2.1
+- try ppc build against sbcl
+
+* Wed Apr 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-2
+- use setarch -X hack to allow runtime-gcl to function (#187647)
+- respin for sbcl-0.9.12
+
+* Wed Apr 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.3-1
+- 5.9.3
+
+* Thu Mar 30 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-13
+- respin for sbcl-0.9.11
+
+* Mon Mar 27 2006 Rex Dieter <rexdieter[AT]users.sf.net>
+- fc6+: BR: texinfo -> texinfo-tex (#186827)
+
+* Thu Mar 09 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-12
+- enable runtime-cmucl (%%ix86 only, atm)
+
+* Wed Mar 08 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-11
+- fc5: enable runtime-gcl
+- runtime-sbcl: Requires: sbcl = %%{sbcl_version_used_to_build}
+
 * Mon Feb 27 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.9.2-10
 - respin for sbcl-0.9.10
 
