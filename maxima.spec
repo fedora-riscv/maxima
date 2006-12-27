@@ -1,39 +1,45 @@
 
-%define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
-%define xemacs_sitelisp %{_datadir}/xemacs/site-packages/lisp/
-
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.10.0
+Version: 5.11.0
 
-Release: 9%{?dist}
+Release: 3%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-ExclusiveArch: %{ix86} x86_64 ppc
+
+ExclusiveArch: %{ix86} x86_64
 
 %define maxima_ver %{version}%{?beta}
+%define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
+%define xemacs_sitelisp %{_datadir}/xemacs/site-packages/lisp/
+%define texmf %{_datadir}/texmf
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
 %endif
 
 %ifarch %{ix86} x86_64
-%define default_lisp clisp 
+%if 0%{?fedora} > 2
+%define default_lisp gcl 
 %define _enable_clisp --enable-clisp 
 %define _enable_gcl --enable-gcl 
+%else
+%define default_lisp sbcl 
 %define _enable_sbcl --enable-sbcl 
+%endif
 %endif
 
 %ifarch ppc
-%define default_lisp sbcl
+# define default_lisp sbcl
 # clisp: http://bugzilla.redhat.com/166347
 #define _enable_clisp --enable-clisp 
 # gcl:   http://bugzilla.redhat.com/167952
 #define _enable_gcl --enable-gcl 
-%define _enable_sbcl --enable-sbcl 
+# sbcl:  http://bugzilla.redhat.com/220053
+#define _enable_sbcl --enable-sbcl 
 %endif
 
 Source1: maxima.png
@@ -44,11 +50,7 @@ Source6: maxima-modes.el
 Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
-Patch1: maxima-5.10.0-xdg-utils.patch
-# (mysterious?) xemacs patch (don't use, for now)
-Patch2: maxima.el-xemacs.patch
-# use sbcl --disable-debugger
-Patch3: maxima-5.9.4-sbcl-disable-debugger.patch
+Patch1: maxima-5.11.0-xdg_utils.patch
 # emaxima fix from Camm Maguire
 Patch5: maxima-5.9.2-emaxima.patch
 # maxima-runtime-gcl: Unrecoverable error: fault count too high (bug #187647)
@@ -62,7 +64,7 @@ Patch6: maxima-5.9.4-gcl_setarch.patch
 
 BuildRequires: time
 # texi2dvi
-%if "%{?fedora}" > "5"
+%if 0%{?fedora} > 5 || 0%{?rhel} > 4
 BuildRequires: texinfo-tex
 %else
 BuildRequires: texinfo
@@ -140,7 +142,7 @@ Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}
-%if "%{?fedora}" > "4"
+%if 0%{?fedora} > 4 || 0%{?rhel} > 4
 # See http://bugzilla.redhat.com/187647
 %define setarch_hack 1
 BuildRequires: setarch
@@ -157,12 +159,11 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-# almost any sbcl will do, but we want to be sure we're using the latest -- Rex
-BuildRequires: sbcl >= 0.9.18
+BuildRequires: sbcl >= 1.0.1
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
-%if "%{?sbcl_ver}" >= "0.9"
+%if "%{?sbcl_ver}" >= "1.0"
 Requires: sbcl = %{sbcl_ver}
 %endif
 Requires: %{name} = %{version}
@@ -180,8 +181,6 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 install -p -m644 %{SOURCE10} .
 
 %patch1 -p1 -b .xdg_open
-#patch2 -p1 -b .xemacs
-#patch3 -p1 -b .sbcl-disable-debugger
 %patch5 -p1 -b .emaxima
 %if "%{?setarch_hack}" == "1"
 %patch6 -p1 -b .gcl-setarch
@@ -242,10 +241,6 @@ desktop-file-install \
   --vendor="fedora" \
   %{SOURCE2} 
 
-# emaxima LaTeX style
-install -d $RPM_BUILD_ROOT%{_datadir}/texmf/tex/latex/emaxima
-cp -alf $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/emacs/*.sty \
-	$RPM_BUILD_ROOT%{_datadir}/texmf/tex/latex/emaxima/
 # (x)emacs
 install -D -m644 -p %{SOURCE6} $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el
 
@@ -258,6 +253,11 @@ for dir in %{emacs_sitelisp} %{xemacs_sitelisp} ; do
   ln -s %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el $RPM_BUILD_ROOT$dir/site-start.d/
   touch $RPM_BUILD_ROOT$dir/site-start.d/maxima-modes.elc
 done
+
+# emaxima LaTeX style (%ghost)
+install -d $RPM_BUILD_ROOT%{texmf}/tex/latex/
+ln -sf  %{_datadir}/maxima/%{maxima_ver}/emacs \
+        $RPM_BUILD_ROOT%{texmf}/tex/latex/emaxima
 
 ## unwanted/unpackaged files
 rm -f $RPM_BUILD_ROOT%{_infodir}/dir
@@ -282,11 +282,9 @@ fi
 
 %post gui
 touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 
 %postun gui
 touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
@@ -314,6 +312,18 @@ if [ $2 -eq 0 ]; then
  rm -f %{xemacs_sitelisp}/site-start.d/maxima-modes.el* ||:
 fi
 
+%triggerin -- tetex-latex
+if [ -d %{texmf}/tex/latex ]; then
+  rm -rf %{texmf}/tex/latex/emaxima ||:
+  ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs %{texmf}/tex/latex/emaxima ||:
+  %{_bindir}/texhash 2> /dev/null ||:
+fi
+
+%triggerun -- tetex-latex
+if [ $2 -eq 0 ]; then
+  rm -f %{texmf}/tex/latex/emaxima ||:
+fi
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -336,9 +346,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{maxima_ver}/
 %{_libexecdir}/maxima
-%{_infodir}/*.info*
+%{_infodir}/*
 %{_mandir}/man1/maxima.*
-%{_datadir}/texmf/tex/latex/emaxima/
 %dir %{_datadir}/maxima/%{maxima_ver}/emacs
 %{_datadir}/maxima/%{maxima_ver}/emacs/emaxima.*
 %{_datadir}/maxima/%{maxima_ver}/emacs/*.el
@@ -347,6 +356,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/*.el
 %ghost %{emacs_sitelisp}
 %ghost %{xemacs_sitelisp}
+%ghost %{texmf}/tex/latex/emaxima
 
 %files src
 %defattr(-,root,root,-)
@@ -385,6 +395,22 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Dec 27 2006 Rex Dieter <rdieter[AT]fedoraproject.org. 5.11.0-3
+- updated xdg_utils patch (sent upstream)
+
+* Thu Dec 21 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-2
+- %%triggerin -- tetex-latex (for emaxima.sty)
+- disable ppc builds (for now), sbcl/ppc is segfaulting (#220053)
+
+* Thu Dec 21 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-1
+- maxima-5.11.0 (#220512)
+
+* Mon Dec 18 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.99-0.3.rc3
+- maxima-5.10.99rc3
+
+* Wed Dec 13 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.99-0.2.rc2
+- maxima-5.10.99rc2
+
 * Wed Dec 06 2006 Rex Dieter <rexdieter[AT]users.sf.net> 5.10.0-9
 - respin (for sbcl-1.0)
 
