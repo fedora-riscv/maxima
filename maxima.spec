@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.11.0
 
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -38,7 +38,7 @@ ExclusiveArch: %{ix86} x86_64
 #define _enable_clisp --enable-clisp 
 # gcl:   http://bugzilla.redhat.com/167952
 #define _enable_gcl --enable-gcl 
-# sbcl/ppc borked: http://bugzilla.redhat.com/220053
+# sbcl:  http://bugzilla.redhat.com/220053
 #define _enable_sbcl --enable-sbcl 
 %endif
 
@@ -159,11 +159,11 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-BuildRequires: sbcl 
+BuildRequires: sbcl >= 1.0.1
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
-%if "%{?sbcl_ver}" >= "0.9"
+%if "%{?sbcl_ver}" >= "1.0"
 Requires: sbcl = %{sbcl_ver}
 %endif
 Requires: %{name} = %{version}
@@ -395,6 +395,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Dec 27 2006 Rex Dieter <rdieter[AT]fedoraproject.org. 5.11.0-3
+- updated xdg_utils patch (sent upstream)
+
 * Thu Dec 21 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-2
 - %%triggerin -- tetex-latex (for emaxima.sty)
 - disable ppc builds (for now), sbcl/ppc is segfaulting (#220053)
