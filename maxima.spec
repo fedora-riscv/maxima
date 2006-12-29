@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.11.0
 
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -26,6 +26,7 @@ ExclusiveArch: %{ix86} x86_64
 %define default_lisp gcl 
 %define _enable_clisp --enable-clisp 
 %define _enable_gcl --enable-gcl 
+%define _enable_sbcl --enable-sbcl
 %else
 %define default_lisp sbcl 
 %define _enable_sbcl --enable-sbcl 
@@ -395,7 +396,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Wed Dec 27 2006 Rex Dieter <rdieter[AT]fedoraproject.org. 5.11.0-3
+* Thu Dec 28 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-4
+- (re)--enable-sbcl
+
+* Wed Dec 27 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-3
 - updated xdg_utils patch (sent upstream)
 
 * Thu Dec 21 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-2
