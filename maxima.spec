@@ -10,7 +10,7 @@ URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch: %{ix86} x86_64 ppc
+ExclusiveArch: %{ix86} x86_64 ppc sparc
 
 %define maxima_ver %{version}%{?beta}
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
@@ -41,6 +41,11 @@ ExclusiveArch: %{ix86} x86_64 ppc
 #define _enable_gcl --enable-gcl 
 # sbcl:  http://bugzilla.redhat.com/220053 (resolved)
 %define _enable_sbcl --enable-sbcl 
+%endif
+
+%ifarch sparc
+%define default_lisp sbcl
+%define _enable_sbcl --enable-sbcl
 %endif
 
 Source1: maxima.png
