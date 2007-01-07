@@ -3,14 +3,14 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.11.0
 
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch: %{ix86} x86_64
+ExclusiveArch: %{ix86} x86_64 ppc sparc
 
 %define maxima_ver %{version}%{?beta}
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
@@ -34,13 +34,18 @@ ExclusiveArch: %{ix86} x86_64
 %endif
 
 %ifarch ppc
-# define default_lisp sbcl
+%define default_lisp sbcl
 # clisp: http://bugzilla.redhat.com/166347
 #define _enable_clisp --enable-clisp 
 # gcl:   http://bugzilla.redhat.com/167952
 #define _enable_gcl --enable-gcl 
-# sbcl:  http://bugzilla.redhat.com/220053
-#define _enable_sbcl --enable-sbcl 
+# sbcl:  http://bugzilla.redhat.com/220053 (resolved)
+%define _enable_sbcl --enable-sbcl 
+%endif
+
+%ifarch sparc
+%define default_lisp sbcl
+%define _enable_sbcl --enable-sbcl
 %endif
 
 Source1: maxima.png
@@ -396,6 +401,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jan 05 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-5
+- (re)enable ppc/sbcl builds (#220053)
+
 * Thu Dec 28 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-4
 - (re)--enable-sbcl
 
