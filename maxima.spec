@@ -1,9 +1,11 @@
 
+%define beta rc2
+
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.11.0
+Version: 5.11.99
 
-Release: 8%{?dist}
+Release: 0.1.%{beta}%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -56,9 +58,6 @@ Source6: maxima-modes.el
 Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
-Patch1: maxima-5.11.0-xdg_utils.patch
-# emaxima fix from Camm Maguire
-Patch5: maxima-5.9.2-emaxima.patch
 # maxima-runtime-gcl: Unrecoverable error: fault count too high (bug #187647)
 Patch6: maxima-5.9.4-gcl_setarch.patch
 
@@ -165,7 +164,7 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-BuildRequires: sbcl >= 1.0.4
+BuildRequires: sbcl >= 1.0.5
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
@@ -186,8 +185,6 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 # Extra docs
 install -p -m644 %{SOURCE10} .
 
-%patch1 -p1 -b .xdg_open
-%patch5 -p1 -b .emaxima
 %if "%{?setarch_hack}" == "1"
 %patch6 -p1 -b .gcl-setarch
 %endif
@@ -401,6 +398,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Apr 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.99-0.1.rc2
+- maxima-5.11.99rc2
+
 * Mon Mar 26 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-8
 - respin for sbcl-1.0.4
 
