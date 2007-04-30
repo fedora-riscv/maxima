@@ -5,7 +5,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.11.99
 
-Release: 0.2.%{beta}%{?dist} 
+Release: 0.3.%{beta}%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -401,7 +401,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Sun Apr 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.99-0.2.rc2
+* Sun Apr 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.99-0.3.rc2
 - fix sbcl/ppc build (#238376)
 
 * Sun Apr 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.99-0.1.rc2
