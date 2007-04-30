@@ -5,7 +5,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.11.99
 
-Release: 0.1.%{beta}%{?dist} 
+Release: 0.2.%{beta}%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -58,8 +58,10 @@ Source6: maxima-modes.el
 Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
-# maxima-runtime-gcl: Unrecoverable error: fault count too high (bug #187647)
+# maxima-runtime-gcl: Unrecoverable error: fault count too high (#187647)
 Patch6: maxima-5.9.4-gcl_setarch.patch
+# maxima: --enable-sbcl ppc build failure (#238376)
+Patch238376: maxima-5.11.99rc2-purify.patch
 
 # Inhibit automatic compressing of info files. Compressed info
 # files break maxima's internal help.
@@ -188,6 +190,7 @@ install -p -m644 %{SOURCE10} .
 %if "%{?setarch_hack}" == "1"
 %patch6 -p1 -b .gcl-setarch
 %endif
+%patch238376 -p1 -b .purify
 
 sed -i -e 's|@ARCH@|%{_target_cpu}|' src/maxima.in
 
@@ -398,7 +401,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Apr 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.99-0.1.rc2
+* Sun Apr 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.99-0.2.rc2
+- fix sbcl/ppc build (#238376)
+
+* Sun Apr 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.99-0.1.rc2
 - maxima-5.11.99rc2
 
 * Mon Mar 26 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-8
