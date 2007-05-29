@@ -3,14 +3,14 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.12.0
 
-Release: 2%{?dist} 
+Release: 3%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch: %{ix86} x86_64 ppc sparc
+ExclusiveArch: i386 x86_64 ppc sparc
 
 %define maxima_ver %{version}%{?beta}
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
@@ -399,7 +399,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon May 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-2
+* Tue May 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-3
+- ExclusiveArch: %%ix86 -> i386 (for koji)
+
+* Tue May 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-2
 - respin for sbcl-1.0.6
 
 * Thu May 03 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-1
