@@ -1,16 +1,16 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.11.0
+Version: 5.12.0
 
-Release: 6%{?dist}
+Release: 3%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch: %{ix86} x86_64 ppc sparc
+ExclusiveArch: i386 x86_64 ppc sparc
 
 %define maxima_ver %{version}%{?beta}
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
@@ -56,11 +56,10 @@ Source6: maxima-modes.el
 Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
-Patch1: maxima-5.11.0-xdg_utils.patch
-# emaxima fix from Camm Maguire
-Patch5: maxima-5.9.2-emaxima.patch
-# maxima-runtime-gcl: Unrecoverable error: fault count too high (bug #187647)
+# maxima-runtime-gcl: Unrecoverable error: fault count too high (#187647)
 Patch6: maxima-5.9.4-gcl_setarch.patch
+# maxima: --enable-sbcl ppc build failure (#238376)
+Patch238376: maxima-5.11.99rc2-purify.patch
 
 # Inhibit automatic compressing of info files. Compressed info
 # files break maxima's internal help.
@@ -165,7 +164,7 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-BuildRequires: sbcl >= 1.0.2
+BuildRequires: sbcl >= 1.0.6
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
@@ -186,11 +185,10 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 # Extra docs
 install -p -m644 %{SOURCE10} .
 
-%patch1 -p1 -b .xdg_open
-%patch5 -p1 -b .emaxima
 %if "%{?setarch_hack}" == "1"
 %patch6 -p1 -b .gcl-setarch
 %endif
+%patch238376 -p1 -b .purify
 
 sed -i -e 's|@ARCH@|%{_target_cpu}|' src/maxima.in
 
@@ -401,6 +399,30 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue May 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-3
+- ExclusiveArch: %%ix86 -> i386 (for koji)
+
+* Tue May 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-2
+- respin for sbcl-1.0.6
+
+* Thu May 03 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-1
+- maxima-5.12.0
+
+* Mon Apr 30 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.99-0.4.rc3
+- maxima-5.11.99rc3
+
+* Sun Apr 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.99-0.3.rc2
+- fix sbcl/ppc build (#238376)
+
+* Sun Apr 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.99-0.1.rc2
+- maxima-5.11.99rc2
+
+* Mon Mar 26 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-8
+- respin for sbcl-1.0.4
+
+* Wed Feb 28 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-7
+- respin for sbcl-1.0.3
+
 * Thu Jan 25 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.11.0-6
 - respin for sbcl-1.0.2
 
