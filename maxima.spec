@@ -3,14 +3,14 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.12.0
 
-Release: 3%{?dist} 
+Release: 4%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch: i386 x86_64 ppc sparc
+ExclusiveArch: %{ix86} x86_64 ppc sparc
 
 %define maxima_ver %{version}%{?beta}
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
@@ -35,8 +35,8 @@ ExclusiveArch: i386 x86_64 ppc sparc
 
 %ifarch ppc
 %define default_lisp sbcl
-# clisp: http://bugzilla.redhat.com/166347
-#define _enable_clisp --enable-clisp 
+# clisp: http://bugzilla.redhat.com/166347 (resolved)
+%define _enable_clisp --enable-clisp 
 # gcl:   http://bugzilla.redhat.com/167952
 #define _enable_gcl --enable-gcl 
 # sbcl:  http://bugzilla.redhat.com/220053 (resolved)
@@ -399,6 +399,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jul 12 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-4
+- enable clisp/ppc (#166347)
+- revert koji hack.
+
 * Tue May 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-3
 - ExclusiveArch: %%ix86 -> i386 (for koji)
 
