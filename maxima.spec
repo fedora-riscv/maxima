@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.12.0
 
-Release: 4%{?dist} 
+Release: 5%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -35,8 +35,8 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 
 %ifarch ppc
 %define default_lisp sbcl
-# clisp: http://bugzilla.redhat.com/166347 (resolved)
-%define _enable_clisp --enable-clisp 
+# clisp: http://bugzilla.redhat.com/166347 (resolved) - clisp/ppc (still) awol.
+#define _enable_clisp --enable-clisp 
 # gcl:   http://bugzilla.redhat.com/167952
 #define _enable_gcl --enable-gcl 
 # sbcl:  http://bugzilla.redhat.com/220053 (resolved)
@@ -399,6 +399,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jul 20 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-5
+- disable clisp/ppc, still awol (#166347)
+- respin for sblc-1.0.7
+
 * Thu Jul 12 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-4
 - enable clisp/ppc (#166347)
 - revert koji hack.
