@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.12.0
 
-Release: 5%{?dist} 
+Release: 6%{?dist} 
 License: GPL
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -164,7 +164,7 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-BuildRequires: sbcl >= 1.0.6
+BuildRequires: sbcl >= 1.0.8
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
@@ -399,9 +399,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Jul 28 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-6
+- respin for sbcl-1.0.8
+
 * Fri Jul 20 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-5
 - disable clisp/ppc, still awol (#166347)
-- respin for sblc-1.0.7
+- respin for sbcl-1.0.7
 
 * Thu Jul 12 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-4
 - enable clisp/ppc (#166347)
