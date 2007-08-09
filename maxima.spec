@@ -1,10 +1,12 @@
 
+%define beta rc1
+
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.12.0
+Version: 5.12.99
 
-Release: 6%{?dist} 
-License: GPL
+Release: 0.1.%{beta}%{?dist} 
+License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -66,6 +68,14 @@ Patch238376: maxima-5.11.99rc2-purify.patch
 %define __spec_install_post %{nil} 
 # debuginfo.list ends up empty/blank anyway. disable
 %define debug_package   %{nil}
+
+# upstream langpack upgrades, +Provides too? -- Rex
+Obsoletes: %{name}-lang-es < %{version}-%{release}
+Obsoletes: %{name}-lang-es-utf8 < %{version}-%{release}
+Obsoletes: %{name}-lang-pt < %{version}-%{release}
+Obsoletes: %{name}-lang-pt-utf8 < %{version}-%{release}
+Obsoletes: %{name}-lang-pt_BR < %{version}-%{release}
+Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 
 BuildRequires: time
 # texi2dvi
@@ -188,7 +198,7 @@ install -p -m644 %{SOURCE10} .
 %if "%{?setarch_hack}" == "1"
 %patch6 -p1 -b .gcl-setarch
 %endif
-%patch238376 -p1 -b .purify
+#patch238376 -p1 -b .purify
 
 sed -i -e 's|@ARCH@|%{_target_cpu}|' src/maxima.in
 
@@ -208,7 +218,10 @@ find -name CVS -type d | xargs rm -r
   %{?_enable_clisp} %{!?_enable_clisp: --disable-clisp } %{?_with_clisp_runtime} \
   %{?_enable_cmucl} %{!?_enable_cmucl: --disable-cmucl } %{?_with_cmucl_runtime} \
   %{?_enable_gcl}   %{!?_enable_gcl:   --disable-gcl } \
-  %{?_enable_sbcl}  %{!?_enable_sbcl:  --disable-sbcl }
+  %{?_enable_sbcl}  %{!?_enable_sbcl:  --disable-sbcl } \
+  --enable-lang-es --enable-lang-es-utf8 \
+  --enable-lang-pt --enable-lang-pt-utf8 \
+  --enable-lang-pt_BR --enable-lang-pt_BR-utf8 
 
 make %{?_smp_mflags}
 
@@ -345,12 +358,20 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/maxima/%{maxima_ver}
 %{_datadir}/maxima/%{maxima_ver}/[a-c,f-r,t-w,y-z,A-Z]*
 %{_datadir}/maxima/%{maxima_ver}/demo/
-%doc %{_datadir}/maxima/%{maxima_ver}/doc
+%doc %{_datadir}/maxima/%{maxima_ver}/doc/
+%doc %lang(es) %{_datadir}/maxima/%{version}/doc/html/es*
+%doc %lang(pt) %{_datadir}/maxima/%{version}/doc/html/pt/
+%doc %lang(pt) %{_datadir}/maxima/%{version}/doc/html/pt.utf-8/
+%doc %lang(pt_BR) %{_datadir}/maxima/%{version}/doc/html/pt_BR*
 %{_datadir}/maxima/%{maxima_ver}/share/
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{maxima_ver}/
 %{_libexecdir}/maxima
-%{_infodir}/*
+%{_infodir}/*maxima*
+%lang(es) %{_infodir}/es*
+%lang(pt) %{_infodir}/pt/
+%lang(pt) %{_infodir}/pt.utf8/
+%lang(pt_BR) %{_infodir}/pt_BR*
 %{_mandir}/man1/maxima.*
 %dir %{_datadir}/maxima/%{maxima_ver}/emacs
 %{_datadir}/maxima/%{maxima_ver}/emacs/emaxima.*
@@ -399,6 +420,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Aug 09 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.99-0.1.rc1
+- maxima-5.9.99rc1
+- enable langpacks: es, pt, pt_BR
+
 * Sat Jul 28 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-6
 - respin for sbcl-1.0.8
 
