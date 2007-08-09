@@ -421,7 +421,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Thu Aug 09 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.99-0.1.rc1
-- maxima-5.9.99rc1
+- maxima-5.12.99rc1
 - enable langpacks: es, pt, pt_BR
 
 * Sat Jul 28 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.0-6
