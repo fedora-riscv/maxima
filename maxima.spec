@@ -5,7 +5,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.12.99
 
-Release: 0.3.%{beta}%{?dist} 
+Release: 0.4.%{beta}%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -361,7 +361,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/maxima/%{maxima_ver}/doc/
 %doc %lang(es) %{_datadir}/maxima/%{maxima_ver}/doc/html/es*
 %doc %lang(pt) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt/
-%doc %lang(pt) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt.utf-8/
+%doc %lang(pt) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt.utf8/
 %doc %lang(pt_BR) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt_BR*
 %{_datadir}/maxima/%{maxima_ver}/share/
 %dir %{_libdir}/maxima/
@@ -420,7 +420,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Thu Aug 09 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.99-0.3.rc1
+* Thu Aug 09 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.99-0.4.rc1
 - maxima-5.12.99rc1
 - enable langpacks: es, pt, pt_BR
 
