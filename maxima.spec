@@ -1,11 +1,11 @@
 
-%define beta rc1
+%define beta rc2
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.12.99
 
-Release: 0.4.%{beta}%{?dist} 
+Release: 0.5.%{beta}%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -60,8 +60,6 @@ Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.
 
 # maxima-runtime-gcl: Unrecoverable error: fault count too high (#187647)
 Patch6: maxima-5.9.4-gcl_setarch.patch
-# maxima: --enable-sbcl ppc build failure (#238376)
-Patch238376: maxima-5.11.99rc2-purify.patch
 
 # Inhibit automatic compressing of info files. Compressed info
 # files break maxima's internal help.
@@ -198,7 +196,6 @@ install -p -m644 %{SOURCE10} .
 %if "%{?setarch_hack}" == "1"
 %patch6 -p1 -b .gcl-setarch
 %endif
-#patch238376 -p1 -b .purify
 
 sed -i -e 's|@ARCH@|%{_target_cpu}|' src/maxima.in
 
@@ -420,6 +417,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Aug 19 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.99-0.5.rc2
+- maxima-5.12.99rc2
+
 * Thu Aug 09 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.99-0.4.rc1
 - maxima-5.12.99rc1
 - enable langpacks: es, pt, pt_BR
