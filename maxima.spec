@@ -1,11 +1,9 @@
 
-%define beta rc2
-
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.12.99
+Version: 5.13.0
 
-Release: 0.5.%{beta}%{?dist} 
+Release: 1%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -417,6 +415,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Aug 25 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-1
+- maxima-5.13.0
+
 * Sun Aug 19 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.12.99-0.5.rc2
 - maxima-5.12.99rc2
 
