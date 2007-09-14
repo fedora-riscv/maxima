@@ -2,7 +2,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.13.0
 
-Release: 5%{?dist} 
+Release: 6%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -21,14 +21,13 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 %endif
 
 %ifarch %{ix86} x86_64
+%define default_lisp sbcl
 %if 0%{?fedora} > 2
-%define default_lisp sbcl 
 %define _enable_clisp --enable-clisp 
-# disable until unborked, http://bugzilla.redhat.com/256281
 %define _enable_gcl --enable-gcl 
 %define _enable_sbcl --enable-sbcl
 %else
-%define default_lisp sbcl 
+# epel/rhel
 %define _enable_sbcl --enable-sbcl 
 %endif
 %endif
@@ -419,8 +418,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Fri Sep 14 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-5
-- xmaxima.desktop: Categories =- Education
+* Fri Sep 14 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-6
+- xmaxima.desktop: Categories=Development,Math
 
 * Thu Aug 30 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-4
 - (re)--enable-gcl, f8+ (#256281)
