@@ -2,7 +2,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.13.0
 
-Release: 4%{?dist} 
+Release: 5%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -419,8 +419,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Sep 14 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-5
+- xmaxima.desktop: Categories =- Education
+
 * Thu Aug 30 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-4
-- (re)--enable-gcl (#256281)
+- (re)--enable-gcl, f8+ (#256281)
+- fix inadvertant Obsoletes: maxima-runtime-gcl (f7)
 
 * Mon Aug 27 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-3
 - until it is unborked, disable gcl support, f8+ (#256281)
