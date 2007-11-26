@@ -2,7 +2,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.13.0
 
-Release: 9%{?dist} 
+Release: 10%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -124,7 +124,7 @@ Requires: %{name} = %{version}-%{release}
 %if "%{?_enable_clisp:1}" == "1"
 # to workaround mysterious(?) "cpio: MD5 sum mismatch" errors when installing this subpkg
 %define __prelink_undo_cmd %{nil}
-%define _with_clisp_runtime --with-clisp-runtime=%{_libdir}/clisp/base/lisp.run
+#define _with_clisp_runtime --with-clisp-runtime=%{_libdir}/clisp/base/lisp.run
 %package runtime-clisp
 Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
@@ -418,7 +418,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Nov 26 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-9
+* Mon Nov 26 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-10
 - rebuild against sbcl-1.0.12/clisp-2.43
 
 * Sat Nov 03 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-8
