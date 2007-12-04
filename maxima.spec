@@ -1,12 +1,15 @@
+
+%define beta rc1
+
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.13.0
+Version: 5.13.99
 
-Release: 10%{?dist} 
+Release: 0.1.%{beta}%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
-Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
+Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch: %{ix86} x86_64 ppc sparc
@@ -418,6 +421,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Dec 04 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.99-0.1.rc1
+- maxima-5.13.99rc1
+
 * Mon Nov 26 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-10
 - rebuild against sbcl-1.0.12/clisp-2.43
 
