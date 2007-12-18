@@ -5,7 +5,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.13.99
 
-Release: 0.2.%{beta}%{?dist} 
+Release: 0.3.%{beta}%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -27,7 +27,7 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 %define default_lisp sbcl
 %if 0%{?fedora} > 2
 %define _enable_clisp --enable-clisp 
-%define _enable_gcl --enable-gcl 
+#define _enable_gcl --enable-gcl 
 %define _enable_sbcl --enable-sbcl
 %else
 # epel/rhel
@@ -421,6 +421,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 17 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.99-0.3.rc2
+- disable gcl (for now, doesn't build atm)
+
 * Mon Dec 17 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.99-0.2.rc2
 - maxima-5.13.99rc2
 
