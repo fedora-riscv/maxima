@@ -25,7 +25,9 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 %define default_lisp sbcl
 %if 0%{?fedora} > 2
 %define _enable_clisp --enable-clisp 
+%if 0%{?fedora} < 9
 %define _enable_gcl --enable-gcl 
+%endif
 %define _enable_sbcl --enable-sbcl
 %else
 # epel/rhel
