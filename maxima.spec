@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.14.0
 
-Release: 2%{?dist} 
+Release: 3%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -25,9 +25,9 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 %define default_lisp sbcl
 %if 0%{?fedora} > 2
 %define _enable_clisp --enable-clisp 
-%if 0%{?fedora} < 9
+#if 0%{?fedora} < 9
 %define _enable_gcl --enable-gcl 
-%endif
+#endif
 %define _enable_sbcl --enable-sbcl
 %else
 # epel/rhel
@@ -421,6 +421,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jan 01 2008 Rex Dieter <rdieter[AT]fedoraproject.org> 5.14.0-3
+- (re)enable gcl
+
 * Thu Dec 27 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.14.0-2
 - respin (sbcl)
 
