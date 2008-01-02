@@ -19,7 +19,9 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
+%if 0%{?fedora} < 9
 %define _enable_gcl --enable-gcl
+%endif
 %endif
 
 %ifarch %{ix86} x86_64
@@ -423,6 +425,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Wed Jan 02 2008 Rex Dieter <rdieter[AT]fedoraproject.org> 5.14.0-4
 - x86_64: --disable-gcl (#427250)
+- --disable-gcl (f9+, temporary, until broken deps fixed)
 
 * Tue Jan 01 2008 Rex Dieter <rdieter[AT]fedoraproject.org> 5.14.0-3
 - (re)enable gcl
