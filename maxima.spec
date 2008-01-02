@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.14.0
 
-Release: 3%{?dist} 
+Release: 4%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -19,15 +19,15 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
+%define _enable_gcl --enable-gcl
 %endif
 
 %ifarch %{ix86} x86_64
 %define default_lisp sbcl
 %if 0%{?fedora} > 2
 %define _enable_clisp --enable-clisp 
-#if 0%{?fedora} < 9
-%define _enable_gcl --enable-gcl 
-#endif
+# gcl busted on x86_64 atm: http://bugzilla.redhat.com/427250
+#define _enable_gcl --enable-gcl
 %define _enable_sbcl --enable-sbcl
 %else
 # epel/rhel
@@ -421,6 +421,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jan 02 2008 Rex Dieter <rdieter[AT]fedoraproject.org> 5.14.0-4
+- x86_64: --disable-gcl (#427250)
+
 * Tue Jan 01 2008 Rex Dieter <rdieter[AT]fedoraproject.org> 5.14.0-3
 - (re)enable gcl
 
