@@ -19,7 +19,7 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
-%if 0%{?fedora} < 9
+%if 0%{?fedora} > 2 && 0%{?fedora} < 9
 %define _enable_gcl --enable-gcl
 %endif
 %endif
