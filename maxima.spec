@@ -1,12 +1,13 @@
+
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.13.0
+Version: 5.14.0
 
 Release: 4%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
-Source:	 http://dl.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
+Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch: %{ix86} x86_64 ppc sparc
@@ -18,17 +19,20 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
+%if 0%{?fedora} < 9
+%define _enable_gcl --enable-gcl
+%endif
 %endif
 
 %ifarch %{ix86} x86_64
+%define default_lisp sbcl
 %if 0%{?fedora} > 2
-%define default_lisp sbcl 
 %define _enable_clisp --enable-clisp 
-# disable until unborked, http://bugzilla.redhat.com/256281
-%define _enable_gcl --enable-gcl 
+# gcl busted on x86_64 atm: http://bugzilla.redhat.com/427250
+#define _enable_gcl --enable-gcl
 %define _enable_sbcl --enable-sbcl
 %else
-%define default_lisp sbcl 
+# epel/rhel
 %define _enable_sbcl --enable-sbcl 
 %endif
 %endif
@@ -125,7 +129,7 @@ Requires: %{name} = %{version}-%{release}
 %if "%{?_enable_clisp:1}" == "1"
 # to workaround mysterious(?) "cpio: MD5 sum mismatch" errors when installing this subpkg
 %define __prelink_undo_cmd %{nil}
-%define _with_clisp_runtime --with-clisp-runtime=%{_libdir}/clisp/base/lisp.run
+#define _with_clisp_runtime --with-clisp-runtime=%{_libdir}/clisp/base/lisp.run
 %package runtime-clisp
 Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
@@ -174,7 +178,7 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
-BuildRequires: sbcl >= 1.0.9
+BuildRequires: sbcl
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
@@ -419,6 +423,40 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jan 02 2008 Rex Dieter <rdieter[AT]fedoraproject.org> 5.14.0-4
+- x86_64: --disable-gcl (#427250)
+- --disable-gcl (f9+, temporary, until broken deps fixed)
+
+* Tue Jan 01 2008 Rex Dieter <rdieter[AT]fedoraproject.org> 5.14.0-3
+- (re)enable gcl
+
+* Thu Dec 27 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.14.0-2
+- respin (sbcl)
+
+* Sat Dec 22 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.14.0-1
+- maxima-5.14.0
+
+* Mon Dec 17 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.99-0.3.rc2
+- disable gcl (for now, doesn't build atm)
+
+* Mon Dec 17 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.99-0.2.rc2
+- maxima-5.13.99rc2
+
+* Tue Dec 04 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.99-0.1.rc1
+- maxima-5.13.99rc1
+
+* Mon Nov 26 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-10
+- rebuild against sbcl-1.0.12/clisp-2.43
+
+* Sat Nov 03 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-8
+- rebuild against sbcl-1.0.11
+
+* Tue Oct 09 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-7
+- rebuild against sbcl-1.0.10
+
+* Fri Sep 14 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-6
+- xmaxima.desktop: Categories=Development,Math
+
 * Thu Aug 30 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 5.13.0-4
 - (re)--enable-gcl, f8+ (#256281)
 - fix inadvertant Obsoletes: maxima-runtime-gcl (f7)
