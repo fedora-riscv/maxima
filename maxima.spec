@@ -10,7 +10,7 @@ URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch: %{ix86} x86_64 ppc sparc
+ExclusiveArch: %{ix86} x86_64 sparc
 
 %define maxima_ver %{version}%{?beta}
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
@@ -38,13 +38,14 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 %endif
 
 %ifarch ppc
-%define default_lisp sbcl
+#define default_lisp sbcl
 # clisp: http://bugzilla.redhat.com/166347 (resolved) - clisp/ppc (still) awol.
 #define _enable_clisp --enable-clisp 
 # gcl:   http://bugzilla.redhat.com/167952
 #define _enable_gcl --enable-gcl 
 # sbcl:  http://bugzilla.redhat.com/220053 (resolved)
-%define _enable_sbcl --enable-sbcl 
+# sbcl: ppc/ld joy, "final link failed: Nonrepresentable section on output" http://bugzilla.redhat.com/448734
+#define _enable_sbcl --enable-sbcl 
 %endif
 
 %ifarch sparc
@@ -432,6 +433,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Wed May 28 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.15.0-1
 - maxima-5.15.0
+- omit ppc (sbcl, #448734)
 
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 5.14.0-6
 - Autorebuild for GCC 4.3
