@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.14.0
+Version: 5.15.0
 
-Release: 6%{?dist} 
+Release: 1%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -52,9 +52,16 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 %define _enable_sbcl --enable-sbcl
 %endif
 
+%if "%{?_enable_cmucl}" == "%{nil}"
+Obsoletes: %{name}-runtime-cmucl < %{version}-%{release}
+%endif
 %if "%{?_enable_gcl}" == "%{nil}"
 Obsoletes: %{name}-runtime-gcl < %{version}-%{release}
 %endif
+%if "%{?_enable_sbcl}" == "%{nil}"
+Obsoletes: %{name}-runtime-sbcl < %{version}-%{release}
+%endif
+
 
 Source1: maxima.png
 Source2: xmaxima.desktop
@@ -257,7 +264,7 @@ make install DESTDIR=$RPM_BUILD_ROOT
 install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/maxima.png
 
 desktop-file-install \
-  --dir $RPM_BUILD_ROOT%{_datadir}/applications \
+  --dir="$RPM_BUILD_ROOT%{_datadir}/applications" \
   --vendor="fedora" \
   %{SOURCE2} 
 
@@ -423,6 +430,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed May 28 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.15.0-1
+- maxima-5.15.0
+
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 5.14.0-6
 - Autorebuild for GCC 4.3
 
