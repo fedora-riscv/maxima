@@ -310,9 +310,11 @@ fi
 
 %post gui
 touch --no-create %{_datadir}/icons/hicolor ||:
+gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 
 %postun gui
 touch --no-create %{_datadir}/icons/hicolor ||:
+gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
@@ -340,14 +342,14 @@ if [ $2 -eq 0 ]; then
  rm -f %{xemacs_sitelisp}/site-start.d/maxima-modes.el* ||:
 fi
 
-%triggerin -- tetex-latex
+%triggerin -- tetex-latex,texlive-latex
 if [ -d %{texmf}/tex/latex ]; then
   rm -rf %{texmf}/tex/latex/emaxima ||:
   ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs %{texmf}/tex/latex/emaxima ||:
   %{_bindir}/texhash 2> /dev/null ||:
 fi
 
-%triggerun -- tetex-latex
+%triggerun -- tetex-latex,texlive-latex
 if [ $2 -eq 0 ]; then
   rm -f %{texmf}/tex/latex/emaxima ||:
 fi
@@ -386,6 +388,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/maxima.*
 %dir %{_datadir}/maxima/%{maxima_ver}/emacs
 %{_datadir}/maxima/%{maxima_ver}/emacs/emaxima.*
+%{_datadir}/maxima/%{maxima_ver}/emacs/imaxima.*
 %{_datadir}/maxima/%{maxima_ver}/emacs/*.el
 %ghost %{_datadir}/maxima/%{maxima_ver}/emacs/*.elc
 %dir %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/
@@ -435,6 +438,7 @@ rm -rf $RPM_BUILD_ROOT
 - maxima-5.15.0
 - omit ppc (sbcl, #448734)
 - omit gcl (f10+ busted, for now)
+- touchup scriptlets
 
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 5.14.0-6
 - Autorebuild for GCC 4.3
