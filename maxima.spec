@@ -19,7 +19,7 @@ ExclusiveArch: %{ix86} x86_64 sparc
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
-%if 0%{?fedora} > 2
+%if 0%{?fedora} > 2 && 0%{?fedora} < 10
 %define _enable_gcl --enable-gcl
 %endif
 %endif
@@ -434,6 +434,7 @@ rm -rf $RPM_BUILD_ROOT
 * Wed May 28 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.15.0-1
 - maxima-5.15.0
 - omit ppc (sbcl, #448734)
+- omit gcl (f10+ busted, for now)
 
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 5.14.0-6
 - Autorebuild for GCC 4.3
