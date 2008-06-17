@@ -1,16 +1,21 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.14.0
+Version: 5.15.0
 
-Release: 6%{?dist} 
+Release: 1%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch: %{ix86} x86_64 ppc sparc
+%if 0%{?fedora} > 8
+# reinclude ppc when fixed: http://bugzilla.redhat.com/448734
+ExclusiveArch: i386 x86_64 sparc
+%else
+ExclusiveArch: i386 x86_64 ppc sparc
+%endif
 
 %define maxima_ver %{version}%{?beta}
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
@@ -19,7 +24,7 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
-%if 0%{?fedora} > 2
+%if 0%{?fedora} > 2 && 0%{?fedora} < 10
 %define _enable_gcl --enable-gcl
 %endif
 %endif
@@ -38,13 +43,14 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 %endif
 
 %ifarch ppc
-%define default_lisp sbcl
+#define default_lisp sbcl
 # clisp: http://bugzilla.redhat.com/166347 (resolved) - clisp/ppc (still) awol.
 #define _enable_clisp --enable-clisp 
 # gcl:   http://bugzilla.redhat.com/167952
 #define _enable_gcl --enable-gcl 
 # sbcl:  http://bugzilla.redhat.com/220053 (resolved)
-%define _enable_sbcl --enable-sbcl 
+# sbcl: ppc/ld joy, "final link failed: Nonrepresentable section on output" http://bugzilla.redhat.com/448734
+#define _enable_sbcl --enable-sbcl 
 %endif
 
 %ifarch sparc
@@ -52,9 +58,16 @@ ExclusiveArch: %{ix86} x86_64 ppc sparc
 %define _enable_sbcl --enable-sbcl
 %endif
 
+%if "%{?_enable_cmucl}" == "%{nil}"
+Obsoletes: %{name}-runtime-cmucl < %{version}-%{release}
+%endif
 %if "%{?_enable_gcl}" == "%{nil}"
 Obsoletes: %{name}-runtime-gcl < %{version}-%{release}
 %endif
+%if "%{?_enable_sbcl}" == "%{nil}"
+Obsoletes: %{name}-runtime-sbcl < %{version}-%{release}
+%endif
+
 
 Source1: maxima.png
 Source2: xmaxima.desktop
@@ -257,7 +270,7 @@ make install DESTDIR=$RPM_BUILD_ROOT
 install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/maxima.png
 
 desktop-file-install \
-  --dir $RPM_BUILD_ROOT%{_datadir}/applications \
+  --dir="$RPM_BUILD_ROOT%{_datadir}/applications" \
   --vendor="fedora" \
   %{SOURCE2} 
 
@@ -302,9 +315,11 @@ fi
 
 %post gui
 touch --no-create %{_datadir}/icons/hicolor ||:
+gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 
 %postun gui
 touch --no-create %{_datadir}/icons/hicolor ||:
+gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
 
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
@@ -332,14 +347,14 @@ if [ $2 -eq 0 ]; then
  rm -f %{xemacs_sitelisp}/site-start.d/maxima-modes.el* ||:
 fi
 
-%triggerin -- tetex-latex
+%triggerin -- tetex-latex,texlive-latex
 if [ -d %{texmf}/tex/latex ]; then
   rm -rf %{texmf}/tex/latex/emaxima ||:
   ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs %{texmf}/tex/latex/emaxima ||:
   %{_bindir}/texhash 2> /dev/null ||:
 fi
 
-%triggerun -- tetex-latex
+%triggerun -- tetex-latex,texlive-latex
 if [ $2 -eq 0 ]; then
   rm -f %{texmf}/tex/latex/emaxima ||:
 fi
@@ -378,6 +393,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/maxima.*
 %dir %{_datadir}/maxima/%{maxima_ver}/emacs
 %{_datadir}/maxima/%{maxima_ver}/emacs/emaxima.*
+%{_datadir}/maxima/%{maxima_ver}/emacs/imaxima.*
 %{_datadir}/maxima/%{maxima_ver}/emacs/*.el
 %ghost %{_datadir}/maxima/%{maxima_ver}/emacs/*.elc
 %dir %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/
@@ -423,6 +439,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed May 28 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.15.0-1
+- maxima-5.15.0
+- omit ppc (sbcl, #448734)
+- omit gcl (f10+ busted, for now)
+- touchup scriptlets
+
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 5.14.0-6
 - Autorebuild for GCC 4.3
 
