@@ -11,6 +11,7 @@ Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %if 0%{?fedora} > 8
+
 # reinclude ppc when fixed: http://bugzilla.redhat.com/448734
 ExclusiveArch: i386 x86_64 sparc
 %else
@@ -24,8 +25,9 @@ ExclusiveArch: i386 x86_64 ppc sparc
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
-%if 0%{?fedora} > 2 && 0%{?fedora} < 10
-%define _enable_gcl --enable-gcl
+%if 0%{?fedora} > 2 # && 0%{?fedora} < 10
+# gcl/f8 bustage on i386: https://bugzilla.redhat.com/show_bug.cgi?id=451801
+#define _enable_gcl --enable-gcl
 %endif
 %endif
 
@@ -442,7 +444,7 @@ rm -rf $RPM_BUILD_ROOT
 * Wed May 28 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.15.0-1
 - maxima-5.15.0
 - omit ppc (sbcl, #448734)
-- omit gcl (f10+ busted, for now)
+- omit gcl (#451801)
 - touchup scriptlets
 
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 5.14.0-6
