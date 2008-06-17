@@ -43,14 +43,14 @@ ExclusiveArch: i386 x86_64 ppc sparc
 %endif
 
 %ifarch ppc
-#define default_lisp sbcl
+%define default_lisp sbcl
 # clisp: http://bugzilla.redhat.com/166347 (resolved) - clisp/ppc (still) awol.
 #define _enable_clisp --enable-clisp 
 # gcl:   http://bugzilla.redhat.com/167952
 #define _enable_gcl --enable-gcl 
 # sbcl:  http://bugzilla.redhat.com/220053 (resolved)
 # sbcl: ppc/ld joy, "final link failed: Nonrepresentable section on output" http://bugzilla.redhat.com/448734
-#define _enable_sbcl --enable-sbcl 
+%define _enable_sbcl --enable-sbcl 
 %endif
 
 %ifarch sparc
