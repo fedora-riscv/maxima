@@ -25,7 +25,7 @@ ExclusiveArch: i386 x86_64 ppc sparc
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
-%if 0%{?fedora} > 2 # && 0%{?fedora} < 10
+%if 0%{?fedora}
 # gcl/f8 bustage on i386: https://bugzilla.redhat.com/show_bug.cgi?id=451801
 #define _enable_gcl --enable-gcl
 %endif
