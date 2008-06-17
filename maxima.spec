@@ -10,7 +10,12 @@ URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch: %{ix86} x86_64 sparc
+%if 0%{?fedora} > 8
+# reinclude ppc when fixed: http://bugzilla.redhat.com/448734
+ExclusiveArch: i386 x86_64 sparc
+%else
+ExclusiveArch: i386 x86_64 ppc sparc
+%endif
 
 %define maxima_ver %{version}%{?beta}
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
