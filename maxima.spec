@@ -60,13 +60,13 @@ ExclusiveArch: i386 x86_64 ppc sparc
 %define _enable_sbcl --enable-sbcl
 %endif
 
-%if "%{?_enable_cmucl}" == "%{nil}"
+%if "x%{?_enable_cmucl}" == "x%{nil}"
 Obsoletes: %{name}-runtime-cmucl < %{version}-%{release}
 %endif
-%if "%{?_enable_gcl}" == "%{nil}"
+%if "x%{?_enable_gcl}" == "x%{nil}"
 Obsoletes: %{name}-runtime-gcl < %{version}-%{release}
 %endif
-%if "%{?_enable_sbcl}" == "%{nil}"
+%if "x%{?_enable_sbcl}" == "x%{nil}"
 Obsoletes: %{name}-runtime-sbcl < %{version}-%{release}
 %endif
 
