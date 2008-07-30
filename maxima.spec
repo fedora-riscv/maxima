@@ -141,7 +141,7 @@ Requires: %{name} = %{version}-%{release}
 %description src 
 %{name} lisp source code.
 
-%if "%{?_enable_clisp:1}" == "1"
+%if "x%{?_enable_clisp:1}" == "x1"
 # to workaround mysterious(?) "cpio: MD5 sum mismatch" errors when installing this subpkg
 %define __prelink_undo_cmd %{nil}
 #define _with_clisp_runtime --with-clisp-runtime=%{_libdir}/clisp/base/lisp.run
@@ -157,7 +157,7 @@ Provides: %{name}-runtime = %{version}
 Maxima compiled with Common Lisp (clisp) 
 %endif
 
-%if "%{?_enable_cmucl:1}" == "1"
+%if "x%{?_enable_cmucl:1}" == "x1"
 %define _with_cmucl_runtime=--with-cmucl-runtime=%{_libdir}/cmucl/bin/lisp
 %package runtime-cmucl
 Summary: Maxima compiled with CMUCL
@@ -170,7 +170,7 @@ Provides:  %{name}-runtime = %{version}
 Maxima compiled with CMU Common Lisp (cmucl) 
 %endif
 
-%if "%{?_enable_gcl:1}" == "1"
+%if "x%{?_enable_gcl:1}" == "x1"
 %package runtime-gcl
 Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
@@ -189,7 +189,7 @@ Provides:  %{name}-runtime-gcl = %{version}-%{release}
 Maxima compiled with Gnu Common Lisp (gcl)
 %endif
 
-%if "%{?_enable_sbcl:1}" == "1"
+%if "x%{?_enable_sbcl:1}" == "x1"
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
@@ -415,25 +415,25 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/*/*
 
-%if "%{?_enable_clisp:1}" == "1"
+%if "x%{?_enable_clisp:1}" == "x1"
 %files runtime-clisp
 %defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-clisp
 %endif
 
-%if "%{?_enable_cmucl:1}" == "1"
+%if "x%{?_enable_cmucl:1}" == "x1"
 %files runtime-cmucl
 %defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-cmucl
 %endif
 
-%if "%{?_enable_gcl:1}" == "1"
+%if "x%{?_enable_gcl:1}" == "x1"
 %files runtime-gcl
 %defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-gcl
 %endif
 
-%if "%{?_enable_sbcl:1}" == "1"
+%if "x%{?_enable_sbcl:1}" == "x1"
 %files runtime-sbcl
 %defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-sbcl
