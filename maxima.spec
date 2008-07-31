@@ -197,7 +197,7 @@ BuildRequires: sbcl
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
-%if 0%{?sbcl_ver} >= 1.0
+%if "x%{?sbcl_ver}" != "x%{nil}" 
 Requires: sbcl = %{sbcl_ver}
 %endif
 Requires: %{name} = %{version}
