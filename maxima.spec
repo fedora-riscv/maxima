@@ -214,7 +214,7 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 # Extra docs
 install -p -m644 %{SOURCE10} .
 
-%if "%{?setarch_hack}" == "1"
+%if 0%{?setarch_hack} == 1
 %patch6 -p1 -b .gcl-setarch
 %endif
 
