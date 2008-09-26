@@ -13,9 +13,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %if 0%{?fedora} > 8
 
 # reinclude ppc when fixed: http://bugzilla.redhat.com/448734
-ExclusiveArch: i386 x86_64 sparc
+ExclusiveArch: i386 x86_64 sparcv9
 %else
-ExclusiveArch: i386 x86_64 ppc sparc
+ExclusiveArch: i386 x86_64 ppc sparcv9
 %endif
 
 %define maxima_ver %{version}%{?beta}
@@ -55,7 +55,7 @@ ExclusiveArch: i386 x86_64 ppc sparc
 %define _enable_sbcl --enable-sbcl 
 %endif
 
-%ifarch sparc
+%ifarch sparcv9
 %define default_lisp sbcl
 %define _enable_sbcl --enable-sbcl
 %endif
