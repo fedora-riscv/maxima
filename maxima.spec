@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.15.0
+Version: 5.16.3
 
-Release: 1%{?dist} 
+Release: 4%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -13,9 +13,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %if 0%{?fedora} > 8
 
 # reinclude ppc when fixed: http://bugzilla.redhat.com/448734
-ExclusiveArch: i386 x86_64 sparc
+ExclusiveArch: i386 x86_64 sparcv9
 %else
-ExclusiveArch: i386 x86_64 ppc sparc
+ExclusiveArch: i386 x86_64 ppc sparcv9
 %endif
 
 %define maxima_ver %{version}%{?beta}
@@ -55,18 +55,18 @@ ExclusiveArch: i386 x86_64 ppc sparc
 %define _enable_sbcl --enable-sbcl 
 %endif
 
-%ifarch sparc
+%ifarch sparcv9
 %define default_lisp sbcl
 %define _enable_sbcl --enable-sbcl
 %endif
 
-%if "%{?_enable_cmucl}" == "%{nil}"
+%if "x%{?_enable_cmucl}" == "x%{nil}"
 Obsoletes: %{name}-runtime-cmucl < %{version}-%{release}
 %endif
-%if "%{?_enable_gcl}" == "%{nil}"
+%if "x%{?_enable_gcl}" == "x%{nil}"
 Obsoletes: %{name}-runtime-gcl < %{version}-%{release}
 %endif
-%if "%{?_enable_sbcl}" == "%{nil}"
+%if "x%{?_enable_sbcl}" == "x%{nil}"
 Obsoletes: %{name}-runtime-sbcl < %{version}-%{release}
 %endif
 
@@ -141,7 +141,7 @@ Requires: %{name} = %{version}-%{release}
 %description src 
 %{name} lisp source code.
 
-%if "%{?_enable_clisp:1}" == "1"
+%if "x%{?_enable_clisp:1}" == "x1"
 # to workaround mysterious(?) "cpio: MD5 sum mismatch" errors when installing this subpkg
 %define __prelink_undo_cmd %{nil}
 #define _with_clisp_runtime --with-clisp-runtime=%{_libdir}/clisp/base/lisp.run
@@ -157,7 +157,7 @@ Provides: %{name}-runtime = %{version}
 Maxima compiled with Common Lisp (clisp) 
 %endif
 
-%if "%{?_enable_cmucl:1}" == "1"
+%if "x%{?_enable_cmucl:1}" == "x1"
 %define _with_cmucl_runtime=--with-cmucl-runtime=%{_libdir}/cmucl/bin/lisp
 %package runtime-cmucl
 Summary: Maxima compiled with CMUCL
@@ -170,7 +170,7 @@ Provides:  %{name}-runtime = %{version}
 Maxima compiled with CMU Common Lisp (cmucl) 
 %endif
 
-%if "%{?_enable_gcl:1}" == "1"
+%if "x%{?_enable_gcl:1}" == "x1"
 %package runtime-gcl
 Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
@@ -189,7 +189,7 @@ Provides:  %{name}-runtime-gcl = %{version}-%{release}
 Maxima compiled with Gnu Common Lisp (gcl)
 %endif
 
-%if "%{?_enable_sbcl:1}" == "1"
+%if "x%{?_enable_sbcl:1}" == "x1"
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
@@ -197,7 +197,7 @@ BuildRequires: sbcl
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
-%if "%{?sbcl_ver}" >= "1.0"
+%if "x%{?sbcl_ver}" != "x%{nil}" 
 Requires: sbcl = %{sbcl_ver}
 %endif
 Requires: %{name} = %{version}
@@ -214,7 +214,7 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 # Extra docs
 install -p -m644 %{SOURCE10} .
 
-%if "%{?setarch_hack}" == "1"
+%if 0%{?setarch_hack} == 1
 %patch6 -p1 -b .gcl-setarch
 %endif
 
@@ -415,25 +415,25 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/*/*
 
-%if "%{?_enable_clisp:1}" == "1"
+%if "x%{?_enable_clisp:1}" == "x1"
 %files runtime-clisp
 %defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-clisp
 %endif
 
-%if "%{?_enable_cmucl:1}" == "1"
+%if "x%{?_enable_cmucl:1}" == "x1"
 %files runtime-cmucl
 %defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-cmucl
 %endif
 
-%if "%{?_enable_gcl:1}" == "1"
+%if "x%{?_enable_gcl:1}" == "x1"
 %files runtime-gcl
 %defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-gcl
 %endif
 
-%if "%{?_enable_sbcl:1}" == "1"
+%if "x%{?_enable_sbcl:1}" == "x1"
 %files runtime-sbcl
 %defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-sbcl
@@ -441,6 +441,27 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Nov 05 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.16.3-4
+- respin (sbcl)
+
+* Thu Oct 02 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.16.3-3
+- respin (sbcl)
+
+* Tue Sep 02 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.16.3-2
+- respin (sbcl)
+
+* Sun Aug 24 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.16.3-1
+- maxima-5.16.3
+
+* Mon Aug 18 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.16.2-1
+- maxima-5.16.2 (5.16 rc)
+
+* Fri Aug 01 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.15.0-3
+- rawhide/rpm hacks/workarounds
+
+* Wed Jul 30 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.15.0-2
+- respin (sbcl)
+
 * Wed May 28 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.15.0-1
 - maxima-5.15.0
 - omit ppc (sbcl, #448734)
