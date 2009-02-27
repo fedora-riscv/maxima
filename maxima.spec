@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.17.1
 
-Release: 5%{?dist} 
+Release: 6%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -12,9 +12,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %if 0%{?fedora} > 8
 # reinclude ppc when fixed: http://bugzilla.redhat.com/448734
-ExclusiveArch: i386 x86_64 sparcv9
+ExclusiveArch: %{ix86} x86_64 sparcv9
 %else
-ExclusiveArch: i386 x86_64 ppc sparcv9
+ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 %endif
 
 %define maxima_ver %{version}%{?beta}
@@ -441,6 +441,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Feb 27 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.17.1-6 
+- ExclusiveArch: s/i386/%%ix86/
+
 * Wed Feb 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5.17.1-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
