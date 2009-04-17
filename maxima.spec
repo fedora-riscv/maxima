@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.17.1
+Version: 5.18.0
 
-Release: 7%{?dist} 
+Release: 1%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -78,11 +78,8 @@ Source6: maxima-modes.el
 Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
-# maxima-runtime-gcl: Unrecoverable error: fault count too high (#187647)
-Patch6: maxima-5.9.4-gcl_setarch.patch
-
-# Inhibit automatic compressing of info files. Compressed info
-# files break maxima's internal help.
+# Inhibit automatic compressing of info files. 
+# Compressed info files break maxima's internal help.
 %define __spec_install_post %{nil} 
 # debuginfo.list ends up empty/blank anyway. disable
 %define debug_package   %{nil}
@@ -95,6 +92,9 @@ Obsoletes: %{name}-lang-pt-utf8 < %{version}-%{release}
 Obsoletes: %{name}-lang-pt_BR < %{version}-%{release}
 Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 
+# 5.18.0 tarball busted?, temporary 
+#BuildRequires: automake
+BuildRequires: desktop-file-utils
 BuildRequires: time
 # texi2dvi
 %if 0%{?fedora} > 5 || 0%{?rhel} > 4
@@ -103,7 +103,6 @@ BuildRequires: texinfo-tex
 BuildRequires: texinfo
 %endif
 BuildRequires: tetex-latex
-BuildRequires: desktop-file-utils
 # /usr/bin/wish
 BuildRequires: tk
 
@@ -175,13 +174,6 @@ Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}
-%if 0
-#if 0%{?fedora} > 4 || 0%{?rhel} > 4
-# See http://bugzilla.redhat.com/187647
-%define setarch_hack 1
-BuildRequires: setarch
-Requires:  setarch
-%endif
 Obsoletes: maxima-exec-gcl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}
 Provides:  %{name}-runtime-gcl = %{version}-%{release}
@@ -214,10 +206,6 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 # Extra docs
 install -p -m644 %{SOURCE10} .
 
-%if 0%{?setarch_hack} == 1
-%patch6 -p1 -b .gcl-setarch
-%endif
-
 sed -i -e 's|@ARCH@|%{_target_cpu}|' src/maxima.in
 
 sed -i -e 's:/usr/local/info:/usr/share/info:' \
@@ -244,18 +232,14 @@ find -name CVS -type d | xargs rm -r
 make %{?_smp_mflags}
 
 # docs
-pushd doc
+install -D -p -m644 %{SOURCE11} doc/maximabook/maxima.pdf
 
- install -D -p -m644 %{SOURCE11} maximabook/maxima.pdf
-
-# pushd info
+# pushd doc/info
 #  texi2dvi --pdf maxima.texi
 # popd
 
- pushd intromax
-  pdflatex intromax.ltx
- popd
-
+pushd doc/intromax
+ pdflatex intromax.ltx
 popd
 
 
@@ -441,6 +425,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 17 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.18.0-1
+- maxima-5.18.0
+
 * Wed Mar 04 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.17.1-7
 - respin (sbcl)
 
