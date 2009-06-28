@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.18.1
 
-Release: 2%{?dist} 
+Release: 3%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -25,8 +25,8 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
 %if 0%{?fedora}
-# gcl/f8 bustage on i386: https://bugzilla.redhat.com/show_bug.cgi?id=451801
-%define _enable_gcl --enable-gcl
+# temporarily disable -gcl (#496124)
+#define _enable_gcl --enable-gcl
 %endif
 %endif
 
@@ -34,8 +34,8 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 %define default_lisp sbcl
 %if 0%{?fedora} > 2
 %define _enable_clisp --enable-clisp 
-# gcl busted on x86_64 atm: http://bugzilla.redhat.com/427250
-%define _enable_gcl --enable-gcl
+# temporarily disable -gcl (#496124)
+#define _enable_gcl --enable-gcl
 %define _enable_sbcl --enable-sbcl
 %else
 # epel/rhel
@@ -47,8 +47,8 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 %define default_lisp sbcl
 # clisp: http://bugzilla.redhat.com/166347 (resolved) - clisp/ppc (still) awol.
 #define _enable_clisp --enable-clisp 
-# gcl:   http://bugzilla.redhat.com/167952
-%define _enable_gcl --enable-gcl 
+# temporarily disable -gcl (#496124)
+#define _enable_gcl --enable-gcl
 # sbcl:  http://bugzilla.redhat.com/220053 (resolved)
 # sbcl: ppc/ld joy, "final link failed: Nonrepresentable section on output" http://bugzilla.redhat.com/448734
 %define _enable_sbcl --enable-sbcl 
@@ -68,7 +68,6 @@ Obsoletes: %{name}-runtime-gcl < %{version}-%{release}
 %if "x%{?_enable_sbcl}" == "x%{nil}"
 Obsoletes: %{name}-runtime-sbcl < %{version}-%{release}
 %endif
-
 
 Source1: maxima.png
 Source2: xmaxima.desktop
@@ -425,6 +424,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jun 29 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.18.1-3
+- disable -runtime-gcl until issues (selinux, bug #496124) are fixed
+
 * Sat May 02 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.18.1-2
 - rebuild (sbcl)
 
