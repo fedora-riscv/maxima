@@ -361,11 +361,14 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/maxima/%{maxima_ver}
 %{_datadir}/maxima/%{maxima_ver}/[a-c,f-r,t-w,y-z,A-Z]*
 %{_datadir}/maxima/%{maxima_ver}/demo/
-%doc %{_datadir}/maxima/%{maxima_ver}/doc/
-%doc %lang(es) %{_datadir}/maxima/%{maxima_ver}/doc/html/es*
+%dir %{_datadir}/maxima/%{maxima_ver}/doc/
+%doc %{_datadir}/maxima/%{maxima_ver}/doc/*.h*
+%doc %lang(es) %{_datadir}/maxima/%{maxima_ver}/doc/html/es/
+%doc %lang(es) %{_datadir}/maxima/%{maxima_ver}/doc/html/es.utf8/
 %doc %lang(pt) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt/
 %doc %lang(pt) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt.utf8/
-%doc %lang(pt_BR) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt_BR*
+%doc %lang(pt_BR) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt_BR/
+%doc %lang(pt_BR) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt_BR.utf8/
 %{_datadir}/maxima/%{maxima_ver}/share/
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{maxima_ver}/
