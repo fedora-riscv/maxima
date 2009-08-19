@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.18.1
+Version: 5.19.0
 
-Release: 6%{?dist} 
+Release: 2%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -187,7 +187,7 @@ Group:   Applications/Engineering
 BuildRequires: sbcl
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
-%global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
+%global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2 | cut -d- -f1)
 %if "x%{?sbcl_ver}" != "x%{nil}" 
 Requires: sbcl = %{sbcl_ver}
 %endif
@@ -355,14 +355,16 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/misc/ doc/implementation/
 %doc doc/intromax/intromax.pdf
 %doc doc/maximabook/maxima.pdf
-%doc macref.pdf
 %{_bindir}/maxima
 %dir %{_datadir}/maxima
 %dir %{_datadir}/maxima/%{maxima_ver}
 %{_datadir}/maxima/%{maxima_ver}/[a-c,f-r,t-w,y-z,A-Z]*
 %{_datadir}/maxima/%{maxima_ver}/demo/
 %dir %{_datadir}/maxima/%{maxima_ver}/doc/
-%doc %{_datadir}/maxima/%{maxima_ver}/doc/*.h*
+%dir %{_datadir}/maxima/%{maxima_ver}/doc/html/
+%{_datadir}/maxima/%{maxima_ver}/doc/html/figures/
+%doc %lang(en) %{_datadir}/maxima/%{maxima_ver}/doc/html/*.h*
+%doc %lang(en) %{_datadir}/maxima/%{maxima_ver}/doc/share/
 %doc %lang(es) %{_datadir}/maxima/%{maxima_ver}/doc/html/es/
 %doc %lang(es) %{_datadir}/maxima/%{maxima_ver}/doc/html/es.utf8/
 %doc %lang(pt) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt/
@@ -427,6 +429,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Aug 18 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.0-2
+- safer evaluation of %%sbcl_ver macro
+
+* Sat Aug 01 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.0-1
+- maxima-5.19.0
+
 * Tue Jul 28 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.18.1-6
 - rebuild (sbcl)
 
