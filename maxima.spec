@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.19.0
+Version: 5.19.1
 
-Release: 2%{?dist} 
+Release: 1%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -299,12 +299,16 @@ if [ $1 -eq 0 ]; then
 fi
 
 %post gui
-touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
+touch --no-create %{_datadir}/icons/hicolor &> /dev/null || :
 
 %postun gui
-touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
+if [ $1 -eq 0 ] ; then
+  touch --no-create %{_datadir}/icons/hicolor &> /dev/null
+  gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
+fi
+
+%posttrans gui
+gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
@@ -429,6 +433,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Aug 22 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.1-1
+- maxima-5.19.1
+- -gui: optimize scriptlets
+
 * Tue Aug 18 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.0-2
 - safer evaluation of %%sbcl_ver macro
 
