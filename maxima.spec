@@ -153,7 +153,7 @@ Maxima compiled with Common Lisp (clisp)
 %endif
 
 %if "x%{?_enable_cmucl:1}" == "x1"
-%define _with_cmucl_runtime=--with-cmucl-runtime=%{_libdir}/cmucl/bin/lisp
+%define _with_cmucl_runtime --with-cmucl-runtime=%{_prefix}/lib/cmucl/bin/lisp
 %package runtime-cmucl
 Summary: Maxima compiled with CMUCL
 Group:	 Applications/Engineering 
