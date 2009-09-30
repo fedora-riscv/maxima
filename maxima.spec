@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.19.2
 
-Release: 1%{?dist} 
+Release: 2%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -91,8 +91,6 @@ Obsoletes: %{name}-lang-pt-utf8 < %{version}-%{release}
 Obsoletes: %{name}-lang-pt_BR < %{version}-%{release}
 Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 
-# 5.18.0 tarball busted?, temporary 
-#BuildRequires: automake
 BuildRequires: desktop-file-utils
 BuildRequires: time
 # texi2dvi
@@ -433,6 +431,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 29 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.2-2
+- rebuild (cmucl)
+
 * Sun Aug 30 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.2-1
 - maxima-5.19.2
 
