@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.18.1
+Version: 5.19.2
 
-Release: 6%{?dist} 
+Release: 1%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -187,7 +187,7 @@ Group:   Applications/Engineering
 BuildRequires: sbcl
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
-%global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
+%global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2 | cut -d- -f1)
 %if "x%{?sbcl_ver}" != "x%{nil}" 
 Requires: sbcl = %{sbcl_ver}
 %endif
@@ -299,12 +299,16 @@ if [ $1 -eq 0 ]; then
 fi
 
 %post gui
-touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
+touch --no-create %{_datadir}/icons/hicolor &> /dev/null || :
 
 %postun gui
-touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
+if [ $1 -eq 0 ] ; then
+  touch --no-create %{_datadir}/icons/hicolor &> /dev/null
+  gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
+fi
+
+%posttrans gui
+gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
@@ -355,7 +359,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/misc/ doc/implementation/
 %doc doc/intromax/intromax.pdf
 %doc doc/maximabook/maxima.pdf
-%doc macref.pdf
 %{_bindir}/maxima
 %dir %{_datadir}/maxima
 %dir %{_datadir}/maxima/%{maxima_ver}
@@ -430,6 +433,19 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Aug 30 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.2-1
+- maxima-5.19.2
+
+* Sat Aug 22 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.1-1
+- maxima-5.19.1
+- -gui: optimize scriptlets
+
+* Tue Aug 18 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.0-2
+- safer evaluation of %%sbcl_ver macro
+
+* Sat Aug 01 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.0-1
+- maxima-5.19.0
+
 * Tue Jul 28 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.18.1-6
 - rebuild (sbcl)
 
