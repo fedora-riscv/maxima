@@ -432,7 +432,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Tue Dec 15 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.20.1-1
-- maxima-5.20.1
+- maxima-5.20.1 (#547012)
 
 * Thu Dec 10 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.20.0-1
 - maxima-5.20.0
