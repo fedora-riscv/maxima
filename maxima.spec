@@ -52,6 +52,7 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 # sbcl:  http://bugzilla.redhat.com/220053 (resolved)
 # sbcl: ppc/ld joy, "final link failed: Nonrepresentable section on output" http://bugzilla.redhat.com/448734
 %define _enable_sbcl --enable-sbcl 
+%define _check_nonfatal ||:
 %endif
 
 %ifarch sparcv9
@@ -241,7 +242,7 @@ popd
 
 
 %check 
-make check
+make -k check %{?check_nonfatal}
 
 
 %install
