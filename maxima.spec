@@ -1,7 +1,7 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.19.2
+Version: 5.20.1
 
 Release: 1%{?dist} 
 License: GPLv2
@@ -91,8 +91,6 @@ Obsoletes: %{name}-lang-pt-utf8 < %{version}-%{release}
 Obsoletes: %{name}-lang-pt_BR < %{version}-%{release}
 Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 
-# 5.18.0 tarball busted?, temporary 
-#BuildRequires: automake
 BuildRequires: desktop-file-utils
 BuildRequires: time
 # texi2dvi
@@ -155,7 +153,7 @@ Maxima compiled with Common Lisp (clisp)
 %endif
 
 %if "x%{?_enable_cmucl:1}" == "x1"
-%define _with_cmucl_runtime=--with-cmucl-runtime=%{_libdir}/cmucl/bin/lisp
+%define _with_cmucl_runtime --with-cmucl-runtime=%{_prefix}/lib/cmucl/bin/lisp
 %package runtime-cmucl
 Summary: Maxima compiled with CMUCL
 Group:	 Applications/Engineering 
@@ -433,6 +431,18 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Dec 15 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.20.1-1
+- maxima-5.20.1 (#547012)
+
+* Thu Dec 10 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.20.0-1
+- maxima-5.20.0
+
+* Mon Oct 26 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.2-3
+- rebuild (sbcl)
+
+* Tue Sep 29 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.2-2
+- rebuild (cmucl)
+
 * Sun Aug 30 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.2-1
 - maxima-5.19.2
 
