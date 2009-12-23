@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.16.3
+Version: 5.20.1
 
-Release: 4%{?dist} 
+Release: 1%{?dist} 
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -11,11 +11,10 @@ Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %if 0%{?fedora} > 8
-
 # reinclude ppc when fixed: http://bugzilla.redhat.com/448734
-ExclusiveArch: i386 x86_64 sparcv9
+ExclusiveArch: %{ix86} x86_64 sparcv9
 %else
-ExclusiveArch: i386 x86_64 ppc sparcv9
+ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 %endif
 
 %define maxima_ver %{version}%{?beta}
@@ -26,7 +25,7 @@ ExclusiveArch: i386 x86_64 ppc sparcv9
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
 %if 0%{?fedora}
-# gcl/f8 bustage on i386: https://bugzilla.redhat.com/show_bug.cgi?id=451801
+# temporarily disable -gcl (#496124)
 #define _enable_gcl --enable-gcl
 %endif
 %endif
@@ -35,7 +34,7 @@ ExclusiveArch: i386 x86_64 ppc sparcv9
 %define default_lisp sbcl
 %if 0%{?fedora} > 2
 %define _enable_clisp --enable-clisp 
-# gcl busted on x86_64 atm: http://bugzilla.redhat.com/427250
+# temporarily disable -gcl (#496124)
 #define _enable_gcl --enable-gcl
 %define _enable_sbcl --enable-sbcl
 %else
@@ -48,11 +47,12 @@ ExclusiveArch: i386 x86_64 ppc sparcv9
 %define default_lisp sbcl
 # clisp: http://bugzilla.redhat.com/166347 (resolved) - clisp/ppc (still) awol.
 #define _enable_clisp --enable-clisp 
-# gcl:   http://bugzilla.redhat.com/167952
-#define _enable_gcl --enable-gcl 
+# temporarily disable -gcl (#496124)
+#define _enable_gcl --enable-gcl
 # sbcl:  http://bugzilla.redhat.com/220053 (resolved)
 # sbcl: ppc/ld joy, "final link failed: Nonrepresentable section on output" http://bugzilla.redhat.com/448734
 %define _enable_sbcl --enable-sbcl 
+%define check_nonfatal ||:
 %endif
 
 %ifarch sparcv9
@@ -70,7 +70,6 @@ Obsoletes: %{name}-runtime-gcl < %{version}-%{release}
 Obsoletes: %{name}-runtime-sbcl < %{version}-%{release}
 %endif
 
-
 Source1: maxima.png
 Source2: xmaxima.desktop
 Source6: maxima-modes.el
@@ -79,11 +78,8 @@ Source6: maxima-modes.el
 Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
-# maxima-runtime-gcl: Unrecoverable error: fault count too high (#187647)
-Patch6: maxima-5.9.4-gcl_setarch.patch
-
-# Inhibit automatic compressing of info files. Compressed info
-# files break maxima's internal help.
+# Inhibit automatic compressing of info files. 
+# Compressed info files break maxima's internal help.
 %define __spec_install_post %{nil} 
 # debuginfo.list ends up empty/blank anyway. disable
 %define debug_package   %{nil}
@@ -96,6 +92,7 @@ Obsoletes: %{name}-lang-pt-utf8 < %{version}-%{release}
 Obsoletes: %{name}-lang-pt_BR < %{version}-%{release}
 Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 
+BuildRequires: desktop-file-utils
 BuildRequires: time
 # texi2dvi
 %if 0%{?fedora} > 5 || 0%{?rhel} > 4
@@ -104,7 +101,6 @@ BuildRequires: texinfo-tex
 BuildRequires: texinfo
 %endif
 BuildRequires: tetex-latex
-BuildRequires: desktop-file-utils
 # /usr/bin/wish
 BuildRequires: tk
 
@@ -158,7 +154,7 @@ Maxima compiled with Common Lisp (clisp)
 %endif
 
 %if "x%{?_enable_cmucl:1}" == "x1"
-%define _with_cmucl_runtime=--with-cmucl-runtime=%{_libdir}/cmucl/bin/lisp
+%define _with_cmucl_runtime --with-cmucl-runtime=%{_prefix}/lib/cmucl/bin/lisp
 %package runtime-cmucl
 Summary: Maxima compiled with CMUCL
 Group:	 Applications/Engineering 
@@ -176,12 +172,6 @@ Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}
-%if 0%{?fedora} > 4 || 0%{?rhel} > 4
-# See http://bugzilla.redhat.com/187647
-%define setarch_hack 1
-BuildRequires: setarch
-Requires:  setarch
-%endif
 Obsoletes: maxima-exec-gcl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}
 Provides:  %{name}-runtime-gcl = %{version}-%{release}
@@ -196,7 +186,7 @@ Group:   Applications/Engineering
 BuildRequires: sbcl
 # maxima requires the *same* (or very similar) version it was built against
 # this hack should work, even in mock (-: -- Rex
-%global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2)
+%global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2 | cut -d- -f1)
 %if "x%{?sbcl_ver}" != "x%{nil}" 
 Requires: sbcl = %{sbcl_ver}
 %endif
@@ -213,10 +203,6 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 
 # Extra docs
 install -p -m644 %{SOURCE10} .
-
-%if 0%{?setarch_hack} == 1
-%patch6 -p1 -b .gcl-setarch
-%endif
 
 sed -i -e 's|@ARCH@|%{_target_cpu}|' src/maxima.in
 
@@ -244,23 +230,19 @@ find -name CVS -type d | xargs rm -r
 make %{?_smp_mflags}
 
 # docs
-pushd doc
+install -D -p -m644 %{SOURCE11} doc/maximabook/maxima.pdf
 
- install -D -p -m644 %{SOURCE11} maximabook/maxima.pdf
-
-# pushd info
+# pushd doc/info
 #  texi2dvi --pdf maxima.texi
 # popd
 
- pushd intromax
-  pdflatex intromax.ltx
- popd
-
+pushd doc/intromax
+ pdflatex intromax.ltx
 popd
 
 
 %check 
-make check
+make -k check %{?check_nonfatal}
 
 
 %install
@@ -316,12 +298,16 @@ if [ $1 -eq 0 ]; then
 fi
 
 %post gui
-touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
+touch --no-create %{_datadir}/icons/hicolor &> /dev/null || :
 
 %postun gui
-touch --no-create %{_datadir}/icons/hicolor ||:
-gtk-update-icon-cache -q %{_datadir}/icons/hicolor 2> /dev/null ||:
+if [ $1 -eq 0 ] ; then
+  touch --no-create %{_datadir}/icons/hicolor &> /dev/null
+  gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
+fi
+
+%posttrans gui
+gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
@@ -372,17 +358,22 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/misc/ doc/implementation/
 %doc doc/intromax/intromax.pdf
 %doc doc/maximabook/maxima.pdf
-%doc macref.pdf
 %{_bindir}/maxima
 %dir %{_datadir}/maxima
 %dir %{_datadir}/maxima/%{maxima_ver}
 %{_datadir}/maxima/%{maxima_ver}/[a-c,f-r,t-w,y-z,A-Z]*
 %{_datadir}/maxima/%{maxima_ver}/demo/
-%doc %{_datadir}/maxima/%{maxima_ver}/doc/
-%doc %lang(es) %{_datadir}/maxima/%{maxima_ver}/doc/html/es*
+%dir %{_datadir}/maxima/%{maxima_ver}/doc/
+%dir %{_datadir}/maxima/%{maxima_ver}/doc/html/
+%{_datadir}/maxima/%{maxima_ver}/doc/html/figures/
+%doc %lang(en) %{_datadir}/maxima/%{maxima_ver}/doc/html/*.h*
+%doc %lang(en) %{_datadir}/maxima/%{maxima_ver}/doc/share/
+%doc %lang(es) %{_datadir}/maxima/%{maxima_ver}/doc/html/es/
+%doc %lang(es) %{_datadir}/maxima/%{maxima_ver}/doc/html/es.utf8/
 %doc %lang(pt) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt/
 %doc %lang(pt) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt.utf8/
-%doc %lang(pt_BR) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt_BR*
+%doc %lang(pt_BR) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt_BR/
+%doc %lang(pt_BR) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt_BR.utf8/
 %{_datadir}/maxima/%{maxima_ver}/share/
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{maxima_ver}/
@@ -441,6 +432,73 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Dec 15 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.20.1-1
+- maxima-5.20.1 (#547012)
+
+* Thu Dec 10 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.20.0-1
+- maxima-5.20.0
+
+* Mon Oct 26 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.2-3
+- rebuild (sbcl)
+
+* Tue Sep 29 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.2-2
+- rebuild (cmucl)
+
+* Sun Aug 30 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.2-1
+- maxima-5.19.2
+
+* Sat Aug 22 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.1-1
+- maxima-5.19.1
+- -gui: optimize scriptlets
+
+* Tue Aug 18 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.0-2
+- safer evaluation of %%sbcl_ver macro
+
+* Sat Aug 01 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.19.0-1
+- maxima-5.19.0
+
+* Tue Jul 28 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.18.1-6
+- rebuild (sbcl)
+
+* Sat Jul 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5.18.1-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
+
+* Sun Jun 29 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.18.1-3
+- disable -runtime-gcl until issues (selinux, bug #496124) are fixed
+
+* Sat May 02 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.18.1-2
+- rebuild (sbcl)
+
+* Sat Apr 18 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.18.1-1
+- maxima-5.18.1
+
+* Fri Apr 17 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.18.0-1
+- maxima-5.18.0
+
+* Wed Mar 04 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.17.1-7
+- respin (sbcl)
+
+* Fri Feb 27 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.17.1-6 
+- ExclusiveArch: s/i386/%%ix86/
+
+* Wed Feb 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5.17.1-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
+
+* Tue Feb 03 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.17.1-4
+- respin (sbcl)
+
+* Sun Jan 18 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.17.1-3
+- reenable gcl on i386 (#451801), x86_64 (#427250), ppc (#167952)
+
+* Wed Dec 31 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.17.1-2
+- respin (sbcl)
+
+* Wed Dec 17 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.17.1-1
+- maxima-5.17.1
+
+* Thu Dec 04 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.17.0-1
+- maxima-5.17.0
+
 * Wed Nov 05 2008 Rex Dieter <rdieter@fedoraproject.org> - 5.16.3-4
 - respin (sbcl)
 
