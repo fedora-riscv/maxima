@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.20.1
 
-Release: 1%{?dist} 
+Release: 2%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -110,6 +110,7 @@ Requires: %{name}-runtime = %{version}
 #Requires(hint): %{name}-runtime-%{default_lisp} = %{version}
 #endif
 Requires: gnuplot
+Requires: rlwrap
 Requires(post): /sbin/install-info
 Requires(postun): /sbin/install-info
 
@@ -278,8 +279,6 @@ ln -sf  %{_datadir}/maxima/%{maxima_ver}/emacs \
 
 ## unwanted/unpackaged files
 rm -f $RPM_BUILD_ROOT%{_infodir}/dir
-# until we get/Require rlwrap from http://utopia.knoware.nl/~hlub/uck/rlwrap/
-rm -f $RPM_BUILD_ROOT%{_bindir}/rmaxima
 # docs
 rm -rf $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/doc/{contributors,implementation,misc,maximabook,EMaximaIntro.ps}
 
@@ -359,6 +358,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/intromax/intromax.pdf
 %doc doc/maximabook/maxima.pdf
 %{_bindir}/maxima
+%{_bindir}/rmaxima
 %dir %{_datadir}/maxima
 %dir %{_datadir}/maxima/%{maxima_ver}
 %{_datadir}/maxima/%{maxima_ver}/[a-c,f-r,t-w,y-z,A-Z]*
@@ -432,6 +432,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Dec 16 2009 Stephen Beahm <stephenbeahm@comcast.net> - 5.20.1-2
+- enable rmaxima (#551910)
+
 * Tue Dec 15 2009 Rex Dieter <rdieter@fedoraproject.org> - 5.20.1-1
 - maxima-5.20.1 (#547012)
 
