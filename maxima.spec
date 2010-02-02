@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.20.1
 
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -185,11 +185,12 @@ Maxima compiled with Gnu Common Lisp (gcl)
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
 BuildRequires: sbcl
-# maxima requires the *same* (or very similar) version it was built against
-# this hack should work, even in mock (-: -- Rex
+# requires the same sbcl version it was built against
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2 | cut -d- -f1)
 %if "x%{?sbcl_ver}" != "x%{nil}" 
 Requires: sbcl = %{sbcl_ver}
+%else
+Requires: sbcl
 %endif
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-sbcl < %{version}-%{release}
@@ -432,6 +433,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Feb 02 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.20.1-3
+- rebuild (sbcl)
+
 * Wed Dec 16 2009 Stephen Beahm <stephenbeahm@comcast.net> - 5.20.1-2
 - enable rmaxima (#551910)
 
