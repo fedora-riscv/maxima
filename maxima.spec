@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.20.1
 
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -433,6 +433,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 10 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.20.1-4
+- rebuild (sbcl)
+
 * Tue Feb 02 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.20.1-3
 - rebuild (sbcl)
 
