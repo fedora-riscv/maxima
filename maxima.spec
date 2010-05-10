@@ -3,19 +3,14 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.20.1
 
-Release: 2%{?dist}
+Release: 4%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-%if 0%{?fedora} > 8
-# reinclude ppc when fixed: http://bugzilla.redhat.com/448734
-ExclusiveArch: %{ix86} x86_64 sparcv9
-%else
 ExclusiveArch: %{ix86} x86_64 ppc sparcv9
-%endif
 
 %define maxima_ver %{version}%{?beta}
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
@@ -49,10 +44,7 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 #define _enable_clisp --enable-clisp 
 # temporarily disable -gcl (#496124)
 #define _enable_gcl --enable-gcl
-# sbcl:  http://bugzilla.redhat.com/220053 (resolved)
-# sbcl: ppc/ld joy, "final link failed: Nonrepresentable section on output" http://bugzilla.redhat.com/448734
 %define _enable_sbcl --enable-sbcl 
-%define check_nonfatal ||:
 %endif
 
 %ifarch sparcv9
@@ -185,11 +177,12 @@ Maxima compiled with Gnu Common Lisp (gcl)
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
 BuildRequires: sbcl
-# maxima requires the *same* (or very similar) version it was built against
-# this hack should work, even in mock (-: -- Rex
+# requires the same sbcl version it was built against
 %global sbcl_ver %(sbcl --version 2>/dev/null | cut -d' ' -f2 | cut -d- -f1)
 %if "x%{?sbcl_ver}" != "x%{nil}" 
 Requires: sbcl = %{sbcl_ver}
+%else
+Requires: sbcl
 %endif
 Requires: %{name} = %{version}
 Obsoletes: maxima-exec-sbcl < %{version}-%{release}
@@ -243,7 +236,7 @@ popd
 
 
 %check 
-make -k check %{?check_nonfatal}
+make -k check
 
 
 %install
@@ -432,6 +425,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 10 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.20.1-4
+- rebuild (sbcl)
+- re-enable ppc
+
+* Tue Feb 02 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.20.1-3
+- rebuild (sbcl)
+
 * Wed Dec 16 2009 Stephen Beahm <stephenbeahm@comcast.net> - 5.20.1-2
 - enable rmaxima (#551910)
 
