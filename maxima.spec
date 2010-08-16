@@ -226,12 +226,8 @@ make %{?_smp_mflags}
 # docs
 install -D -p -m644 %{SOURCE11} doc/maximabook/maxima.pdf
 
-# pushd doc/info
-#  texi2dvi --pdf maxima.texi
-# popd
-
 pushd doc/intromax
- pdflatex intromax.ltx
+ pdflatex intromax.tex
 popd
 
 
