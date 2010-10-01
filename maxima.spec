@@ -424,6 +424,9 @@ rm -rf $RPM_BUILD_ROOT
 * Thu Sep 30 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.22.1-4
 - rebuild (sbcl)
 
+* Wed Sep 29 2010 jkeating - 5.22.1-3
+- Rebuilt for gcc bug 634757
+
 * Sat Sep 18 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.22.1-2 
 - rebuild (sbcl)
 
