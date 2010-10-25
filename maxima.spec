@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.22.1
 
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -19,18 +19,13 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 
 %ifarch %{ix86}
 %define _enable_cmucl --enable-cmucl
-%if 0%{?fedora}
-# temporarily disable -gcl (#496124)
-#define _enable_gcl --enable-gcl
-%endif
 %endif
 
 %ifarch %{ix86} x86_64
 %define default_lisp sbcl
 %if 0%{?fedora} > 2
 %define _enable_clisp --enable-clisp 
-# temporarily disable -gcl (#496124)
-#define _enable_gcl --enable-gcl
+%define _enable_gcl --enable-gcl
 %define _enable_sbcl --enable-sbcl
 %else
 # epel/rhel
@@ -42,8 +37,7 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 %define default_lisp sbcl
 # clisp: http://bugzilla.redhat.com/166347 (resolved) - clisp/ppc (still) awol.
 #define _enable_clisp --enable-clisp 
-# temporarily disable -gcl (#496124)
-#define _enable_gcl --enable-gcl
+%define _enable_gcl --enable-gcl
 %define _enable_sbcl --enable-sbcl 
 %endif
 
@@ -96,11 +90,7 @@ BuildRequires: tetex-latex
 # /usr/bin/wish
 BuildRequires: tk
 
-Requires: %{name}-runtime = %{version}
-## Consider this when rpm supports it -- Rex
-#if "%{?default_lisp:1}" == "1"
-#Requires(hint): %{name}-runtime-%{default_lisp} = %{version}
-#endif
+Requires: %{name}-runtime%{?default_lisp:-%{default_lisp}} = %{version}-%{release}
 Requires: gnuplot
 Requires: rlwrap
 Requires(post): /sbin/install-info
@@ -139,9 +129,9 @@ Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
 BuildRequires: clisp-devel
 Requires: clisp
-Requires: %{name} = %{version}
+Requires: %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-clisp < %{version}-%{release}
-Provides: %{name}-runtime = %{version}
+Provides: %{name}-runtime = %{version}-%{release}
 %description runtime-clisp
 Maxima compiled with Common Lisp (clisp) 
 %endif
@@ -152,9 +142,11 @@ Maxima compiled with Common Lisp (clisp)
 Summary: Maxima compiled with CMUCL
 Group:	 Applications/Engineering 
 BuildRequires: cmucl 
-Requires:  %{name} = %{version}
+# needed dep somewhere around cmucl-20a -- Rex
+Requires: cmucl
+Requires:  %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-cmucl < %{version}-%{release}
-Provides:  %{name}-runtime = %{version}
+Provides:  %{name}-runtime = %{version}-%{release}
 %description runtime-cmucl
 Maxima compiled with CMU Common Lisp (cmucl) 
 %endif
@@ -164,10 +156,9 @@ Maxima compiled with CMU Common Lisp (cmucl)
 Summary: Maxima compiled with GCL
 Group:   Applications/Engineering
 BuildRequires: gcl
-Requires:  %{name} = %{version}
+Requires:  %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-gcl < %{version}-%{release}
-Provides:  %{name}-runtime = %{version}
-Provides:  %{name}-runtime-gcl = %{version}-%{release}
+Provides:  %{name}-runtime = %{version}-%{release}
 %description runtime-gcl
 Maxima compiled with Gnu Common Lisp (gcl)
 %endif
@@ -184,9 +175,9 @@ Requires: sbcl = %{sbcl_vr}
 %else
 Requires: sbcl
 %endif
-Requires: %{name} = %{version}
+Requires: %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-sbcl < %{version}-%{release}
-Provides: %{name}-runtime = %{version}
+Provides: %{name}-runtime = %{version}-%{release}
 %description runtime-sbcl
 Maxima compiled with Steel Bank Common Lisp (sbcl).
 %endif
@@ -421,6 +412,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Oct 25 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.22.1-5
+- maxima-runtime-cmucl: missing cmucl dependency (#646186)
+- tighten -runtime-related deps
+- add dep on default runtime
+- enable gcl runtime (#496124)
+
 * Thu Sep 30 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.22.1-4
 - rebuild (sbcl)
 
