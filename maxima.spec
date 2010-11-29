@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.22.1
 
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -412,6 +412,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Nov 29 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.22.1-6
+- rebuild (clisp, libsigsegv)
+
 * Mon Oct 25 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.22.1-5
 - maxima-runtime-cmucl: missing cmucl dependency (#646186)
 - tighten -runtime-related deps
