@@ -37,7 +37,9 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 %define default_lisp sbcl
 # clisp: http://bugzilla.redhat.com/166347 (resolved) - clisp/ppc (still) awol.
 #define _enable_clisp --enable-clisp 
+%if 0%{?fedora} || 0%{?rhel} > 5
 %define _enable_gcl --enable-gcl
+%endif
 %define _enable_sbcl --enable-sbcl 
 %endif
 
