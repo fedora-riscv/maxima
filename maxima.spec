@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.23.2
+Version: 5.25.0
 
-Release: 2%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -197,7 +197,7 @@ sed -i -e \
   interfaces/emacs/emaxima/maxima.el
 
 # remove CVS crud
-find -name CVS -type d | xargs rm -r
+find -name CVS -type d | xargs --no-run-if-empty rm -r
 
 
 %build
@@ -411,6 +411,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Aug 21 2011 Rex Dieter <rdieter@fedoraproject.org> 5.25.0-1
+- maxima-5.25.0
+
+* Fri Jul 15 2011 Rex Dieter <rdieter@fedoraproject.org> 5.24.0-1
+- maxima-5.24.0
+
 * Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5.23.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
