@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.25.0
 
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -169,7 +169,7 @@ Group:   Applications/Engineering
 BuildRequires: sbcl
 # requires the same sbcl it was built against
 %global sbcl_vr %(sbcl --version 2>/dev/null | cut -d' ' -f2)
-%if "x%{?sbcl_ver}" != "x%{nil}" 
+%if "x%{?sbcl_vr}" != "x%{nil}" 
 Requires: sbcl = %{sbcl_vr}
 %else
 Requires: sbcl
@@ -411,8 +411,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Aug 22 2011 Rex Dieter <rdieter@fedoraproject.org> 5.25.0-2
-- rebuild (sbcl)
+* Mon Aug 22 2011 Rex Dieter <rdieter@fedoraproject.org> 5.25.0-3
+- fix sbcl_vr macro usage 
 
 * Sun Aug 21 2011 Rex Dieter <rdieter@fedoraproject.org> 5.25.0-1
 - maxima-5.25.0
