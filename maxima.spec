@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.27.0
 
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -22,13 +22,11 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 %define _enable_sbcl --enable-sbcl
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp 
+%if 0%{?fedora} < 18
 %define _enable_gcl --enable-gcl
+%endif
 %define _enable_ecl --enable-ecl
 %endif
-%endif
-
-%ifarch %{ix86}
-%define _enable_cmucl --enable-cmucl
 %endif
 
 %ifarch ppc
@@ -452,6 +450,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jul 01 2012 Rex Dieter <rdieter@fedoraproject.org> 5.27.0-5
+- disable cmucl (orphaned) support
+- disable gcl support on f18+, gcl build temporarily(?) busted
+
 * Sun Jul 1 2012 pcpa <paulo.cesar.pereira.de.andrade@gmail.com> - 5.27.0-4
 - Enable ecl support.
 - Build ecl interface to maxima required by sagemath.
