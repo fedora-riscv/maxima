@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.27.0
 
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -23,6 +23,7 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp 
 %define _enable_gcl --enable-gcl
+%define _enable_ecl --enable-ecl
 %endif
 %endif
 
@@ -53,6 +54,9 @@ Obsoletes: %{name}-runtime-gcl < %{version}-%{release}
 %endif
 %if "x%{?_enable_sbcl}" == "x%{nil}"
 Obsoletes: %{name}-runtime-sbcl < %{version}-%{release}
+%endif
+%if "x%{?_enable_ecl}" == "x%{nil}"
+Obsoletes: %{name}-runtime-ecl < %{version}-%{release}
 %endif
 
 Source1: maxima.png
@@ -181,6 +185,19 @@ Provides: %{name}-runtime = %{version}-%{release}
 Maxima compiled with Steel Bank Common Lisp (sbcl).
 %endif
 
+%if "x%{?_enable_ecl:1}" == "x1"
+%package runtime-ecl
+Summary: Maxima compiled with ECL 
+Group:   Applications/Engineering
+BuildRequires: ecl
+%global ecllib %(ecl -eval "(princ (SI:GET-LIBRARY-PATHNAME))" -eval "(quit)")
+Requires: ecl
+Requires: %{name} = %{version}-%{release}
+Obsoletes: maxima-exec-ecl < %{version}-%{release}
+Provides: %{name}-runtime = %{version}-%{release}
+%description runtime-ecl
+Maxima compiled with Embeddable Common-Lisp (ecl).
+%endif
 
 %prep
 %setup -q  -n %{name}%{!?cvs:-%{version}%{?beta}}
@@ -207,6 +224,7 @@ find -name CVS -type d | xargs --no-run-if-empty rm -r
   %{?_enable_cmucl} %{!?_enable_cmucl: --disable-cmucl } %{?_with_cmucl_runtime} \
   %{?_enable_gcl}   %{!?_enable_gcl:   --disable-gcl } \
   %{?_enable_sbcl}  %{!?_enable_sbcl:  --disable-sbcl } \
+  %{?_enable_ecl}   %{!?_enable_ecl:   --disable-ecl } \
   --enable-lang-es --enable-lang-es-utf8 \
   --enable-lang-pt --enable-lang-pt-utf8 \
   --enable-lang-pt_BR --enable-lang-pt_BR-utf8 
@@ -220,6 +238,18 @@ pushd doc/intromax
  pdflatex intromax.tex
 popd
 
+#   Allow ecl to "require" maxima. This is required by sagemath ecl runtime.
+%if "x%{?_enable_ecl:1}" == "x1"
+pushd src
+    mkdir ./lisp-cache
+    ecl  \
+	-eval '(require `asdf)' \
+	-eval '(setf asdf::*user-cache* (truename "./lisp-cache"))' \
+	-eval '(load "maxima-build.lisp")' \
+	-eval '(asdf:make-build :maxima :type :fasl :move-here ".")' \
+	-eval '(quit)' 
+popd
+%endif
 
 %check 
 make -k check
@@ -229,6 +259,10 @@ make -k check
 rm -rf $RPM_BUILD_ROOT
 
 make install DESTDIR=$RPM_BUILD_ROOT
+
+%if "x%{?_enable_ecl:1}" == "x1"
+install -D -m755 src/maxima.fasb $RPM_BUILD_ROOT%{ecllib}/maxima.fas
+%endif
 
 # app icon
 install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/maxima.png
@@ -409,8 +443,19 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/maxima/%{maxima_ver}/binary-sbcl
 %endif
 
+%if "x%{?_enable_ecl:1}" == "x1"
+%files runtime-ecl
+%defattr(-,root,root,-)
+%{_libdir}/maxima/%{version}/binary-ecl
+%{ecllib}/maxima.fas
+%endif
+
 
 %changelog
+* Sun Jul 1 2012 pcpa <paulo.cesar.pereira.de.andrade@gmail.com> - 5.27.0-4
+- Enable ecl support.
+- Build ecl interface to maxima required by sagemath.
+
 * Tue May 29 2012 Rex Dieter <rdieter@fedoraproject.org> 5.27.0-3
 - rebuild (sbcl)
 
