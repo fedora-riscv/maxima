@@ -186,6 +186,8 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 Summary: Maxima compiled with ECL 
 Group:   Applications/Engineering
 BuildRequires: ecl
+# workaround missing requires in ecl pkg(?)
+BuildRequires: libffi-devel
 %global ecllib %(ecl -eval "(princ (SI:GET-LIBRARY-PATHNAME))" -eval "(quit)")
 Requires: ecl
 Requires: %{name} = %{version}-%{release}
