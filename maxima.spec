@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.27.0
 
-Release: 5%{?dist}.1
+Release: 6%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -18,11 +18,11 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 %define texmf %{_datadir}/texmf
 
 %ifarch %{ix86} x86_64
-%define default_lisp ecl 
-#define _enable_sbcl --enable-sbcl
+%define default_lisp sbcl 
+%define _enable_sbcl --enable-sbcl
 %if 0%{?fedora}
-#define _enable_clisp --enable-clisp 
-#define _enable_gcl --enable-gcl
+%define _enable_clisp --enable-clisp 
+%define _enable_gcl --enable-gcl
 %define _enable_ecl --enable-ecl
 %endif
 %endif
@@ -450,6 +450,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jul 02 2012 Rex Dieter <rdieter@fedoraproject.org> 5.27.0-6
+- BR: libffi-devel (workaround ecl bug #837102)
+
 * Mon Jul 02 2012 Rex Dieter <rdieter@fedoraproject.org> 5.27.0-5.1
 - enable (only) ecl to highlight ftbfs
 
