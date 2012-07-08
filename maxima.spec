@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.27.0
 
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -11,6 +11,11 @@ Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch: %{ix86} x86_64 ppc sparcv9
+
+## upstreamable patches
+# https://bugzilla.redhat.com/show_bug.cgi?id=837142
+# https://sourceforge.net/tracker/?func=detail&aid=3539587&group_id=4933&atid=104933
+Patch50: maxima-5.27.0-clisp-noreadline.patch
 
 %define maxima_ver %{version}%{?beta}
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
@@ -199,6 +204,8 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 
 %prep
 %setup -q  -n %{name}%{!?cvs:-%{version}%{?beta}}
+
+%patch50 -p1 -b .clisp-noreadline
 
 # Extra docs
 install -p -m644 %{SOURCE10} .
@@ -450,6 +457,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jul 08 2012 Rex Dieter <rdieter@fedoraproject.org> 5.27.0-7
+- RFE: Add patch to allow disabling readline in maxima-runtime-clisp (#837142)
+
 * Mon Jul 02 2012 Rex Dieter <rdieter@fedoraproject.org> 5.27.0-6
 - BR: libffi-devel (workaround ecl bug #837102)
 

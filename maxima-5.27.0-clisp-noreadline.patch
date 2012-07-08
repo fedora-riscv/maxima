@@ -1,0 +1,23 @@
+diff -up maxima-5.27.0/src/maxima.in.orig maxima-5.27.0/src/maxima.in
+--- maxima-5.27.0/src/maxima.in.orig	2012-07-02 20:30:19.795879333 -0400
++++ maxima-5.27.0/src/maxima.in	2012-07-02 20:31:30.947882064 -0400
+@@ -103,6 +103,7 @@ while [ -n "$1" ]; do
+ 	--userdir ) : ; shift;; # noop; handled by process_userdir_argument
+ 	--userdir=*) : ;; # noop; handled by process_userdir_argument
+ 	-v|--verbose ) verbose=true;;
++	--disable-readline ) CLISP_OPTIONS="-disable-readline";;
+ 	*) ;;
+     esac
+     shift
+@@ -135,9 +136,9 @@ if [ "$verbose" = "true" ]; then
+ fi
+ if [ "$MAXIMA_LISP" = "clisp" ]; then
+     if [ "$layout_autotools" = "true" ]; then
+-	exec "$MAXIMA_IMAGESDIR/binary-$MAXIMA_LISP/@CLISP_RUNTIME@" $MAXIMA_LISP_OPTIONS -q -M "$maxima_image_base.mem" "" -- "$arg1" "$arg2" "$arg3" "$arg4" "$arg5" "$arg6" "$arg7" "$arg8" "$arg9"
++	exec "$MAXIMA_IMAGESDIR/binary-$MAXIMA_LISP/@CLISP_RUNTIME@" $MAXIMA_LISP_OPTIONS $CLISP_OPTIONS -q -M "$maxima_image_base.mem" "" -- "$arg1" "$arg2" "$arg3" "$arg4" "$arg5" "$arg6" "$arg7" "$arg8" "$arg9"
+     else
+-	exec "@CLISP_NAME@" $MAXIMA_LISP_OPTIONS -q -M "$maxima_image_base.mem" "" -- "$arg1" "$arg2" "$arg3" "$arg4" "$arg5" "$arg6" "$arg7" "$arg8" "$arg9"
++	exec "@CLISP_NAME@" $MAXIMA_LISP_OPTIONS $CLISP_OPTIONS -q -M "$maxima_image_base.mem" "" -- "$arg1" "$arg2" "$arg3" "$arg4" "$arg5" "$arg6" "$arg7" "$arg8" "$arg9"
+     fi
+ elif [ "$MAXIMA_LISP" = "cmucl" ]; then
+     # CMUCL can use either an executable image or a regular lisp core
