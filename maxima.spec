@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.27.0
+Version: 5.28.0
 
-Release: 11%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -15,7 +15,7 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 ## upstreamable patches
 # https://bugzilla.redhat.com/show_bug.cgi?id=837142
 # https://sourceforge.net/tracker/?func=detail&aid=3539587&group_id=4933&atid=104933
-Patch50: maxima-5.27.0-clisp-noreadline.patch
+Patch50: maxima-5.28.0-clisp-noreadline.patch
 
 %define maxima_ver %{version}%{?beta}
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
@@ -457,6 +457,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Aug 17 2012 Rex Dieter <rdieter@fedoraproject.org> 5.28.0-1
+- maxima-5.28.0
+
 * Fri Aug 10 2012 Rex Dieter <rdieter@fedoraproject.org> 5.27.0-11
 - rebuild (ecl)
 
