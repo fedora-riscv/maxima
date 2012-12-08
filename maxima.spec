@@ -456,7 +456,7 @@ rm -rf $RPM_BUILD_ROOT
 %files runtime-ecl
 %defattr(-,root,root,-)
 %{_libdir}/maxima/%{version}/binary-ecl
-%{ecllib}/maxima.fas
+%{ecllib}/maxima*.fas
 %endif
 
 
