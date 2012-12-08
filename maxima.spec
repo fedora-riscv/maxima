@@ -1,9 +1,14 @@
 
+%define desktop_vendor --vendor=fedora
+%if 0%{?fedora} > 17 || 0%{?rhel} > 6
+%undefine desktop_vendor
+%endif
+
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.28.0
+Version: 5.29.0
 
-Release: 3%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -90,7 +95,10 @@ BuildRequires: texinfo-tex
 %else
 BuildRequires: texinfo
 %endif
-BuildRequires: tetex-latex
+BuildRequires: tex(latex)
+%if 0%{?fedora} > 17
+BuildRequires: tex(fullpage.sty)
+%endif
 # /usr/bin/wish
 BuildRequires: tk
 
@@ -239,10 +247,6 @@ make %{?_smp_mflags}
 # docs
 install -D -p -m644 %{SOURCE11} doc/maximabook/maxima.pdf
 
-pushd doc/intromax
- pdflatex intromax.tex
-popd
-
 #   Allow ecl to "require" maxima. This is required by sagemath ecl runtime.
 %if "x%{?_enable_ecl:1}" == "x1"
 pushd src
@@ -256,6 +260,7 @@ pushd src
 popd
 %endif
 
+
 %check 
 make -k check
 
@@ -266,7 +271,7 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
 %if "x%{?_enable_ecl:1}" == "x1"
-install -D -m755 src/maxima.fasb $RPM_BUILD_ROOT%{ecllib}/maxima.fas
+install -D -m755 src/maxima.system.fasb $RPM_BUILD_ROOT%{ecllib}/maxima.system.fas
 %endif
 
 # app icon
@@ -274,7 +279,7 @@ install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/ap
 
 desktop-file-install \
   --dir="$RPM_BUILD_ROOT%{_datadir}/applications" \
-  --vendor="fedora" \
+  %{?desktop_vendor} \
   %{SOURCE2} 
 
 # (x)emacs
@@ -373,7 +378,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc AUTHORS ChangeLog COPYING README README.lisps
 %doc doc/misc/ doc/implementation/
-%doc doc/intromax/intromax.pdf
 %doc doc/maximabook/maxima.pdf
 %{_bindir}/maxima
 %{_bindir}/rmaxima
@@ -457,6 +461,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Dec 08 2012 Rex Dieter <rdieter@fedoraproject.org> 5.29.0-1
+- maxima-5.29.0
+
 * Fri Nov 02 2012 Rex Dieter <rdieter@fedoraproject.org> 5.28.0-3
 - rebuild (sbcl)
 
