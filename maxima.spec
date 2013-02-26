@@ -279,9 +279,9 @@ rm -rf $RPM_BUILD_ROOT
 
 make install DESTDIR=$RPM_BUILD_ROOT
 
-make install-html -C doc
+make install-html -C doc DESTDIR=$RPM_BUILD_ROOT
 %if 0%{?texinfo}
-make instal-info -C doc
+make install-info -C doc DESTDIR=$RPM_BUILD_ROOT
 %endif
 
 %if "x%{?_enable_ecl:1}" == "x1"
