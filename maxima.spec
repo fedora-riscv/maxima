@@ -4,11 +4,16 @@
 %undefine desktop_vendor
 %endif
 
+## f19/texinfo-5.0 is busted, https://bugzilla.redhat.com/913274
+%if 0%{?fedora} < 19
+%define texinfo 1
+%endif
+
 Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.29.1
 
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -16,6 +21,9 @@ Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch: %{ix86} x86_64 ppc sparcv9
+
+# don't build doc/ by default
+Patch1: maxima-5.29.1-no_doc.patch
 
 ## upstreamable patches
 # https://bugzilla.redhat.com/show_bug.cgi?id=837142
@@ -33,7 +41,7 @@ Patch50: maxima-5.28.0-clisp-noreadline.patch
 %define default_lisp sbcl 
 %define _enable_sbcl --enable-sbcl
 %if 0%{?fedora}
-%define _enable_clisp --enable-clisp 
+%define _enable_clisp --enable-clisp
 %define _enable_gcl --enable-gcl
 %define _enable_ecl --enable-ecl
 %endif
@@ -44,7 +52,7 @@ Patch50: maxima-5.28.0-clisp-noreadline.patch
 %define _enable_sbcl --enable-sbcl
 %if 0%{?fedora}
 # clisp: http://bugzilla.redhat.com/166347 (resolved) - clisp/ppc (still) awol.
-#define _enable_clisp --enable-clisp 
+#define _enable_clisp --enable-clisp
 %define _enable_gcl --enable-gcl
 %endif
 %endif
@@ -91,11 +99,11 @@ Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 
 BuildRequires: desktop-file-utils
 BuildRequires: time
+%if 0%{?texinfo}
 # texi2dvi
-%if 0%{?fedora} > 5 || 0%{?rhel} > 4
 BuildRequires: texinfo-tex
-%else
-BuildRequires: texinfo
+Requires(post): /sbin/install-info
+Requires(postun): /sbin/install-info
 %endif
 BuildRequires: tex(latex)
 %if 0%{?fedora} > 17
@@ -107,8 +115,6 @@ BuildRequires: tk
 Requires: %{name}-runtime%{?default_lisp:-%{default_lisp}} = %{version}-%{release}
 Requires: gnuplot
 Requires: rlwrap
-Requires(post): /sbin/install-info
-Requires(postun): /sbin/install-info
 
 %description
 Maxima is a full symbolic computation program.  It is full featured
@@ -215,6 +221,7 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 %prep
 %setup -q  -n %{name}%{!?cvs:-%{version}%{?beta}}
 
+%patch1 -p1 -b .no_doc
 %patch50 -p1 -b .clisp-noreadline
 
 # Extra docs
@@ -229,7 +236,7 @@ sed -i -e \
   interfaces/emacs/emaxima/maxima.el
 
 # remove CVS crud
-find -name CVS -type d | xargs --no-run-if-empty rm -r
+find -name CVS -type d | xargs --no-run-if-empty rm -rv
 
 
 %build
@@ -248,6 +255,10 @@ make %{?_smp_mflags}
 
 # docs
 install -D -p -m644 %{SOURCE11} doc/maximabook/maxima.pdf
+make html -C doc
+%if 0%{?texinfo}
+make info -C doc
+%endif
 
 #   Allow ecl to "require" maxima. This is required by sagemath ecl runtime.
 %if "x%{?_enable_ecl:1}" == "x1"
@@ -263,14 +274,15 @@ popd
 %endif
 
 
-%check 
-make -k check
-
-
 %install
 rm -rf $RPM_BUILD_ROOT
 
 make install DESTDIR=$RPM_BUILD_ROOT
+
+make install-html -C doc
+%if 0%{?texinfo}
+make instal-info -C doc
+%endif
 
 %if "x%{?_enable_ecl:1}" == "x1"
 install -D -m755 src/maxima.system.fasb $RPM_BUILD_ROOT%{ecllib}/maxima.system.fas
@@ -311,13 +323,28 @@ rm -rf $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/doc/{contributors,impleme
 touch debugfiles.list
 
 
+%check
+make -k check
+
+
+%if ! 0%{?texinfo}
+%pre
+if [ $1 -gt 0 ]; then
+/sbin/install-info --delete %{_infodir}/maxima.info %{_infodir}/dir > /dev/null 2>&1 ||:
+fi
+%endif
+
 %post
+%if 0%{?texinfo}
 /sbin/install-info %{_infodir}/maxima.info %{_infodir}/dir ||:
+%endif
 [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 
 %postun
 if [ $1 -eq 0 ]; then
+%if 0%{?texinfo}
   /sbin/install-info --delete %{_infodir}/maxima.info %{_infodir}/dir ||:
+%endif
   [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 fi
 
@@ -402,11 +429,13 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{maxima_ver}/
 %{_libexecdir}/maxima
+%if 0%{?texinfo}
 %{_infodir}/*maxima*
 %lang(es) %{_infodir}/es*
 %lang(pt) %{_infodir}/pt/
 %lang(pt) %{_infodir}/pt.utf8/
 %lang(pt_BR) %{_infodir}/pt_BR*
+%endif
 %{_mandir}/man1/maxima.*
 %dir %{_datadir}/maxima/%{maxima_ver}/emacs
 %{_datadir}/maxima/%{maxima_ver}/emacs/emaxima.*
@@ -463,6 +492,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Feb 26 2013 Rex Dieter <rdieter@fedoraproject.org> 5.29.1-5
+- avoid texinfo on f19+ (#913274)
+
 * Wed Feb 20 2013 Rex Dieter <rdieter@fedoraproject.org> 5.29.1-4
 - rebuild (sbcl)
 
