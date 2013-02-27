@@ -16,9 +16,6 @@ Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 
-# don't build doc/ by default
-Patch1: maxima-5.29.1-no_doc.patch
-
 ## upstreamable patches
 # https://bugzilla.redhat.com/show_bug.cgi?id=837142
 # https://sourceforge.net/tracker/?func=detail&aid=3539587&group_id=4933&atid=104933
@@ -216,7 +213,6 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 
 install %{SOURCE3} ./makeinfo
 
-#patch1 -p1 -b .no_doc
 %patch50 -p1 -b .clisp-noreadline
 
 # Extra docs
