@@ -8,7 +8,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.29.1
 
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -68,7 +68,6 @@ Obsoletes: %{name}-runtime-ecl < %{version}-%{release}
 
 Source1: maxima.png
 Source2: xmaxima.desktop
-Source3: makeinfo.sh
 Source6: maxima-modes.el
 
 ## Other maxima reference docs
@@ -91,14 +90,16 @@ Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 
 BuildRequires: desktop-file-utils
 BuildRequires: time
+%if 0%{?texinfo}
 # texi2dvi
-#BuildRequires: texinfo-tex
+BuildRequires: texinfo-tex
+BuildRequires: tex(latex)
+%if 0%{?fedora} > 17
+BuildRequires: tex(fullpage.sty)
+%endif
+%endif
 Requires(post): /sbin/install-info
 Requires(postun): /sbin/install-info
-#BuildRequires: tex(latex)
-#if 0%{?fedora} > 17
-#BuildRequires: tex(fullpage.sty)
-#endif
 # /usr/bin/wish
 BuildRequires: tk
 
@@ -211,12 +212,11 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 %prep
 %setup -q  -n %{name}%{!?cvs:-%{version}%{?beta}}
 
-install %{SOURCE3} ./makeinfo
-
 %patch50 -p1 -b .clisp-noreadline
 
 # Extra docs
 install -p -m644 %{SOURCE10} .
+install -D -p -m644 %{SOURCE11} doc/maximabook/maxima.pdf
 
 sed -i -e 's|@ARCH@|%{_target_cpu}|' src/maxima.in
 
@@ -231,9 +231,6 @@ find -name CVS -type d | xargs --no-run-if-empty rm -rv
 
 
 %build
-
-PATH=`pwd`:$PATH; export PATH
-
 %configure \
   %{?default_lisp:--with-default-lisp=%{default_lisp} } \
   %{?_enable_clisp} %{!?_enable_clisp: --disable-clisp } %{?_with_clisp_runtime} \
@@ -245,10 +242,10 @@ PATH=`pwd`:$PATH; export PATH
   --enable-lang-pt --enable-lang-pt-utf8 \
   --enable-lang-pt_BR --enable-lang-pt_BR-utf8 
 
-make %{?_smp_mflags}
+# help avoid (re)running makeinfo/tex
+touch doc/info/maxima.info
 
-# docs
-install -D -p -m644 %{SOURCE11} doc/maximabook/maxima.pdf
+make %{?_smp_mflags}
 
 #   Allow ecl to "require" maxima. This is required by sagemath ecl runtime.
 %if "x%{?_enable_ecl:1}" == "x1"
@@ -266,8 +263,6 @@ popd
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-PATH=`pwd`:$PATH; export PATH
 
 make install DESTDIR=$RPM_BUILD_ROOT
 
@@ -311,7 +306,6 @@ touch debugfiles.list
 
 
 %check
-PATH=`pwd`:$PATH; export PATH
 make -k check
 
 
@@ -467,6 +461,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 27 2013 Rex Dieter <rdieter@fedoraproject.org> 5.29.1-6
+- cleaner/simpler workaround to avoid (re)running makeinfo/tex
+
 * Tue Feb 26 2013 Rex Dieter <rdieter@fedoraproject.org> 5.29.1-5
 - avoid texinfo on f19+ (#913274)
 
