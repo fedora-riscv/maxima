@@ -4,11 +4,6 @@
 %undefine desktop_vendor
 %endif
 
-## f19/texinfo-5.0 is busted, https://bugzilla.redhat.com/913274
-%if 0%{?fedora} < 19
-%define texinfo 1
-%endif
-
 Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.29.1
@@ -19,7 +14,6 @@ Group:	 Applications/Engineering
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-
 ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 
 # don't build doc/ by default
@@ -77,6 +71,7 @@ Obsoletes: %{name}-runtime-ecl < %{version}-%{release}
 
 Source1: maxima.png
 Source2: xmaxima.desktop
+Source3: makeinfo.sh
 Source6: maxima-modes.el
 
 ## Other maxima reference docs
@@ -99,16 +94,14 @@ Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 
 BuildRequires: desktop-file-utils
 BuildRequires: time
-%if 0%{?texinfo}
 # texi2dvi
-BuildRequires: texinfo-tex
+#BuildRequires: texinfo-tex
 Requires(post): /sbin/install-info
 Requires(postun): /sbin/install-info
-%endif
-BuildRequires: tex(latex)
-%if 0%{?fedora} > 17
-BuildRequires: tex(fullpage.sty)
-%endif
+#BuildRequires: tex(latex)
+#if 0%{?fedora} > 17
+#BuildRequires: tex(fullpage.sty)
+#endif
 # /usr/bin/wish
 BuildRequires: tk
 
@@ -221,7 +214,9 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 %prep
 %setup -q  -n %{name}%{!?cvs:-%{version}%{?beta}}
 
-%patch1 -p1 -b .no_doc
+install %{SOURCE3} ./makeinfo
+
+#patch1 -p1 -b .no_doc
 %patch50 -p1 -b .clisp-noreadline
 
 # Extra docs
@@ -240,6 +235,9 @@ find -name CVS -type d | xargs --no-run-if-empty rm -rv
 
 
 %build
+
+PATH=`pwd`:$PATH; export PATH
+
 %configure \
   %{?default_lisp:--with-default-lisp=%{default_lisp} } \
   %{?_enable_clisp} %{!?_enable_clisp: --disable-clisp } %{?_with_clisp_runtime} \
@@ -255,10 +253,6 @@ make %{?_smp_mflags}
 
 # docs
 install -D -p -m644 %{SOURCE11} doc/maximabook/maxima.pdf
-make html -C doc
-%if 0%{?texinfo}
-make info -C doc
-%endif
 
 #   Allow ecl to "require" maxima. This is required by sagemath ecl runtime.
 %if "x%{?_enable_ecl:1}" == "x1"
@@ -277,12 +271,9 @@ popd
 %install
 rm -rf $RPM_BUILD_ROOT
 
-make install DESTDIR=$RPM_BUILD_ROOT
+PATH=`pwd`:$PATH; export PATH
 
-make install-html -C doc DESTDIR=$RPM_BUILD_ROOT
-%if 0%{?texinfo}
-make install-info -C doc DESTDIR=$RPM_BUILD_ROOT
-%endif
+make install DESTDIR=$RPM_BUILD_ROOT
 
 %if "x%{?_enable_ecl:1}" == "x1"
 install -D -m755 src/maxima.system.fasb $RPM_BUILD_ROOT%{ecllib}/maxima.system.fas
@@ -327,24 +318,13 @@ touch debugfiles.list
 make -k check
 
 
-%if ! 0%{?texinfo}
-%pre
-if [ $1 -gt 0 ]; then
-/sbin/install-info --delete %{_infodir}/maxima.info %{_infodir}/dir > /dev/null 2>&1 ||:
-fi
-%endif
-
 %post
-%if 0%{?texinfo}
 /sbin/install-info %{_infodir}/maxima.info %{_infodir}/dir ||:
-%endif
 [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 
 %postun
 if [ $1 -eq 0 ]; then
-%if 0%{?texinfo}
   /sbin/install-info --delete %{_infodir}/maxima.info %{_infodir}/dir ||:
-%endif
   [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 fi
 
@@ -429,13 +409,11 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{maxima_ver}/
 %{_libexecdir}/maxima
-%if 0%{?texinfo}
 %{_infodir}/*maxima*
 %lang(es) %{_infodir}/es*
 %lang(pt) %{_infodir}/pt/
 %lang(pt) %{_infodir}/pt.utf8/
 %lang(pt_BR) %{_infodir}/pt_BR*
-%endif
 %{_mandir}/man1/maxima.*
 %dir %{_datadir}/maxima/%{maxima_ver}/emacs
 %{_datadir}/maxima/%{maxima_ver}/emacs/emaxima.*
