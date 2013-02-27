@@ -311,6 +311,7 @@ touch debugfiles.list
 
 
 %check
+PATH=`pwd`:$PATH; export PATH
 make -k check
 
 
