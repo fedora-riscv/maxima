@@ -6,9 +6,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.29.1
+Version: 5.30.0
 
-Release: 6%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -461,6 +461,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Apr 06 2013 Rex Dieter <rdieter@fedoraproject.org> 5.30.0-1
+- 5.3.30
+
 * Wed Feb 27 2013 Rex Dieter <rdieter@fedoraproject.org> 5.29.1-6
 - cleaner/simpler workaround to avoid (re)running makeinfo/tex
 
