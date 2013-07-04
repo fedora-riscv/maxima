@@ -13,13 +13,15 @@ License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 
 ## upstreamable patches
 # https://bugzilla.redhat.com/show_bug.cgi?id=837142
 # https://sourceforge.net/tracker/?func=detail&aid=3539587&group_id=4933&atid=104933
 Patch50: maxima-5.28.0-clisp-noreadline.patch
+
+# Build the fasl while building the executable to avoid double initialization
+Patch51: maxima-5.30.0-build-fasl.patch
 
 ## upstream patches
 
@@ -213,6 +215,7 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 %setup -q  -n %{name}%{!?cvs:-%{version}%{?beta}}
 
 %patch50 -p1 -b .clisp-noreadline
+%patch51 -p1 -b .build-fasl
 
 # Extra docs
 install -p -m644 %{SOURCE10} .
@@ -247,19 +250,6 @@ touch doc/info/maxima.info
 
 make %{?_smp_mflags}
 
-#   Allow ecl to "require" maxima. This is required by sagemath ecl runtime.
-%if "x%{?_enable_ecl:1}" == "x1"
-pushd src
-    mkdir ./lisp-cache
-    ecl  \
-	-eval '(require `asdf)' \
-	-eval '(setf asdf::*user-cache* (truename "./lisp-cache"))' \
-	-eval '(load "maxima-build.lisp")' \
-	-eval '(asdf:make-build :maxima :type :fasl :move-here ".")' \
-	-eval '(quit)' 
-popd
-%endif
-
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -267,7 +257,7 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
 %if "x%{?_enable_ecl:1}" == "x1"
-install -D -m755 src/maxima.system.fasb $RPM_BUILD_ROOT%{ecllib}/maxima.system.fas
+install -D -m755 src/binary-ecl/maxima.fas $RPM_BUILD_ROOT%{ecllib}/maxima.fas
 %endif
 
 # app icon
