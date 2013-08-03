@@ -8,7 +8,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.30.0
 
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -451,6 +451,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5.30.0-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
 * Tue Jun 04 2013 Jerry James <loganjerry@gmail.com> - 5.30.0-5
 - rebuild (ecl)
 
