@@ -8,12 +8,12 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.30.0
 
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
-ExclusiveArch: %{ix86} x86_64 ppc sparcv9
+ExclusiveArch: %{ix86} x86_64 ppc sparcv9 %{arm}
 
 ## upstreamable patches
 # https://bugzilla.redhat.com/show_bug.cgi?id=837142
@@ -38,6 +38,12 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %define _enable_gcl --enable-gcl
 %define _enable_ecl --enable-ecl
 %endif
+%endif
+
+%ifarch %{arm}
+%define default_lisp gcl
+%define _enable_gcl --enable-gcl
+%define _enable_ecl --enable-ecl
 %endif
 
 %ifarch ppc
@@ -451,6 +457,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Aug 10 2013 Rex Dieter <rdieter@fedoraproject.org> 5.30.0-8
+- build for %%arm too (gcl/ecl support)
+
 * Fri Aug 09 2013 Rex Dieter <rdieter@fedoraproject.org> 5.30.0-7
 - rebuild (sbcl)
 
