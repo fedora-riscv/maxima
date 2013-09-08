@@ -23,6 +23,9 @@ Patch50: maxima-5.28.0-clisp-noreadline.patch
 # Build the fasl while building the executable to avoid double initialization
 Patch51: maxima-5.30.0-build-fasl.patch
 
+# support DESTDIR (regression from 5.30.0)
+Patch52: maxima-5.31.0-DESTDIR.patch
+
 ## upstream patches
 
 %define maxima_ver %{version}%{?beta}
@@ -222,6 +225,7 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 
 %patch50 -p1 -b .clisp-noreadline
 %patch51 -p1 -b .build-fasl
+%patch52 -p1 -b .DESTDIR
 
 # Extra docs
 install -p -m644 %{SOURCE10} .

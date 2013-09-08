@@ -1,0 +1,62 @@
+diff -up maxima-5.31.0/src/Makefile.am.DESTDIR maxima-5.31.0/src/Makefile.am
+--- maxima-5.31.0/src/Makefile.am.DESTDIR	2013-08-29 22:45:02.000000000 -0500
++++ maxima-5.31.0/src/Makefile.am	2013-09-08 07:40:00.573280555 -0500
+@@ -107,10 +107,10 @@ clispexeflag =
+ WEIRD_INSTALL_TARGETS += install-clisp-copy
+ WEIRD_UNINSTALL_TARGETS += uninstall-clisp-copy
+ install-clisp-copy:
+-	$(mkinstalldirs) $(clisplibdir)
+-	$(INSTALL_PROGRAM) @CLISP_RUNTIME_PATH@ "$(clisplibdir)/@CLISP_RUNTIME@"
++	$(mkinstalldirs) $(DESTDIR)$(clisplibdir)
++	$(INSTALL_PROGRAM) @CLISP_RUNTIME_PATH@ "$(DESTDIR)$(clisplibdir)/@CLISP_RUNTIME@"
+ uninstall-clisp-copy:
+-	rm -f "$(clisplibdir)/@CLISP_RUNTIME@"
++	rm -f "$(DESTDIR)$(clisplibdir)/@CLISP_RUNTIME@"
+ endif
+ 
+ EXECUTECLISP = $(CLISP_NAME) -norc -q -x
+@@ -203,10 +203,10 @@ binary-scl/maxima.core:
+ WEIRD_INSTALL_TARGETS += install-scl-copy
+ WEIRD_UNINSTALL_TARGETS += uninstall-scl-copy
+ install-scl-copy:
+-	$(mkinstalldirs) $(scllibdir)
+-	$(INSTALL_PROGRAM) @SCL_RUNTIME_PATH@ "$(scllibdir)/@SCL_RUNTIME@"
++	$(mkinstalldirs) $(DESTDIR)$(scllibdir)
++	$(INSTALL_PROGRAM) @SCL_RUNTIME_PATH@ "$(DESTDIR)$(scllibdir)/@SCL_RUNTIME@"
+ uninstall-scl-copy:
+-	rm -f "$(scllibdir)/@SCL_RUNTIME@"
++	rm -f "$(DESTDIR)$(scllibdir)/@SCL_RUNTIME@"
+ 
+ clean-scl:
+ 	rm -rf binary-scl
+diff -up maxima-5.31.0/src/Makefile.in.DESTDIR maxima-5.31.0/src/Makefile.in
+--- maxima-5.31.0/src/Makefile.in.DESTDIR	2013-09-02 22:14:29.000000000 -0500
++++ maxima-5.31.0/src/Makefile.in	2013-09-08 07:41:15.965474658 -0500
+@@ -998,10 +998,10 @@ uninstall-hook: $(WEIRD_UNINSTALL_TARGET
+ bd_%:
+ 	$(MKDIR_P) $(addprefix $(subst bd_,binary-,$@),$(binary_subdirs))
+ @CLISP_EXEC_FALSE@@CLISP_TRUE@install-clisp-copy:
+-@CLISP_EXEC_FALSE@@CLISP_TRUE@	$(mkinstalldirs) $(clisplibdir)
+-@CLISP_EXEC_FALSE@@CLISP_TRUE@	$(INSTALL_PROGRAM) @CLISP_RUNTIME_PATH@ "$(clisplibdir)/@CLISP_RUNTIME@"
++@CLISP_EXEC_FALSE@@CLISP_TRUE@	$(mkinstalldirs) $(DESTDIR)$(clisplibdir)
++@CLISP_EXEC_FALSE@@CLISP_TRUE@	$(INSTALL_PROGRAM) @CLISP_RUNTIME_PATH@ "$(DESTDIR)$(clisplibdir)/@CLISP_RUNTIME@"
+ @CLISP_EXEC_FALSE@@CLISP_TRUE@uninstall-clisp-copy:
+-@CLISP_EXEC_FALSE@@CLISP_TRUE@	rm -f "$(clisplibdir)/@CLISP_RUNTIME@"
++@CLISP_EXEC_FALSE@@CLISP_TRUE@	rm -f "$(DESTDIR)$(clisplibdir)/@CLISP_RUNTIME@"
+ 
+ @CLISP_TRUE@clisp: $(CLISP_MAXIMA)
+ 
+@@ -1039,10 +1039,10 @@ bd_%:
+ @SCL_TRUE@	(echo '(progn $(LOADDEFSYSTEM) $(DEFSYSTEMCOMPILE))' | $(EXECUTESCL)) && \
+ @SCL_TRUE@	(echo '(progn $(LOADDEFSYSTEM) $(DEFSYSTEMLOAD) (ext:save-lisp "binary-scl/maxima.core"))' | $(EXECUTESCL))
+ @SCL_TRUE@install-scl-copy:
+-@SCL_TRUE@	$(mkinstalldirs) $(scllibdir)
+-@SCL_TRUE@	$(INSTALL_PROGRAM) @SCL_RUNTIME_PATH@ "$(scllibdir)/@SCL_RUNTIME@"
++@SCL_TRUE@	$(mkinstalldirs) $(DESTDIR)$(scllibdir)
++@SCL_TRUE@	$(INSTALL_PROGRAM) @SCL_RUNTIME_PATH@ "$(DESTDIR)$(scllibdir)/@SCL_RUNTIME@"
+ @SCL_TRUE@uninstall-scl-copy:
+-@SCL_TRUE@	rm -f "$(scllibdir)/@SCL_RUNTIME@"
++@SCL_TRUE@	rm -f "$(DESTDIR)$(scllibdir)/@SCL_RUNTIME@"
+ 
+ @SCL_TRUE@clean-scl:
+ @SCL_TRUE@	rm -rf binary-scl
