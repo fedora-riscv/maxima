@@ -44,8 +44,8 @@ Patch52: maxima-5.31.0-DESTDIR.patch
 %endif
 
 %ifarch %{arm}
-%define default_lisp ecl
-#define _enable_gcl --enable-gcl
+%define default_lisp gcl
+%define _enable_gcl --enable-gcl
 %define _enable_ecl --enable-ecl
 %endif
 
@@ -306,7 +306,9 @@ touch debugfiles.list
 
 
 %check
+%ifnarch %{arm}
 make -k check
+%endif
 
 
 %post
