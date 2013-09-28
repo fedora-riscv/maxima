@@ -6,7 +6,7 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.31.0
+Version: 5.31.1
 
 Release: 1%{?dist}
 License: GPLv2
@@ -461,6 +461,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Sep 27 2013 Rex Dieter <rdieter@fedoraproject.org> 5.31.1-1
+- 5.31.1
+
 * Sat Sep 07 2013 Rex Dieter <rdieter@fedoraproject.org> 5.31.0-1
 - 5.31.0
 
