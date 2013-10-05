@@ -6,9 +6,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.31.1
+Version: 5.31.2
 
-Release: 2%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -22,9 +22,6 @@ Patch50: maxima-5.28.0-clisp-noreadline.patch
 
 # Build the fasl while building the executable to avoid double initialization
 Patch51: maxima-5.30.0-build-fasl.patch
-
-# support DESTDIR (regression from 5.30.0)
-Patch52: maxima-5.31.0-DESTDIR.patch
 
 ## upstream patches
 
@@ -225,7 +222,6 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 
 %patch50 -p1 -b .clisp-noreadline
 %patch51 -p1 -b .build-fasl
-%patch52 -p1 -b .DESTDIR
 
 # Extra docs
 install -p -m644 %{SOURCE10} .
@@ -463,6 +459,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Oct 05 2013 Rex Dieter <rdieter@fedoraproject.org> 5.31.2-1
+- 5.31.2
+
 * Mon Sep 30 2013 Rex Dieter <rdieter@fedoraproject.org> 5.31.1-2
 - rebuild (sbcl)
 
