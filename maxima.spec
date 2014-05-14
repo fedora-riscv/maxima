@@ -34,7 +34,7 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %define _enable_sbcl --enable-sbcl
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp
-%define _enable_gcl --enable-gcl
+#define _enable_gcl --enable-gcl
 %define _enable_ecl --enable-ecl
 %endif
 %endif
@@ -460,6 +460,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Wed May 14 2014 Rex Dieter <rdieter@fedoraproject.org> 5.33.0-2
 - rebuild (sbcl)
+- disable gcl support (rawhide busted atm)
 
 * Tue Apr 08 2014 Rex Dieter <rdieter@fedoraproject.org> 5.33.0-1
 - 5.33.0
