@@ -12,7 +12,8 @@ License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
-ExclusiveArch: %{ix86} x86_64 ppc sparcv9 %{arm}
+# %{arm} needs gcl/ecl
+ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 
 ## upstreamable patches
 # https://bugzilla.redhat.com/show_bug.cgi?id=837142
