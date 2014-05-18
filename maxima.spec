@@ -7,13 +7,12 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.33.0
 
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
-# %{arm} needs gcl/ecl
-ExclusiveArch: %{ix86} x86_64 ppc sparcv9
+ExclusiveArch: %{arm} %{ix86} x86_64 ppc sparcv9
 
 ## upstreamable patches
 # https://bugzilla.redhat.com/show_bug.cgi?id=837142
@@ -36,13 +35,13 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp
 #define _enable_gcl --enable-gcl
-#define _enable_ecl --enable-ecl
+%define _enable_ecl --enable-ecl
 %endif
 %endif
 
 %ifarch %{arm}
 %define default_lisp gcl
-%define _enable_gcl --enable-gcl
+#define _enable_gcl --enable-gcl
 %define _enable_ecl --enable-ecl
 %endif
 
@@ -459,6 +458,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun May 18 2014 Rex Dieter <rdieter@fedoraproject.org> 5.33.0-3
+- (re)enable ecl support
+
 * Wed May 14 2014 Rex Dieter <rdieter@fedoraproject.org> 5.33.0-2
 - rebuild (sbcl)
 - disable gcl/ecl support (rawhide busted atm)
