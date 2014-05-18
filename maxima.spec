@@ -40,7 +40,7 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %endif
 
 %ifarch %{arm}
-%define default_lisp gcl
+%define default_lisp ecl
 #define _enable_gcl --enable-gcl
 %define _enable_ecl --enable-ecl
 %endif
