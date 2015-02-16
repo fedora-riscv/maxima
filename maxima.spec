@@ -35,7 +35,10 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp
 %define _enable_gcl --enable-gcl
+# https://bugzilla.redhat.com/show_bug.cgi?id=1193134
+%if 0%{?fedora} < 23
 %define _enable_ecl --enable-ecl
+%endif
 %endif
 %endif
 
@@ -461,6 +464,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Fri Feb 13 2015 Rex Dieter <rdieter@fedoraproject.org> 5.35.1-3
 - rebuild (sbcl)
+- %%ix86,x86_64: disable ecl f23+ (#1193134)
 
 * Sat Jan 03 2015 Rex Dieter <rdieter@fedoraproject.org> 5.35.1-2
 - rebuild (sbcl)
