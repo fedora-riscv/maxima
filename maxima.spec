@@ -7,7 +7,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.35.1
 
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -35,10 +35,7 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp
 %define _enable_gcl --enable-gcl
-# https://bugzilla.redhat.com/show_bug.cgi?id=1193134
-%if 0%{?fedora} < 23
 %define _enable_ecl --enable-ecl
-%endif
 %endif
 %endif
 
@@ -462,6 +459,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Feb 21 2015 Rex Dieter <rdieter@fedoraproject.org> 5.35.1-4
+- ecl fixed, re-enable (#1193134)
+
 * Fri Feb 13 2015 Rex Dieter <rdieter@fedoraproject.org> 5.35.1-3
 - rebuild (sbcl)
 - %%ix86,x86_64: disable ecl f23+ (#1193134)
