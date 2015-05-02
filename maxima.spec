@@ -252,7 +252,8 @@ find -name CVS -type d | xargs --no-run-if-empty rm -rv
   --enable-lang-pt_BR --enable-lang-pt_BR-utf8 
 
 # help avoid (re)running makeinfo/tex
-touch doc/info/maxima.info
+touch doc/info/maxima.info \
+      share/contrib/maxima-odesolve/kovacicODE.info
 
 make %{?_smp_mflags}
 
