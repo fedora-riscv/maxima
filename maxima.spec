@@ -311,11 +311,13 @@ make -k check
 
 
 %post
+/sbin/install-info %{_infodir}/imaxima.info %{_infodir}/dir ||:
 /sbin/install-info %{_infodir}/maxima.info %{_infodir}/dir ||:
 [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 
 %preun
 if [ $1 -eq 0 ]; then
+  /sbin/install-info --delete %{_infodir}/imaxima.info %{_infodir}/dir ||:
   /sbin/install-info --delete %{_infodir}/maxima.info %{_infodir}/dir ||:
 fi
 
@@ -393,6 +395,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{maxima_ver}/
 %{_libexecdir}/maxima
+%{_infodir}/imaxima*
 %{_infodir}/maxima*
 %lang(es) %{_infodir}/es*
 %lang(pt) %{_infodir}/pt/
