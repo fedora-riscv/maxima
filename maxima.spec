@@ -324,18 +324,6 @@ if [ $1 -eq 0 ]; then
   [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 fi
 
-%post gui
-touch --no-create %{_datadir}/icons/hicolor &> /dev/null || :
-
-%postun gui
-if [ $1 -eq 0 ] ; then
-  touch --no-create %{_datadir}/icons/hicolor &> /dev/null
-  gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
-fi
-
-%posttrans gui
-gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
-
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
   rm -rf %{emacs_sitelisp}/maxima   
@@ -427,12 +415,22 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/maxima/%{maxima_ver}/src/
 
 %post gui
+touch --no-create %{_datadir}/icons/hicolor &> /dev/null || :
 /sbin/install-info %{_infodir}/xmaxima.info %{_infodir}/dir ||:
 
-%preun
+%preun gui
 if [ $1 -eq 0 ]; then
   /sbin/install-info --delete %{_infodir}/xmaxima.info %{_infodir}/dir ||:
 fi
+
+%postun gui
+if [ $1 -eq 0 ] ; then
+  touch --no-create %{_datadir}/icons/hicolor &> /dev/null
+  gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
+fi
+
+%posttrans gui
+gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 %files gui
 %defattr(-,root,root,-)
