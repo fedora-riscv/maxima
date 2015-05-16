@@ -7,7 +7,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.36.1
 
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -107,7 +107,7 @@ BuildRequires: tex(fullpage.sty)
 %endif
 %endif
 Requires(post): /sbin/install-info
-Requires(postun): /sbin/install-info
+Requires(preun): /sbin/install-info
 # /usr/bin/wish
 BuildRequires: tk
 
@@ -126,6 +126,8 @@ based on the original Macsyma developed at MIT in the 1970's.
 Summary: Tcl/Tk GUI interface for %{name}
 Group:	 Applications/Engineering 
 Requires: %{name} = %{version}-%{release} 
+Requires(post): /sbin/install-info
+Requires(preun): /sbin/install-info
 Obsoletes: %{name}-xmaxima < %{version}-%{release}
 Requires: tk
 Requires: xdg-utils
@@ -312,9 +314,13 @@ make -k check
 /sbin/install-info %{_infodir}/maxima.info %{_infodir}/dir ||:
 [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 
-%postun
+%preun
 if [ $1 -eq 0 ]; then
   /sbin/install-info --delete %{_infodir}/maxima.info %{_infodir}/dir ||:
+fi
+
+%postun
+if [ $1 -eq 0 ]; then
   [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 fi
 
@@ -399,7 +405,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{maxima_ver}/
 %{_libexecdir}/maxima
-%{_infodir}/*maxima*
+%{_infodir}/maxima*
 %lang(es) %{_infodir}/es*
 %lang(pt) %{_infodir}/pt/
 %lang(pt) %{_infodir}/pt.utf8/
@@ -420,12 +426,21 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_datadir}/maxima/%{maxima_ver}/src/
 
+%post gui
+/sbin/install-info %{_infodir}/xmaxima.info %{_infodir}/dir ||:
+
+%preun
+if [ $1 -eq 0 ]; then
+  /sbin/install-info --delete %{_infodir}/xmaxima.info %{_infodir}/dir ||:
+fi
+
 %files gui
 %defattr(-,root,root,-)
 %{_bindir}/xmaxima
 %{_datadir}/maxima/%{maxima_ver}/xmaxima/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/*/*
+%{_infodir}/xmaxima*
 
 %if "x%{?_enable_clisp:1}" == "x1"
 %files runtime-clisp
@@ -460,6 +475,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat May 16 2015 Rex Dieter <rdieter@fedoraproject.org> 5.36.1-2
+- uninstallation refers to files that do not exist (#1222229)
+
 * Fri May 01 2015 Rex Dieter <rdieter@fedoraproject.org> 5.36.1-1
 - 5.36.1 (#1217814)
 
