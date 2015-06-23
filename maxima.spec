@@ -34,7 +34,9 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %define _enable_sbcl --enable-sbcl
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp
+%if 0%{?fedora} < 23
 %define _enable_gcl --enable-gcl
+%endif
 %define _enable_ecl --enable-ecl
 %endif
 %endif
