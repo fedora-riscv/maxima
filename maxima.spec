@@ -5,19 +5,19 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.36.1
+Version: 5.37.1
 
-Release: 4%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
-ExclusiveArch: %{arm} %{ix86} x86_64 ppc sparcv9
+ExclusiveArch: %{arm} %{ix86} x86_64 aarch64 ppc sparcv9
 
 ## upstreamable patches
 # https://bugzilla.redhat.com/show_bug.cgi?id=837142
 # https://sourceforge.net/tracker/?func=detail&aid=3539587&group_id=4933&atid=104933
-Patch50: maxima-5.28.0-clisp-noreadline.patch
+Patch50: maxima-5.37.1-clisp-noreadline.patch
 
 # Build the fasl while building the executable to avoid double initialization
 Patch51: maxima-5.30.0-build-fasl.patch
@@ -31,26 +31,30 @@ Patch51: maxima-5.30.0-build-fasl.patch
 
 %ifarch %{ix86} x86_64
 %define default_lisp sbcl 
-%define _enable_sbcl --enable-sbcl
+%define _enable_sbcl --enable-sbcl-exec
 %if 0%{?fedora}
-%define _enable_clisp --enable-clisp
-%if 0%{?fedora} < 23
+%define _enable_clisp --enable-clisp-exec
 %define _enable_gcl --enable-gcl
-%endif
 %define _enable_ecl --enable-ecl
 %endif
 %endif
 
+%ifarch aarch64
+%define default_lisp sbcl
+%define _enable_gcl --enable-gcl
+%define _enable_ecl --enable-ecl
+%endif
+
 %ifarch %{arm}
 %define default_lisp sbcl
-%define _enable_sbcl --enable-sbcl
+%define _enable_sbcl --enable-sbcl-exec
 #define _enable_gcl --enable-gcl
 %define _enable_ecl --enable-ecl
 %endif
 
 %ifarch ppc
 %define default_lisp sbcl
-%define _enable_sbcl --enable-sbcl
+%define _enable_sbcl --enable-sbcl-exec
 %if 0%{?fedora}
 # clisp: http://bugzilla.redhat.com/166347 (resolved) - clisp/ppc (still) awol.
 #define _enable_clisp --enable-clisp
@@ -60,7 +64,7 @@ Patch51: maxima-5.30.0-build-fasl.patch
 
 %ifarch sparcv9
 %define default_lisp sbcl
-%define _enable_sbcl --enable-sbcl
+%define _enable_sbcl --enable-sbcl-exec
 %endif
 
 %if "x%{?_enable_cmucl}" == "x%{nil}"
@@ -151,7 +155,9 @@ Requires: %{name} = %{version}-%{release}
 Summary: Maxima compiled with clisp
 Group:	 Applications/Engineering
 BuildRequires: clisp-devel
+%if "%{?_enable_clisp}" != "--enable-clisp-exec"
 Requires: clisp
+%endif
 Requires: %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-clisp < %{version}-%{release}
 Provides: %{name}-runtime = %{version}-%{release}
@@ -191,12 +197,14 @@ Maxima compiled with Gnu Common Lisp (gcl)
 Summary: Maxima compiled with SBCL 
 Group:   Applications/Engineering
 BuildRequires: sbcl
+%if "%{?_enable_sbcl}" != "--enable-sbcl-exec"
 # requires the same sbcl it was built against
 %global sbcl_vr %(sbcl --version 2>/dev/null | cut -d' ' -f2)
 %if "x%{?sbcl_vr}" != "x%{nil}" 
 Requires: sbcl = %{sbcl_vr}
 %else
 Requires: sbcl
+%endif
 %endif
 Requires: %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-sbcl < %{version}-%{release}
@@ -308,7 +316,7 @@ touch debugfiles.list
 
 %check
 %ifnarch %{arm}
-make -k check
+make -k check ||:
 %endif
 
 
@@ -478,6 +486,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Mon Sep 14 2015 Rex Dieter <rdieter@fedoraproject.org> 5.37.1-1
+- 5.37.1 (#1259886)
+- support aarch64 (gcl,ecl) (#926122)
+- bump maxima.png icon to 64x64 (#1157589)
+- use --enable-clisp-exec,--enable-sbcl-exec
+
 * Mon Jun 22 2015 Rex Dieter <rdieter@fedoraproject.org> 5.36.1-3
 - rebuild (sbcl)
 
