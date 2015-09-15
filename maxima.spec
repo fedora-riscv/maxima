@@ -7,7 +7,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.37.1
 
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -40,7 +40,7 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %endif
 
 %ifarch aarch64
-%define default_lisp sbcl
+%define default_lisp gcl
 %define _enable_gcl --enable-gcl
 %define _enable_ecl --enable-ecl
 %endif
@@ -486,6 +486,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Mon Sep 14 2015 Rex Dieter <rdieter@fedoraproject.org> 5.37.1-2
+- aarch64: default_lisp gcl
+
 * Mon Sep 14 2015 Rex Dieter <rdieter@fedoraproject.org> 5.37.1-1
 - 5.37.1 (#1259886)
 - support aarch64 (gcl,ecl) (#926122)
