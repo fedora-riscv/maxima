@@ -5,9 +5,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.37.1
+Version: 5.37.2
 
-Release: 2%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
@@ -315,9 +315,9 @@ touch debugfiles.list
 
 
 %check
-%ifnarch %{arm}
-make -k check ||:
-%endif
+#ifnarch %{arm}
+make -k check
+#endif
 
 
 %post
@@ -486,6 +486,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Tue Sep 22 2015 Rex Dieter <rdieter@fedoraproject.org> 5.37.2-1
+- 5.37.2 (fixes 'make check')
+
 * Mon Sep 14 2015 Rex Dieter <rdieter@fedoraproject.org> 5.37.1-2
 - aarch64: default_lisp gcl
 
