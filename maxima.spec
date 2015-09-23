@@ -315,9 +315,9 @@ touch debugfiles.list
 
 
 %check
-#ifnarch %{arm}
-make -k check ||:
-#endif
+%ifnarch %{ix86}
+make -k check
+%endif
 
 
 %post
