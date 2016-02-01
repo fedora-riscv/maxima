@@ -7,9 +7,8 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.37.3
 
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
-Group:	 Applications/Engineering 
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 ExclusiveArch: %{arm} %{ix86} x86_64 aarch64 ppc sparcv9
@@ -130,7 +129,6 @@ based on the original Macsyma developed at MIT in the 1970's.
 
 %package gui
 Summary: Tcl/Tk GUI interface for %{name}
-Group:	 Applications/Engineering 
 Requires: %{name} = %{version}-%{release} 
 Requires(post): /sbin/install-info
 Requires(preun): /sbin/install-info
@@ -142,7 +140,6 @@ Tcl/Tk GUI interface for %{name}
 
 %package src 
 Summary: %{name} lisp source code 
-Group:   Applications/Engineering
 Requires: %{name} = %{version}-%{release}
 %description src 
 %{name} lisp source code.
@@ -153,7 +150,6 @@ Requires: %{name} = %{version}-%{release}
 #define _with_clisp_runtime --with-clisp-runtime=%{_libdir}/clisp/base/lisp.run
 %package runtime-clisp
 Summary: Maxima compiled with clisp
-Group:	 Applications/Engineering
 BuildRequires: clisp-devel
 %if "%{?_enable_clisp}" != "--enable-clisp-exec"
 Requires: clisp
@@ -169,7 +165,6 @@ Maxima compiled with Common Lisp (clisp)
 %define _with_cmucl_runtime --with-cmucl-runtime=%{_prefix}/lib/cmucl/bin/lisp
 %package runtime-cmucl
 Summary: Maxima compiled with CMUCL
-Group:	 Applications/Engineering 
 BuildRequires: cmucl 
 # needed dep somewhere around cmucl-20a -- Rex
 Requires: cmucl
@@ -183,7 +178,6 @@ Maxima compiled with CMU Common Lisp (cmucl)
 %if "x%{?_enable_gcl:1}" == "x1"
 %package runtime-gcl
 Summary: Maxima compiled with GCL
-Group:   Applications/Engineering
 BuildRequires: gcl
 Requires:  %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-gcl < %{version}-%{release}
@@ -195,7 +189,6 @@ Maxima compiled with Gnu Common Lisp (gcl)
 %if "x%{?_enable_sbcl:1}" == "x1"
 %package runtime-sbcl
 Summary: Maxima compiled with SBCL 
-Group:   Applications/Engineering
 BuildRequires: sbcl
 %if "%{?_enable_sbcl}" != "--enable-sbcl-exec"
 # requires the same sbcl it was built against
@@ -216,7 +209,6 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 %if "x%{?_enable_ecl:1}" == "x1"
 %package runtime-ecl
 Summary: Maxima compiled with ECL 
-Group:   Applications/Engineering
 BuildRequires: ecl
 # workaround missing requires in ecl pkg(?)
 BuildRequires: libffi-devel
@@ -271,8 +263,6 @@ make %{?_smp_mflags}
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
 make install DESTDIR=$RPM_BUILD_ROOT
 
 %if "x%{?_enable_ecl:1}" == "x1"
@@ -375,12 +365,7 @@ if [ $2 -eq 0 ]; then
 fi
 
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-
 %files
-%defattr(-,root,root,-)
 %doc AUTHORS ChangeLog COPYING README README.lisps
 %doc doc/misc/ doc/implementation/
 %doc doc/maximabook/maxima.pdf
@@ -424,7 +409,6 @@ rm -rf $RPM_BUILD_ROOT
 %ghost %{texmf}/tex/latex/emaxima
 
 %files src
-%defattr(-,root,root,-)
 %{_datadir}/maxima/%{maxima_ver}/src/
 
 %post gui
@@ -446,7 +430,6 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 %files gui
-%defattr(-,root,root,-)
 %{_bindir}/xmaxima
 %{_datadir}/maxima/%{maxima_ver}/xmaxima/
 %{_datadir}/applications/*.desktop
@@ -455,37 +438,35 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 %if "x%{?_enable_clisp:1}" == "x1"
 %files runtime-clisp
-%defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-clisp
 %endif
 
 %if "x%{?_enable_cmucl:1}" == "x1"
 %files runtime-cmucl
-%defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-cmucl
 %endif
 
 %if "x%{?_enable_gcl:1}" == "x1"
 %files runtime-gcl
-%defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-gcl
 %endif
 
 %if "x%{?_enable_sbcl:1}" == "x1"
 %files runtime-sbcl
-%defattr(-,root,root,-)
 %{_libdir}/maxima/%{maxima_ver}/binary-sbcl
 %endif
 
 %if "x%{?_enable_ecl:1}" == "x1"
 %files runtime-ecl
-%defattr(-,root,root,-)
 %{_libdir}/maxima/%{version}/binary-ecl
 %{ecllib}/maxima*.fas
 %endif
 
 
 %changelog
+* Mon Feb 01 2016 Rex Dieter <rdieter@fedoraproject.org> 5.37.3-2
+- rebuild(sbcl), .spec cosmetics
+
 * Sat Nov 14 2015 Rex Dieter <rdieter@fedoraproject.org> 5.37.3-1
 - 5.37.3
 
