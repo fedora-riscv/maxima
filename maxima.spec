@@ -34,21 +34,27 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp-exec
 %define _enable_gcl --enable-gcl
+%if 0%{?fedora} < 24
 %define _enable_ecl --enable-ecl
+%endif
 %endif
 %endif
 
 %ifarch aarch64
 %define default_lisp gcl
 %define _enable_gcl --enable-gcl
+%if 0%{?fedora} < 24
 %define _enable_ecl --enable-ecl
+%endif
 %endif
 
 %ifarch %{arm}
 %define default_lisp sbcl
 %define _enable_sbcl --enable-sbcl-exec
 #define _enable_gcl --enable-gcl
+%if 0%{?fedora} < 24
 %define _enable_ecl --enable-ecl
+%endif
 %endif
 
 %ifarch ppc
@@ -465,7 +471,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 %changelog
 * Sat Mar 05 2016 Rex Dieter <rdieter@fedoraproject.org> 5.37.3-6
-- rebuild (sbcl)
+- rebuild (sbcl), disable ecl (currently FTBFS) f24+
 
 * Fri Mar  4 2016 Jerry James <loganjerry@gmail.com> - 5.37.3-5
 - Rebuild for ecl 16.1.2
