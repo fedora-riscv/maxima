@@ -5,9 +5,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.37.3
+Version: 5.38.0
 
-Release: 8%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -239,9 +239,6 @@ sed -i -e \
   's/(defcustom\s+maxima-info-index-file\s+)(\S+)/$1\"maxima.info-16\"/' \
   interfaces/emacs/emaxima/maxima.el
 
-# remove CVS crud
-find -name CVS -type d | xargs --no-run-if-empty rm -rv
-
 
 %build
 %configure \
@@ -464,6 +461,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Mon Apr 04 2016 Rex Dieter <rdieter@fedoraproject.org> - 5.38.0-1
+- maxima-5.38.0
+
 * Wed Mar  9 2016 Jerry James <loganjerry@gmail.com> - 5.37.3-8
 - rebuild (ecl)
 
