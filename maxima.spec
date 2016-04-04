@@ -308,6 +308,7 @@ make -k check ||:
 
 
 %post
+touch --no-create %{_datadir}/mime/packages &> /dev/null || :
 /sbin/install-info %{_infodir}/imaxima.info %{_infodir}/dir ||:
 /sbin/install-info %{_infodir}/maxima.info %{_infodir}/dir ||:
 [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
@@ -320,8 +321,13 @@ fi
 
 %postun
 if [ $1 -eq 0 ]; then
+  touch --no-create %{_datadir}/mime/packages &> /dev/null || :
+  update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
   [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 fi
+
+%posttrans
+update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
 
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
@@ -361,7 +367,6 @@ if [ $2 -eq 0 ]; then
   rm -f %{texmf}/tex/latex/emaxima ||:
 fi
 
-
 %files
 %doc AUTHORS ChangeLog COPYING README README.lisps
 %doc doc/misc/ doc/implementation/
@@ -384,6 +389,7 @@ fi
 %doc %lang(pt_BR) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt_BR/
 %doc %lang(pt_BR) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt_BR.utf8/
 %{_datadir}/maxima/%{maxima_ver}/share/
+%{_datadir}/mime/packages/x-mac.xml
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{maxima_ver}/
 %{_libexecdir}/maxima
@@ -394,6 +400,7 @@ fi
 %lang(pt) %{_infodir}/pt.utf8/
 %lang(pt_BR) %{_infodir}/pt_BR*
 %{_mandir}/man1/maxima.*
+
 %dir %{_datadir}/maxima/%{maxima_ver}/emacs
 %{_datadir}/maxima/%{maxima_ver}/emacs/emaxima.*
 %{_datadir}/maxima/%{maxima_ver}/emacs/imaxima.*
