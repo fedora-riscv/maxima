@@ -102,6 +102,7 @@ Obsoletes: %{name}-lang-pt_BR < %{version}-%{release}
 Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 
 BuildRequires: desktop-file-utils
+BuildRequires: perl
 BuildRequires: python
 BuildRequires: time
 %if 0%{?texinfo}
