@@ -11,7 +11,12 @@ Release: 4%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
+%if 0%{?fedora}
 ExclusiveArch: %{arm} %{ix86} x86_64 aarch64 ppc sparcv9
+%endif
+%if 0%{?rhel}
+ExclusiveArch: %{ix86} x86_64 ppc sparcv9
+%endif
 
 ## upstreamable patches
 # https://bugzilla.redhat.com/show_bug.cgi?id=837142
