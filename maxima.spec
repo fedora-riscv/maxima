@@ -402,6 +402,10 @@ fi
 %{_libexecdir}/maxima
 %{_infodir}/imaxima*
 %{_infodir}/maxima*
+%{_infodir}/abs_integrate.info*
+%{_infodir}/drawutils.info*
+%{_infodir}/kovacicODE.info*
+%{_infodir}/logic.info*
 %lang(es) %{_infodir}/es*
 %lang(pt) %{_infodir}/pt/
 %lang(pt) %{_infodir}/pt.utf8/
