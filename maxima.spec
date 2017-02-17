@@ -486,7 +486,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 - Rebuild for readline 7.x
 
 * Sun Dec 18 2016 Rex Dieter <rdieter@fedoraproject.org> - 5.39.0-1
-- maxima-5.29.0
+- maxima-5.39.0
 
 * Wed Sep 28 2016 Rex Dieter <rdieter@fedoraproject.org> - 5.38.0-4
 - rebuild (aarch64)
