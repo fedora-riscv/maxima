@@ -7,7 +7,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.39.0
 
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -479,6 +479,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Fri Feb 24 2017 Jerry James <loganjerry@gmail.com> - 5.39.0-4
+- rebuild (ecl and clisp)
+
 * Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 5.39.0-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
