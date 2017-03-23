@@ -7,7 +7,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.39.0
 
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -46,7 +46,10 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %ifarch aarch64
 %define default_lisp gcl
 %define _enable_gcl --enable-gcl
+## ecl backend hangs on f26+
+%if 0%{?fedora} < 26
 %define _enable_ecl --enable-ecl
+%endif
 %endif
 
 %ifarch %{arm}
@@ -479,6 +482,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Thu Mar 23 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.39.0-5
+- drop aarch64/ecl support on f26 (for now, avoid hangs in %%check)
+
 * Fri Feb 24 2017 Jerry James <loganjerry@gmail.com> - 5.39.0-4
 - rebuild (ecl and clisp)
 
