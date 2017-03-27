@@ -44,12 +44,12 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %endif
 
 %ifarch aarch64
-%define default_lisp gcl
-%define _enable_gcl --enable-gcl
+%define default_lisp ecl
+#define _enable_gcl --enable-gcl
 ## ecl backend hangs on f26+
-%if 0%{?fedora} < 26
+#f 0%{?fedora} < 26
 %define _enable_ecl --enable-ecl
-%endif
+#endif
 %endif
 
 %ifarch %{arm}
@@ -112,7 +112,6 @@ Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 BuildRequires: desktop-file-utils
 BuildRequires: perl
 BuildRequires: python
-BuildRequires: time
 %if 0%{?texinfo}
 # texi2dvi
 BuildRequires: texinfo-tex
@@ -483,7 +482,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 %changelog
 * Thu Mar 23 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.39.0-5
-- drop aarch64/ecl support on f26 (for now, avoid hangs in %%check)
+- aarch64: drop gcl (#1435395), use ecl default
+- drop BR: time (unused)
 
 * Fri Feb 24 2017 Jerry James <loganjerry@gmail.com> - 5.39.0-4
 - rebuild (ecl and clisp)
