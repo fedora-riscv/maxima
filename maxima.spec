@@ -1,13 +1,9 @@
 
-%if 0%{?rhel} && 0%{?rhel} < 7
-%define desktop_vendor --vendor=fedora
-%endif
-
 Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.39.0
 
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -44,12 +40,13 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %endif
 
 %ifarch aarch64
-%define default_lisp ecl
-#define _enable_gcl --enable-gcl
-## ecl backend hangs on f26+
-#f 0%{?fedora} < 26
+%define default_lisp sbcl
+%define _enable_sbcl --enable-sbcl-exec
+# gcl backend hangs on f26+
+%if 0%{?fedora} < 26
+%define _enable_gcl --enable-gcl
+%endif
 %define _enable_ecl --enable-ecl
-#endif
 %endif
 
 %ifarch %{arm}
@@ -280,7 +277,6 @@ install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/ap
 
 desktop-file-install \
   --dir="$RPM_BUILD_ROOT%{_datadir}/applications" \
-  %{?desktop_vendor} \
   %{SOURCE2} 
 
 # (x)emacs
@@ -481,6 +477,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Wed Mar 29 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.39.0-7
+- drop desktop vendor hacks
+- aarch64: support sbcl (default), gcl for < f26
+
 * Mon Mar 27 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.39.0-6
 - rebuild (sbcl)
 
