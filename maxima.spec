@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.39.0
+Version: 5.40.0
 
-Release: 7%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -477,6 +477,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Thu Jun 01 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.40.0-1
+- 5.40.0
+
 * Wed Mar 29 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.39.0-7
 - drop desktop vendor hacks
 - aarch64: support sbcl (default), gcl for < f26
