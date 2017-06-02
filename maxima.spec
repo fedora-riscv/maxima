@@ -107,6 +107,8 @@ Obsoletes: %{name}-lang-pt_BR < %{version}-%{release}
 Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 
 BuildRequires: desktop-file-utils
+BuildRequires:  pkgconfig(bash-completion)
+%global bash_completionsdir %(pkg-config --variable=completionsdir bash-completion 2>/dev/null || echo '/etc/bash_completion.d')
 BuildRequires: perl
 BuildRequires: python
 %if 0%{?texinfo}
@@ -373,7 +375,8 @@ if [ $2 -eq 0 ]; then
 fi
 
 %files
-%doc AUTHORS ChangeLog COPYING README README.lisps
+%license COPYING
+%doc AUTHORS ChangeLog README README.lisps
 %doc doc/misc/ doc/implementation/
 %doc doc/maximabook/maxima.pdf
 %{_bindir}/maxima
@@ -395,6 +398,10 @@ fi
 %doc %lang(pt_BR) %{_datadir}/maxima/%{maxima_ver}/doc/html/pt_BR.utf8/
 %{_datadir}/maxima/%{maxima_ver}/share/
 %{_datadir}/mime/packages/x-mac.xml
+%{_datadir}/mime/packages/x-maxima-out.xml
+%{ bash_completionsdir}/*maxima
+# FIXME, copy/move to %%_datadir/icons/hicolor/
+%{_datadir}/pixmaps/*maxima*
 %dir %{_libdir}/maxima/
 %dir %{_libdir}/maxima/%{maxima_ver}/
 %{_libexecdir}/maxima
