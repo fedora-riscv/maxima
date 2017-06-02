@@ -399,7 +399,7 @@ fi
 %{_datadir}/maxima/%{maxima_ver}/share/
 %{_datadir}/mime/packages/x-mac.xml
 %{_datadir}/mime/packages/x-maxima-out.xml
-%{ bash_completionsdir}/*maxima
+%{bash_completionsdir}/*maxima
 # FIXME, copy/move to %%_datadir/icons/hicolor/
 %{_datadir}/pixmaps/*maxima*
 %dir %{_libdir}/maxima/
