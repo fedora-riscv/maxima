@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.40.0
 
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -94,9 +94,11 @@ Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.
 
 # Inhibit automatic compressing of info files. 
 # Compressed info files break maxima's internal help.
-%define __spec_install_post %{nil} 
+%global __spec_install_post %{nil}
 # debuginfo.list ends up empty/blank anyway. disable
-%define debug_package   %{nil}
+%global debug_package   %{nil}
+# workaround debug-id conflicts (with sbcl)
+%global _build_id_links none
 
 # upstream langpack upgrades, +Provides too? -- Rex
 Obsoletes: %{name}-lang-es < %{version}-%{release}
@@ -484,6 +486,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Sun Jun 04 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.40.0-3
+- workaround sbcl conflicts: _build_id_links none (#1458416#c2)
+
 * Fri Jun 02 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.40.0-2
 - rebuild (sbcl)
 
