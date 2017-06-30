@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.40.0
 
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -486,6 +486,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Thu Jun 29 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.40.0-5
+- rebuild (sbcl)
+
 * Mon Jun 12 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.40.0-4
 - rebuild (sbcl)
 
