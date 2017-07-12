@@ -111,7 +111,7 @@ Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 BuildRequires: desktop-file-utils
 BuildRequires:  pkgconfig(bash-completion)
 %global bash_completionsdir %(pkg-config --variable=completionsdir bash-completion 2>/dev/null || echo '/etc/bash_completion.d')
-BuildRequires: perl
+BuildRequires: perl-interpreter
 BuildRequires: python
 %if 0%{?texinfo}
 # texi2dvi
