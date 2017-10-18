@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.40.0
+Version: 5.41.0
 
-Release: 8%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -222,7 +222,7 @@ Summary: Maxima compiled with ECL
 BuildRequires: ecl
 # workaround missing requires in ecl pkg(?)
 BuildRequires: libffi-devel
-%global ecllib %(ecl -eval "(princ (SI:GET-LIBRARY-PATHNAME))" -eval "(quit)")
+%global ecllib %(ecl -eval "(princ (SI:GET-LIBRARY-PATHNAME))" -eval "(quit)" 2>/dev/null)
 Requires: ecl
 Requires: %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-ecl < %{version}-%{release}
@@ -379,7 +379,7 @@ fi
 %files
 %license COPYING
 %doc AUTHORS ChangeLog README README.lisps
-%doc doc/misc/ doc/implementation/
+%doc doc/implementation/
 %doc doc/maximabook/maxima.pdf
 %{_bindir}/maxima
 %{_bindir}/rmaxima
@@ -486,6 +486,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Thu Oct 05 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.41.0-1
+- 5.41.0
+
 * Fri Sep 22 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.40.0-8
 - rebuild (sbcl)
 
