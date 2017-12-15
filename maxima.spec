@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.41.0
 
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -319,13 +319,13 @@ make -k check ||:
 %post
 touch --no-create %{_datadir}/mime/packages &> /dev/null || :
 /sbin/install-info %{_infodir}/imaxima.info %{_infodir}/dir ||:
-/sbin/install-info %{_infodir}/maxima.info %{_infodir}/dir ||:
+/sbin/install-info %{_infodir}/maxima.info %{_infodir}/dir >& /dev/null ||:
 [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 
 %preun
 if [ $1 -eq 0 ]; then
   /sbin/install-info --delete %{_infodir}/imaxima.info %{_infodir}/dir ||:
-  /sbin/install-info --delete %{_infodir}/maxima.info %{_infodir}/dir ||:
+  /sbin/install-info --delete %{_infodir}/maxima.info %{_infodir}/dir >& /dev/null ||:
 fi
 
 %postun
@@ -486,6 +486,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Fri Dec 15 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.41.0-3
+- ignore errors from 'install-info maxima.info' (#1526608)
+
 * Fri Oct 20 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.41.0-2
 - rebuild (sbcl)
 
