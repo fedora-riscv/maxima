@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.41.0
 
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -317,7 +317,9 @@ make -k check ||:
 
 
 %post
+%if 0%{?rhel} && 0%{?rhel} <= 7
 touch --no-create %{_datadir}/mime/packages &> /dev/null || :
+%endif
 /sbin/install-info %{_infodir}/imaxima.info %{_infodir}/dir ||:
 /sbin/install-info %{_infodir}/maxima.info %{_infodir}/dir >& /dev/null ||:
 [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
@@ -330,13 +332,17 @@ fi
 
 %postun
 if [ $1 -eq 0 ]; then
+%if 0%{?rhel} && 0%{?rhel} <= 7
   touch --no-create %{_datadir}/mime/packages &> /dev/null || :
   update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
+%endif
   [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 fi
 
 %posttrans
+%if 0%{?rhel} && 0%{?rhel} <= 7
 update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
+%endif
 
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
@@ -486,6 +492,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Sat Jan 06 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 5.41.0-4
+- Remove obsolete scriptlets
+
 * Fri Dec 15 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.41.0-3
 - ignore errors from 'install-info maxima.info' (#1526608)
 
