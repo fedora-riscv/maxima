@@ -34,7 +34,10 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %define _enable_sbcl --enable-sbcl-exec
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp-exec
+# FTBFS on f28+ 
+%if 0%{?fedora} < 28
 %define _enable_gcl --enable-gcl
+%endif
 %define _enable_ecl --enable-ecl
 %endif
 %endif
@@ -493,7 +496,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 %changelog
 * Tue Apr 10 2018 Rex Dieter <rdieter@fedoraproject.org> 5.41.0-7
-- rebuild (sbcl)
+- rebuild (sbcl), disable gcl f28+
 
 * Thu Feb 08 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.41.0-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
