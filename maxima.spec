@@ -1,7 +1,7 @@
 
 Summary: Symbolic Computation Program
 Name: 	 maxima
-Version: 5.42.0
+Version: 5.42.1
 
 Release: 1%{?dist}
 License: GPLv2
@@ -34,21 +34,21 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %define _enable_sbcl --enable-sbcl-exec
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp-exec
-# FTBFS on f28+ 
-%if 0%{?fedora} < 28
-%define _enable_gcl --enable-gcl
-%endif
+# FTBFS on f30+
+%if 0%{?fedora} < 30
 %define _enable_ecl --enable-ecl
+%endif
+%define _enable_gcl --enable-gcl
 %endif
 %endif
 
 %ifarch aarch64
 %define default_lisp sbcl
 %define _enable_sbcl --enable-sbcl-exec
-# gcl backend hangs on f26+
-%if 0%{?fedora} < 26
+## gcl backend hangs on f26+
+#if 0%{?fedora} < 26
 %define _enable_gcl --enable-gcl
-%endif
+#endif
 %define _enable_ecl --enable-ecl
 %endif
 
@@ -495,6 +495,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Sat Oct 20 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.42.1-1
+- 5.42.1
+
 * Fri Sep 28 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.42.0-1
 - 5.42.0
 
