@@ -192,6 +192,8 @@ Maxima compiled with CMU Common Lisp (cmucl)
 %package runtime-gcl
 Summary: Maxima compiled with GCL
 BuildRequires: gcl
+# gcl probably missing this dep
+BuildRequires: gcc
 Requires:  %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-gcl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}-%{release}
