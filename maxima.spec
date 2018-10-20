@@ -49,14 +49,20 @@ Patch51: maxima-5.30.0-build-fasl.patch
 #if 0%{?fedora} < 26
 %define _enable_gcl --enable-gcl
 #endif
+# FTBFS on f30+
+%if 0%{?fedora} < 30
 %define _enable_ecl --enable-ecl
+%endif
 %endif
 
 %ifarch %{arm}
 %define default_lisp sbcl
 %define _enable_sbcl --enable-sbcl-exec
 #define _enable_gcl --enable-gcl
+# FTBFS on f30+
+%if 0%{?fedora} < 30
 %define _enable_ecl --enable-ecl
+%endif
 %endif
 
 %ifarch ppc
