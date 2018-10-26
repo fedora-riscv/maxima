@@ -22,6 +22,9 @@ Patch50: maxima-5.37.1-clisp-noreadline.patch
 # Build the fasl while building the executable to avoid double initialization
 Patch51: maxima-5.30.0-build-fasl.patch
 
+# handle multiple ldflags in ecl build
+Patch52: maxima-ecl_ldflags.patch
+
 ## upstream patches
 
 %define maxima_ver %{version}%{?beta}
@@ -34,10 +37,7 @@ Patch51: maxima-5.30.0-build-fasl.patch
 %define _enable_sbcl --enable-sbcl-exec
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp-exec
-# FTBFS on f30+
-%if 0%{?fedora} < 30
 %define _enable_ecl --enable-ecl
-%endif
 %define _enable_gcl --enable-gcl
 %endif
 %endif
@@ -49,20 +49,14 @@ Patch51: maxima-5.30.0-build-fasl.patch
 #if 0%{?fedora} < 26
 %define _enable_gcl --enable-gcl
 #endif
-# FTBFS on f30+
-%if 0%{?fedora} < 30
 %define _enable_ecl --enable-ecl
-%endif
 %endif
 
 %ifarch %{arm}
 %define default_lisp sbcl
 %define _enable_sbcl --enable-sbcl-exec
 #define _enable_gcl --enable-gcl
-# FTBFS on f30+
-%if 0%{?fedora} < 30
 %define _enable_ecl --enable-ecl
-%endif
 %endif
 
 %ifarch ppc
@@ -247,6 +241,7 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 
 %patch50 -p1 -b .clisp-noreadline
 %patch51 -p1 -b .build-fasl
+%patch52 -p1 -b .ecl_ldflags
 
 # Extra docs
 install -p -m644 %{SOURCE10} .
@@ -503,6 +498,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Fri Oct 26 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.42.1-2
+- Fix/enable -ecl support (#1643328)
+
 * Sat Oct 20 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.42.1-1
 - 5.42.1
 
