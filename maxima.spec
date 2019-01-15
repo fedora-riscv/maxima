@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.42.1
 
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -498,6 +498,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 
 
 %changelog
+* Tue Jan 15 2019 Björn Esser <besser82@fedoraproject.org> - 5.42.1-5
+- Rebuilt for libcrypt.so.2 again, the linked libcrypt inherits from clisp
+
 * Mon Jan 14 2019 Björn Esser <besser82@fedoraproject.org> - 5.42.1-4
 - Rebuilt for libcrypt.so.2 (#1666033)
 
