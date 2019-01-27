@@ -445,24 +445,6 @@ fi
 %files src
 %{_datadir}/maxima/%{maxima_ver}/src/
 
-%post gui
-touch --no-create %{_datadir}/icons/hicolor &> /dev/null || :
-/sbin/install-info %{_infodir}/xmaxima.info %{_infodir}/dir ||:
-
-%preun gui
-if [ $1 -eq 0 ]; then
-  /sbin/install-info --delete %{_infodir}/xmaxima.info %{_infodir}/dir ||:
-fi
-
-%postun gui
-if [ $1 -eq 0 ] ; then
-  touch --no-create %{_datadir}/icons/hicolor &> /dev/null
-  gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
-fi
-
-%posttrans gui
-gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
-
 %files gui
 %{_bindir}/xmaxima
 %{_datadir}/maxima/%{maxima_ver}/xmaxima/
