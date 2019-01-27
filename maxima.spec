@@ -124,8 +124,6 @@ BuildRequires: tex(latex)
 BuildRequires: tex(fullpage.sty)
 %endif
 %endif
-Requires(post): /sbin/install-info
-Requires(preun): /sbin/install-info
 # /usr/bin/wish
 BuildRequires: tk
 
@@ -143,8 +141,6 @@ based on the original Macsyma developed at MIT in the 1970's.
 %package gui
 Summary: Tcl/Tk GUI interface for %{name}
 Requires: %{name} = %{version}-%{release} 
-Requires(post): /sbin/install-info
-Requires(preun): /sbin/install-info
 Obsoletes: %{name}-xmaxima < %{version}-%{release}
 Requires: tk
 Requires: xdg-utils
@@ -323,32 +319,12 @@ make -k check ||:
 
 
 %post
-%if 0%{?rhel} && 0%{?rhel} <= 7
-touch --no-create %{_datadir}/mime/packages &> /dev/null || :
-%endif
-/sbin/install-info %{_infodir}/imaxima.info %{_infodir}/dir ||:
-/sbin/install-info %{_infodir}/maxima.info %{_infodir}/dir >& /dev/null ||:
 [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
-
-%preun
-if [ $1 -eq 0 ]; then
-  /sbin/install-info --delete %{_infodir}/imaxima.info %{_infodir}/dir ||:
-  /sbin/install-info --delete %{_infodir}/maxima.info %{_infodir}/dir >& /dev/null ||:
-fi
 
 %postun
 if [ $1 -eq 0 ]; then
-%if 0%{?rhel} && 0%{?rhel} <= 7
-  touch --no-create %{_datadir}/mime/packages &> /dev/null || :
-  update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
-%endif
   [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
 fi
-
-%posttrans
-%if 0%{?rhel} && 0%{?rhel} <= 7
-update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
-%endif
 
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
