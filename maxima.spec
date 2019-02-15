@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.42.1
 
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -156,7 +156,7 @@ Requires: %{name} = %{version}-%{release}
 %if "x%{?_enable_clisp:1}" == "x1"
 # to workaround mysterious(?) "cpio: MD5 sum mismatch" errors when installing this subpkg
 %define __prelink_undo_cmd %{nil}
-#define _with_clisp_runtime --with-clisp-runtime=%{_libdir}/clisp/base/lisp.run
+#define _with_clisp_runtime --with-clisp-runtime=%%{_libdir}/clisp/base/lisp.run
 %package runtime-clisp
 Summary: Maxima compiled with clisp
 BuildRequires: clisp-devel
@@ -318,14 +318,6 @@ make -k check ||:
 %endif
 
 
-%post
-[ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
-
-%postun
-if [ $1 -eq 0 ]; then
-  [ -x /usr/bin/texhash ] && /usr/bin/texhash 2> /dev/null ||:
-fi
-
 %triggerin -- emacs-common
 if [ -d %{emacs_sitelisp} ]; then
   rm -rf %{emacs_sitelisp}/maxima   
@@ -456,6 +448,10 @@ fi
 
 
 %changelog
+* Fri Feb 15 2019 Jerry James <loganjerry@gmail.com> - 5.42.1-7
+- Rebuild for gcl 2.6.13pre79
+- Drop obsolete post and postun scripts
+
 * Fri Feb 01 2019 Fedora Release Engineering <releng@fedoraproject.org> - 5.42.1-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
