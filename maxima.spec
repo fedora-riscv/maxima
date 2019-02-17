@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name: 	 maxima
 Version: 5.42.1
 
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: GPLv2
 URL: 	 http://maxima.sourceforge.net/
 Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -448,6 +448,9 @@ fi
 
 
 %changelog
+* Sun Feb 17 2019 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 5.42.1-8
+- Rebuild for readline 8.0
+
 * Fri Feb 15 2019 Jerry James <loganjerry@gmail.com> - 5.42.1-7
 - Rebuild for gcl 2.6.13pre79
 - Drop obsolete post and postun scripts
