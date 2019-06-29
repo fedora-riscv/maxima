@@ -1,12 +1,12 @@
 
 Summary: Symbolic Computation Program
-Name: 	 maxima
+Name:    maxima
 Version: 5.42.1
 
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: GPLv2
-URL: 	 http://maxima.sourceforge.net/
-Source:	 http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
+URL:     http://maxima.sourceforge.net/
+Source:  http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 %if 0%{?fedora}
 ExclusiveArch: %{arm} %{ix86} x86_64 aarch64 ppc sparcv9
 %endif
@@ -46,7 +46,7 @@ Patch52: maxima-ecl_ldflags.patch
 %define default_lisp sbcl
 %define _enable_sbcl --enable-sbcl-exec
 ## gcl backend hangs on f26+
-#if 0%{?fedora} < 26
+#if 0#{?fedora} < 26
 %define _enable_gcl --enable-gcl
 #endif
 %define _enable_ecl --enable-ecl
@@ -298,7 +298,7 @@ for dir in %{emacs_sitelisp} %{xemacs_sitelisp} ; do
   touch $RPM_BUILD_ROOT$dir/site-start.d/maxima-modes.elc
 done
 
-# emaxima LaTeX style (%ghost)
+# emaxima LaTeX style (%%ghost)
 install -d $RPM_BUILD_ROOT%{texmf}/tex/latex/
 ln -sf  %{_datadir}/maxima/%{maxima_ver}/emacs \
         $RPM_BUILD_ROOT%{texmf}/tex/latex/emaxima
@@ -448,6 +448,10 @@ fi
 
 
 %changelog
+* Sat Jun 29 2019 Jerry James <loganjerry@gmail.com> - 5.42.1-9
+- Rebuild for gcl 2.6.13pre84
+- Fix mixed use of spaces and tabs
+
 * Sun Feb 17 2019 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 5.42.1-8
 - Rebuild for readline 8.0
 
