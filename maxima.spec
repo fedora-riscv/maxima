@@ -28,7 +28,9 @@ Patch52: maxima-ecl_ldflags.patch
 ## upstream patches
 
 %define maxima_ver %{version}%{?beta}
+BuildRequires: emacs
 %define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
+BuildRequires: xemacs
 %define xemacs_sitelisp %{_datadir}/xemacs/site-packages/lisp/
 %define texmf %{_datadir}/texmf
 
