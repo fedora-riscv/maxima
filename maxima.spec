@@ -1,7 +1,7 @@
 
 Summary: Symbolic Computation Program
 Name:    maxima
-Version: 5.42.1
+Version: 5.43.0
 
 Release: 10%{?dist}
 License: GPLv2
@@ -448,6 +448,9 @@ fi
 
 
 %changelog
+* Thu Nov 14 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.43.0-10
+- maxima-5.43.0
+
 * Thu Jul 25 2019 Fedora Release Engineering <releng@fedoraproject.org> - 5.42.1-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
