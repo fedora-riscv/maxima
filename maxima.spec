@@ -115,6 +115,7 @@ BuildRequires: desktop-file-utils
 BuildRequires:  pkgconfig(bash-completion)
 %global bash_completionsdir %(pkg-config --variable=completionsdir bash-completion 2>/dev/null || echo '/etc/bash_completion.d')
 BuildRequires: perl-interpreter
+BuildRequires: perl(Getopt::Long)
 BuildRequires: python
 %if 0%{?texinfo}
 # texi2dvi
