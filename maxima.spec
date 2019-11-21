@@ -29,9 +29,7 @@ Patch52: maxima-ecl_ldflags.patch
 
 %define maxima_ver %{version}%{?beta}
 BuildRequires: emacs
-%define emacs_sitelisp  %{_datadir}/emacs/site-lisp/
-BuildRequires: xemacs
-%define xemacs_sitelisp %{_datadir}/xemacs/site-packages/lisp/
+Requires: emacs-filesystem >= %{_emacs_version}
 %define texmf %{_datadir}/texmf
 
 %ifarch %{ix86} x86_64
@@ -47,10 +45,7 @@ BuildRequires: xemacs
 %ifarch aarch64
 %define default_lisp sbcl
 %define _enable_sbcl --enable-sbcl-exec
-## gcl backend hangs on f26+
-#if 0#{?fedora} < 26
 %define _enable_gcl --enable-gcl
-#endif
 %define _enable_ecl --enable-ecl
 %endif
 
@@ -90,7 +85,6 @@ Obsoletes: %{name}-runtime-ecl < %{version}-%{release}
 %endif
 
 Source1: maxima.png
-Source2: xmaxima.desktop
 Source6: maxima-modes.el
 
 ## Other maxima reference docs
@@ -114,7 +108,7 @@ Obsoletes: %{name}-lang-pt_BR < %{version}-%{release}
 Obsoletes: %{name}-lang-pt_BR-utf8 < %{version}-%{release}
 
 BuildRequires: desktop-file-utils
-BuildRequires:  pkgconfig(bash-completion)
+BuildRequires: pkgconfig(bash-completion)
 %global bash_completionsdir %(pkg-config --variable=completionsdir bash-completion 2>/dev/null || echo '/etc/bash_completion.d')
 BuildRequires: perl-interpreter
 BuildRequires: perl(Getopt::Long)
@@ -271,11 +265,11 @@ sed -i -e \
 touch doc/info/maxima.info \
       share/contrib/maxima-odesolve/kovacicODE.info
 
-make %{?_smp_mflags}
+%make_build
 
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT
+%make_install
 
 %if "x%{?_enable_ecl:1}" == "x1"
 install -D -m755 src/binary-ecl/maxima.fas $RPM_BUILD_ROOT%{ecllib}/maxima.fas
@@ -284,21 +278,10 @@ install -D -m755 src/binary-ecl/maxima.fas $RPM_BUILD_ROOT%{ecllib}/maxima.fas
 # app icon
 install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/maxima.png
 
-desktop-file-install \
-  --dir="$RPM_BUILD_ROOT%{_datadir}/applications" \
-  %{SOURCE2} 
+install -D -m644 -p %{SOURCE6} $RPM_BUILD_ROOT%{_emacs_sitelispdir}/site_start.d/maxima-modes.el
 
-# (x)emacs
-install -D -m644 -p %{SOURCE6} $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el
-
-for dir in %{emacs_sitelisp} %{xemacs_sitelisp} ; do
-  install -d -m755 $RPM_BUILD_ROOT$dir/{,site-start.d}
-  ln -s %{_datadir}/maxima/%{maxima_ver}/emacs $RPM_BUILD_ROOT$dir/maxima
-  for file in $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/emacs/*.el ; do
-    touch `dirname $file`/`basename $file .el`.elc
-  done
-  ln -s %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el $RPM_BUILD_ROOT$dir/site-start.d/
-  touch $RPM_BUILD_ROOT$dir/site-start.d/maxima-modes.elc
+for file in $RPM_BUILD_ROOT%{_emacs_sitelispdir}/{,site_start.d/}*.el ; do
+  %{_emacs_bytecompile} ${file} ||:
 done
 
 # emaxima LaTeX style (%%ghost)
@@ -307,7 +290,7 @@ ln -sf  %{_datadir}/maxima/%{maxima_ver}/emacs \
         $RPM_BUILD_ROOT%{texmf}/tex/latex/emaxima
 
 ## unwanted/unpackaged files
-rm -f $RPM_BUILD_ROOT%{_infodir}/dir
+rm -fv $RPM_BUILD_ROOT%{_infodir}/dir
 # docs
 rm -rf $RPM_BUILD_ROOT%{_datadir}/maxima/%{maxima_ver}/doc/{contributors,implementation,misc,maximabook,EMaximaIntro.ps}
 
@@ -316,36 +299,10 @@ touch debugfiles.list
 
 
 %check
+desktop-file-validate %{buildroot}%{_datadir}/applications/net.sourceforge.maxima.xmaxima.desktop
 %ifnarch %{ix86}
 make -k check ||:
 %endif
-
-
-%triggerin -- emacs-common
-if [ -d %{emacs_sitelisp} ]; then
-  rm -rf %{emacs_sitelisp}/maxima   
-  ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs  %{emacs_sitelisp}/maxima ||:
-fi
-ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el %{emacs_sitelisp}/site-start.d/ ||:
-
-%triggerin -- xemacs-common
-if [ -d %{xemacs_sitelisp} ]; then
-  rm -rf %{xemacs_sitelisp}/maxima
-  ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs  %{xemacs_sitelisp}/maxima ||:
-fi
-ln -sf %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/maxima-modes.el %{xemacs_sitelisp}/site-start.d/ ||:
-
-%triggerun -- emacs-common
-if [ $2 -eq 0 ]; then
- rm -f %{emacs_sitelisp}/maxima || :
- rm -f %{emacs_sitelisp}/site-start.d/maxima-modes.el* ||:
-fi
-
-%triggerun -- xemacs-common
-if [ $2 -eq 0 ]; then
- rm -f %{xemacs_sitelisp}/maxima || :
- rm -f %{xemacs_sitelisp}/site-start.d/maxima-modes.el* ||:
-fi
 
 %triggerin -- tetex-latex,texlive-latex
 if [ -d %{texmf}/tex/latex ]; then
@@ -401,17 +358,11 @@ fi
 %lang(pt) %{_infodir}/pt.utf8/
 %lang(pt_BR) %{_infodir}/pt_BR*
 %{_mandir}/man1/maxima.*
-
-%dir %{_datadir}/maxima/%{maxima_ver}/emacs
-%{_datadir}/maxima/%{maxima_ver}/emacs/emaxima.*
-%{_datadir}/maxima/%{maxima_ver}/emacs/imaxima.*
-%{_datadir}/maxima/%{maxima_ver}/emacs/*.el
-%ghost %{_datadir}/maxima/%{maxima_ver}/emacs/*.elc
-%dir %{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/
-%{_datadir}/maxima/%{maxima_ver}/emacs/site_start.d/*.el
-%ghost %{emacs_sitelisp}
-%ghost %{xemacs_sitelisp}
 %ghost %{texmf}/tex/latex/emaxima
+%{_emacs_sitelispdir}/*
+%exclude %{_emacs_sitelispdir}/site_start.d/
+%{_emacs_sitelispdir}/site_start.d/*.el*
+
 
 %files src
 %{_datadir}/maxima/%{maxima_ver}/src/
@@ -419,7 +370,8 @@ fi
 %files gui
 %{_bindir}/xmaxima
 %{_datadir}/maxima/%{maxima_ver}/xmaxima/
-%{_datadir}/applications/*.desktop
+%{_datadir}/applications/net.sourceforge.maxima.xmaxima.desktop
+%{_metainfodir}/net.sourceforge.maxima.xmaxima.appdata.xml
 %{_datadir}/icons/hicolor/*/*/*
 %{_infodir}/xmaxima*
 
@@ -453,6 +405,8 @@ fi
 %changelog
 * Thu Nov 14 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.43.0-1
 - maxima-5.43.0
+- use %%make_build %%make_install
+- update for emacs packaging guidelines
 
 * Thu Jul 25 2019 Fedora Release Engineering <releng@fedoraproject.org> - 5.42.1-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
