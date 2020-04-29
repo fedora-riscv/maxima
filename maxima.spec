@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name:    maxima
-Version: 5.43.0
+Version: 5.43.2
 
-Release: 3%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 URL:     http://maxima.sourceforge.net/
 Source:  http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -403,6 +403,9 @@ fi
 
 
 %changelog
+* Wed Apr 29 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.43.2-1
+- 5.43.2
+
 * Fri Feb 28 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.43.0-3
 - rebuild (sbcl)
 
