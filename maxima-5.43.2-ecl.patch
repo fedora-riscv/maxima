@@ -1,0 +1,23 @@
+--- maxima-5.43.2/lisp-utils/defsystem.lisp.orig	2019-10-20 21:38:58.000000000 -0600
++++ maxima-5.43.2/lisp-utils/defsystem.lisp	2020-07-06 20:37:46.627238558 -0600
+@@ -4152,7 +4152,7 @@ the system definition, if provided."
+       #+:ecl
+       (progn
+         (ext:package-lock "CL" nil)
+-        (setf (symbol-function 'lisp:require)
++        (setf (symbol-function 'cl:require)
+               (symbol-function 'new-require))
+         (ext:package-lock "CL" t))
+       #+:lispworks
+--- maxima-5.43.2/src/maxima.system.orig	2020-07-06 20:36:09.516472632 -0600
++++ maxima-5.43.2/src/maxima.system	2020-07-06 20:36:24.196437248 -0600
+@@ -81,8 +81,7 @@
+ 	(c::build-fasl "binary-ecl/maxima" :lisp-files obj :ld-flags ldflags)
+ 	(c::build-program "binary-ecl/maxima" :lisp-files obj
+ 			  :ld-flags ldflags
+-			  :epilogue-code '(progn (require :defsystem)
+-					         (cl-user::run)))))))
++			  :epilogue-code '(cl-user::run))))))
+ 
+ (defun maxima-binary-pathname ()
+   #+clisp

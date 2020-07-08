@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name:    maxima
 Version: 5.43.2
 
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 URL:     http://maxima.sourceforge.net/
 Source:  http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -24,6 +24,13 @@ Patch51: maxima-5.30.0-build-fasl.patch
 
 # handle multiple ldflags in ecl build
 Patch52: maxima-ecl_ldflags.patch
+
+# Invoke python3 instead of python
+Patch53: maxima-5.43.2-python3.patch
+
+# Adapt to ECL 20.4.24
+# https://sourceforge.net/p/maxima/code/ci/615b4bf8b13d55a576bc60ad04f7b17d75f49021/
+Patch54: maxima-5.43.2-ecl.patch
 
 ## upstream patches
 
@@ -112,17 +119,19 @@ BuildRequires: pkgconfig(bash-completion)
 %global bash_completionsdir %(pkg-config --variable=completionsdir bash-completion 2>/dev/null || echo '/etc/bash_completion.d')
 BuildRequires: perl-interpreter
 BuildRequires: perl(Getopt::Long)
-BuildRequires: python
-%if 0%{?texinfo}
+BuildRequires: python3
+BuildRequires: %{py3_dist vtk}
+BuildRequires: recode
 # texi2dvi
 BuildRequires: texinfo-tex
 BuildRequires: tex(latex)
 %if 0%{?fedora} > 17
 BuildRequires: tex(fullpage.sty)
 %endif
-%endif
 # /usr/bin/wish
 BuildRequires: tk
+# Needed for the sbcl tests
+BuildRequires: gnuplot
 
 Requires: %{name}-runtime%{?default_lisp:-%{default_lisp}} = %{version}-%{release}
 Requires: gnuplot
@@ -185,8 +194,7 @@ Maxima compiled with CMU Common Lisp (cmucl)
 %package runtime-gcl
 Summary: Maxima compiled with GCL
 BuildRequires: gcl
-# gcl probably missing this dep
-BuildRequires: gcc
+BuildRequires: gcl-emacs
 Requires:  %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-gcl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}-%{release}
@@ -235,6 +243,8 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 %patch50 -p1 -b .clisp-noreadline
 %patch51 -p1 -b .build-fasl
 %patch52 -p1 -b .ecl_ldflags
+%patch53 -p1 -b .python3
+%patch54 -p1 -b .ecl
 
 # Extra docs
 install -p -m644 %{SOURCE10} .
@@ -403,6 +413,12 @@ fi
 
 
 %changelog
+* Wed Jul  8 2020 Jerry James <loganjerry@gmail.com> - 5.43.2-2
+- Rebuild for ecl 20.4.24
+- Add python3 and ecl patches
+- BR gcl-emacs to fix emacs byte-compilation error
+- Bring texinfo support back
+
 * Wed Apr 29 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.43.2-1
 - 5.43.2
 

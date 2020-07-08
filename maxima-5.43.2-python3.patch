@@ -1,0 +1,46 @@
+diff -up maxima-5.43.2/doc/info/build_html.sh.in.orig maxima-5.43.2/doc/info/build_html.sh.in
+--- maxima-5.43.2/doc/info/build_html.sh.in.orig	2020-01-26 21:36:51.000000000 -0700
++++ maxima-5.43.2/doc/info/build_html.sh.in	2020-07-03 16:08:26.384327976 -0600
+@@ -46,7 +46,7 @@ do
+   echo "filenamebase = \"$filenamebase\""
+   cat $f
+ done | @AWK@ '!/^@c / && !/^@c$/ && (/^@deffn/ || /^@defvr/ || /^@end deffn/ || /^@end defvr/ || /@category/ || /@node/ || /^filenamebase/)' | @SED@ -f @abs_srcdir@/extract_categories1.sed | @AWK@ -f @abs_srcdir@/extract_categories1.awk > make-categories.py 
+-python make-categories.py 
++python3 make-categories.py 
+ @SED@ -e 's/^@bye/@node Documentation Categories, , Function and Variable Index\n@chapter Documentation Categories/' @abs_srcdir@/maxima.texi > maxima.texi 
+ ( for f in Category-*.texi; do echo '@include' $f; done ; echo @bye ) >> maxima.texi 
+ 
+diff -up maxima-5.43.2/doc/info/de/extract_categories.sh.orig maxima-5.43.2/doc/info/de/extract_categories.sh
+--- maxima-5.43.2/doc/info/de/extract_categories.sh.orig	2019-10-20 21:38:58.000000000 -0600
++++ maxima-5.43.2/doc/info/de/extract_categories.sh	2020-07-03 16:03:04.055746160 -0600
+@@ -31,7 +31,7 @@ cat *.texi\
+   | awk -F'$' -f $d/extract_categories1.awk \
+   > tmp-make-categories.py
+ 
+-${PYTHONBIN:-python} tmp-make-categories.py
++${PYTHONBIN:-python3} tmp-make-categories.py
+ 
+ sed 's/^@bye//' $TARGET_TEXI > tmp-target.texi
+ echo '@node Documentation Categories' >> tmp-target.texi
+diff -up maxima-5.43.2/share/draw/vtk.lisp.orig maxima-5.43.2/share/draw/vtk.lisp
+--- maxima-5.43.2/share/draw/vtk.lisp.orig	2019-10-20 21:38:58.000000000 -0600
++++ maxima-5.43.2/share/draw/vtk.lisp	2020-07-03 16:01:05.777903241 -0600
+@@ -3114,7 +3114,7 @@
+ 
+     ;; pull in requiered packages
+     (format cmdstorage "~a~%~a~%~%~a~%~a~%~%~a~%~%"
+-      "#!/usr/bin/env python"
++      "#!/usr/bin/python3"
+       "# -*- coding: UTF-8 -*-"
+       "import vtk"
+       "import sys"
+@@ -3134,8 +3134,6 @@
+     #+(or windows win32 win64)
+     ($system "vtkpython " gfn)
+     #-(or windows win32 win64)
+-    (if (member $draw_renderer '($vtk $vtk6))
+-      ($system (format nil "(python \"~a\")&" gfn))
+-      ($system (format nil "(python3 \"~a\")&" gfn)))
++    ($system (format nil "(python3 \"~a\")&" gfn))
+ 
+     '$done))
