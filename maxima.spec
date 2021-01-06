@@ -35,6 +35,7 @@ Patch54: maxima-5.43.2-ecl.patch
 ## upstream patches
 
 %define maxima_ver %{version}%{?beta}
+BuildRequires: make
 BuildRequires: emacs
 Requires: emacs-filesystem >= %{_emacs_version}
 %define texmf %{_datadir}/texmf
