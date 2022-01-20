@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name:    maxima
 Version: 5.43.2
 
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: GPLv2
 URL:     http://maxima.sourceforge.net/
 Source:  http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -414,6 +414,9 @@ fi
 
 
 %changelog
+* Thu Jan 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 5.43.2-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 * Thu Nov 25 2021 Orion Poplawski <orion@nwra.com> - 5.43.2-6
 - Rebuild for vtk 9.1.0
 
