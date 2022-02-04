@@ -1,9 +1,9 @@
 
 Summary: Symbolic Computation Program
 Name:    maxima
-Version: 5.43.2
+Version: 5.45.1
 
-Release: 7%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 URL:     http://maxima.sourceforge.net/
 Source:  http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -22,15 +22,8 @@ Patch50: maxima-5.37.1-clisp-noreadline.patch
 # Build the fasl while building the executable to avoid double initialization
 Patch51: maxima-5.30.0-build-fasl.patch
 
-# handle multiple ldflags in ecl build
-Patch52: maxima-ecl_ldflags.patch
-
 # Invoke python3 instead of python
 Patch53: maxima-5.43.2-python3.patch
-
-# Adapt to ECL 20.4.24
-# https://sourceforge.net/p/maxima/code/ci/615b4bf8b13d55a576bc60ad04f7b17d75f49021/
-Patch54: maxima-5.43.2-ecl.patch
 
 ## upstream patches
 
@@ -41,7 +34,7 @@ Requires: emacs-filesystem >= %{_emacs_version}
 %define texmf %{_datadir}/texmf
 
 %ifarch %{ix86} x86_64
-%define default_lisp sbcl 
+%define default_lisp sbcl
 %define _enable_sbcl --enable-sbcl-exec
 %if 0%{?fedora}
 %define _enable_clisp --enable-clisp-exec
@@ -99,7 +92,7 @@ Source6: maxima-modes.el
 Source10: http://starship.python.net/crew/mike/TixMaxima/macref.pdf
 Source11: http://maxima.sourceforge.net/docs/maximabook/maximabook-19-Sept-2004.pdf
 
-# Inhibit automatic compressing of info files. 
+# Inhibit automatic compressing of info files.
 # Compressed info files break maxima's internal help.
 %global __spec_install_post %{nil}
 # debuginfo.list ends up empty/blank anyway. disable
@@ -147,17 +140,17 @@ based on the original Macsyma developed at MIT in the 1970's.
 
 %package gui
 Summary: Tcl/Tk GUI interface for %{name}
-Requires: %{name} = %{version}-%{release} 
+Requires: %{name} = %{version}-%{release}
 Obsoletes: %{name}-xmaxima < %{version}-%{release}
 Requires: tk
 Requires: xdg-utils
 %description gui
 Tcl/Tk GUI interface for %{name}
 
-%package src 
-Summary: %{name} lisp source code 
+%package src
+Summary: %{name} lisp source code
 Requires: %{name} = %{version}-%{release}
-%description src 
+%description src
 %{name} lisp source code.
 
 %if "x%{?_enable_clisp:1}" == "x1"
@@ -174,21 +167,21 @@ Requires: %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-clisp < %{version}-%{release}
 Provides: %{name}-runtime = %{version}-%{release}
 %description runtime-clisp
-Maxima compiled with Common Lisp (clisp) 
+Maxima compiled with Common Lisp (clisp)
 %endif
 
 %if "x%{?_enable_cmucl:1}" == "x1"
 %define _with_cmucl_runtime --with-cmucl-runtime=%{_prefix}/lib/cmucl/bin/lisp
 %package runtime-cmucl
 Summary: Maxima compiled with CMUCL
-BuildRequires: cmucl 
+BuildRequires: cmucl
 # needed dep somewhere around cmucl-20a -- Rex
 Requires: cmucl
 Requires:  %{name} = %{version}-%{release}
 Obsoletes: maxima-exec-cmucl < %{version}-%{release}
 Provides:  %{name}-runtime = %{version}-%{release}
 %description runtime-cmucl
-Maxima compiled with CMU Common Lisp (cmucl) 
+Maxima compiled with CMU Common Lisp (cmucl)
 %endif
 
 %if "x%{?_enable_gcl:1}" == "x1"
@@ -205,12 +198,12 @@ Maxima compiled with Gnu Common Lisp (gcl)
 
 %if "x%{?_enable_sbcl:1}" == "x1"
 %package runtime-sbcl
-Summary: Maxima compiled with SBCL 
+Summary: Maxima compiled with SBCL
 BuildRequires: sbcl
 %if "%{?_enable_sbcl}" != "--enable-sbcl-exec"
 # requires the same sbcl it was built against
 %global sbcl_vr %(sbcl --version 2>/dev/null | cut -d' ' -f2)
-%if "x%{?sbcl_vr}" != "x%{nil}" 
+%if "x%{?sbcl_vr}" != "x%{nil}"
 Requires: sbcl = %{sbcl_vr}
 %else
 Requires: sbcl
@@ -225,7 +218,7 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 
 %if "x%{?_enable_ecl:1}" == "x1"
 %package runtime-ecl
-Summary: Maxima compiled with ECL 
+Summary: Maxima compiled with ECL
 BuildRequires: ecl
 # workaround missing requires in ecl pkg(?)
 BuildRequires: libffi-devel
@@ -243,9 +236,7 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 
 %patch50 -p1 -b .clisp-noreadline
 %patch51 -p1 -b .build-fasl
-%patch52 -p1 -b .ecl_ldflags
 %patch53 -p1 -b .python3
-%patch54 -p1 -b .ecl
 
 # Extra docs
 install -p -m644 %{SOURCE10} .
@@ -270,7 +261,7 @@ sed -i -e \
   %{?_enable_ecl}   %{!?_enable_ecl:   --disable-ecl } \
   --enable-lang-es --enable-lang-es-utf8 \
   --enable-lang-pt --enable-lang-pt-utf8 \
-  --enable-lang-pt_BR --enable-lang-pt_BR-utf8 
+  --enable-lang-pt_BR --enable-lang-pt_BR-utf8
 
 # help avoid (re)running makeinfo/tex
 touch doc/info/maxima.info \
@@ -281,10 +272,6 @@ touch doc/info/maxima.info \
 
 %install
 %make_install
-
-%if "x%{?_enable_ecl:1}" == "x1"
-install -D -m755 src/binary-ecl/maxima.fas $RPM_BUILD_ROOT%{ecllib}/maxima.fas
-%endif
 
 # app icon
 install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/maxima.png
@@ -329,7 +316,7 @@ fi
 
 %files
 %license COPYING
-%doc AUTHORS ChangeLog README README.lisps
+%doc AUTHORS ChangeLog README README-lisps.md
 %doc doc/implementation/
 %doc doc/maximabook/maxima.pdf
 %{_bindir}/maxima
@@ -369,6 +356,7 @@ fi
 %lang(pt) %{_infodir}/pt.utf8/
 %lang(pt_BR) %{_infodir}/pt_BR*
 %{_mandir}/man1/maxima.*
+%{_mandir}/*/man1/maxima.*
 %ghost %{texmf}/tex/latex/emaxima
 %{_emacs_sitelispdir}/*
 %exclude %{_emacs_sitelispdir}/site_start.d/
@@ -409,11 +397,13 @@ fi
 %if "x%{?_enable_ecl:1}" == "x1"
 %files runtime-ecl
 %{_libdir}/maxima/%{version}/binary-ecl
-%{ecllib}/maxima*.fas
 %endif
 
 
 %changelog
+* Thu Feb  3 2022 José Matos <jamatos@fedoraproject.org> - 5.45.1-1
+- update to 5.45.1
+
 * Thu Jan 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 5.43.2-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
@@ -832,7 +822,7 @@ fi
 - maxima-5.25.1
 
 * Mon Aug 22 2011 Rex Dieter <rdieter@fedoraproject.org> 5.25.0-3
-- fix sbcl_vr macro usage 
+- fix sbcl_vr macro usage
 
 * Sun Aug 21 2011 Rex Dieter <rdieter@fedoraproject.org> 5.25.0-1
 - maxima-5.25.0
@@ -864,7 +854,7 @@ fi
 * Wed Sep 29 2010 jkeating - 5.22.1-3
 - Rebuilt for gcc bug 634757
 
-* Sat Sep 18 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.22.1-2 
+* Sat Sep 18 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.22.1-2
 - rebuild (sbcl)
 
 * Mon Aug 16 2010 Rex Dieter <rdieter@fedoraproject.org> - 5.22.1-1
