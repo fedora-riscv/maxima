@@ -22,6 +22,9 @@ Patch50: maxima-5.37.1-clisp-noreadline.patch
 # Build the fasl while building the executable to avoid double initialization
 Patch51: maxima-5.30.0-build-fasl.patch
 
+# handle multiple ldflags in ecl build
+Patch52: maxima-ecl_ldflags.patch
+
 # Invoke python3 instead of python
 Patch53: maxima-5.43.2-python3.patch
 
@@ -220,8 +223,6 @@ Maxima compiled with Steel Bank Common Lisp (sbcl).
 %package runtime-ecl
 Summary: Maxima compiled with ECL
 BuildRequires: ecl
-# workaround missing requires in ecl pkg(?)
-BuildRequires: libffi-devel
 %global ecllib %(ecl -eval "(princ (SI:GET-LIBRARY-PATHNAME))" -eval "(quit)" 2>/dev/null)
 Requires: ecl
 Requires: %{name} = %{version}-%{release}
@@ -236,6 +237,7 @@ Maxima compiled with Embeddable Common-Lisp (ecl).
 
 %patch50 -p1 -b .clisp-noreadline
 %patch51 -p1 -b .build-fasl
+%patch52 -p1 -b .ecl_ldflags
 %patch53 -p1 -b .python3
 
 # Extra docs
@@ -272,6 +274,10 @@ touch doc/info/maxima.info \
 
 %install
 %make_install
+
+%if "x%{?_enable_ecl:1}" == "x1"
+install -D -m755 src/binary-ecl/maxima.fas $RPM_BUILD_ROOT%{ecllib}/maxima.fas
+%endif
 
 # app icon
 install -p -D -m644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/maxima.png
@@ -397,10 +403,14 @@ fi
 %if "x%{?_enable_ecl:1}" == "x1"
 %files runtime-ecl
 %{_libdir}/maxima/%{version}/binary-ecl
+%{ecllib}/maxima*.fas
 %endif
 
 
 %changelog
+* Sat Feb  5 2022 Jerry James <loganjerry@gmail.com> - 5.45.1-1
+- Bring back maxima-ecl_ldflags.patch and install maxima.fas again
+
 * Thu Feb  3 2022 José Matos <jamatos@fedoraproject.org> - 5.45.1-1
 - update to 5.45.1
 
