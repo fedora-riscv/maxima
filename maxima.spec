@@ -3,7 +3,7 @@ Summary: Symbolic Computation Program
 Name:    maxima
 Version: 5.45.1
 
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 URL:     http://maxima.sourceforge.net/
 Source:  http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
@@ -20,6 +20,7 @@ ExclusiveArch: %{ix86} x86_64 ppc sparcv9
 Patch50: maxima-5.37.1-clisp-noreadline.patch
 
 # Build the fasl while building the executable to avoid double initialization
+# https://github.com/sagemath/sage/blob/develop/build/pkgs/maxima/patches/maxima.system.patch
 Patch51: maxima-5.30.0-build-fasl.patch
 
 # handle multiple ldflags in ecl build
@@ -408,6 +409,9 @@ fi
 
 
 %changelog
+* Mon Mar  7 2022 Jerry James <loganjerry@gmail.com> - 5.45.1-2
+- Tweak the previous change to get a valid ECL FASL
+
 * Sat Feb  5 2022 Jerry James <loganjerry@gmail.com> - 5.45.1-1
 - Bring back maxima-ecl_ldflags.patch and install maxima.fas again
 

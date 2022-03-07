@@ -1,25 +1,19 @@
---- maxima-5.45.1/src/maxima.system.orig	2022-02-05 10:50:24.516845077 -0700
-+++ maxima-5.45.1/src/maxima.system	2022-02-05 10:52:39.451606046 -0700
-@@ -71,20 +71,16 @@
- 	(let ((c::*ld-format* (concatenate 'string c::*ld-format* " /LIBPATH:binary-ecl")))
- 	  (c::build-fasl "binary-ecl/maxima" :lisp-files '(maxima-lib))))
-       #-msvc
--      (let ((obj (mapcar #'(lambda (p)
--			     ;; Convert dir/foo.fas to dir/foo.o
--			     (make-pathname :type "o" :defaults p))
+--- maxima-5.45.1/src/maxima.system.orig	2022-03-07 11:23:14.847637296 -0700
++++ maxima-5.45.1/src/maxima.system	2022-03-07 11:29:22.520003900 -0700
+@@ -80,17 +80,13 @@
+       (let ((obj (mapcar #'(lambda (p)
+ 			     ;; Convert dir/foo.fas to dir/foo.o
+ 			     (make-pathname :type "o" :defaults p))
 -			 files)))
 -	(c::build-fasl "binary-ecl/maxima" :lisp-files obj
 -			  :ld-flags
 -			  (let ((x (symbol-value (find-symbol "*AUTOCONF-LD-FLAGS*"
 -							      (find-package "MAXIMA")))))
 -			    (if (and x (not (string= x ""))) (list x))))
-+      (let* ((obj (mapcar #'(lambda (p)
-+			      ;; Convert dir/foo.fas to dir/foo.o
-+			      (make-pathname :type "o" :defaults p))
-+			  files))
-+	     (ldflags (let ((x (symbol-value (find-symbol "*AUTOCONF-LD-FLAGS*"
-+							  (find-package "MAXIMA")))))
-+			(if (and x (not (string= x ""))) (c::split-program-options x)))))
++			 files))
++	    (ldflags (let ((x (symbol-value (find-symbol "*AUTOCONF-LD-FLAGS*"
++							 (find-package "MAXIMA")))))
++		       (if (and x (not (string= x ""))) (c::split-program-options x)))))
 +	(c::build-fasl "binary-ecl/maxima" :lisp-files obj :ld-flags ldflags)
  	(c::build-program "binary-ecl/maxima" :lisp-files obj
 -			  :ld-flags
