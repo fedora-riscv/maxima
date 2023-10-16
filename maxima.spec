@@ -3,12 +3,12 @@ Summary: Symbolic Computation Program
 Name:    maxima
 Version: 5.45.1
 
-Release: 4%{?dist}
+Release: 4.rv64%{?dist}
 License: GPLv2
 URL:     http://maxima.sourceforge.net/
 Source:  http://downloads.sourceforge.net/sourceforge/maxima/maxima-%{version}%{?beta}.tar.gz
 %if 0%{?fedora}
-ExclusiveArch: %{arm} %{ix86} x86_64 aarch64 ppc sparcv9
+ExclusiveArch: %{arm} %{ix86} x86_64 aarch64 ppc sparcv9 riscv64
 %endif
 %if 0%{?rhel}
 ExclusiveArch: %{ix86} x86_64 ppc sparcv9
@@ -72,6 +72,11 @@ Requires: emacs-filesystem >= %{_emacs_version}
 %endif
 
 %ifarch sparcv9
+%define default_lisp sbcl
+%define _enable_sbcl --enable-sbcl-exec
+%endif
+
+%ifarch riscv64
 %define default_lisp sbcl
 %define _enable_sbcl --enable-sbcl-exec
 %endif
